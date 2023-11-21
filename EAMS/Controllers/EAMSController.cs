@@ -17,6 +17,7 @@ namespace EAMS.Controllers
             
         }
 
+        #region District Master
         [HttpGet]
         [Route("DistrictList")]
         public async Task<IActionResult> DistrictListById(string stateMasterId)
@@ -24,6 +25,8 @@ namespace EAMS.Controllers
             var sd = await _EAMSService.GetDistrictById(stateMasterId);   
             return Ok(sd);
         }
+
+        #endregion
 
         [HttpGet]
         [Route("StateList")]

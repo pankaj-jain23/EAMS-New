@@ -19,7 +19,10 @@ namespace EAMS_DAL.Repository
         {
             _context = context;
         }
+        #region
+        //StateMethods
 
+        #endregion
 
         public async Task<List<StateMaster>> GetState()
         {

@@ -61,10 +61,11 @@ namespace EAMS_ACore
 
         public DateTime? BoothDeletedAt { get; set; } = DateTime.UtcNow;
 
-        //public long? AssignedTo { get; set; }
+        public string? AssignedTo { get; set; }
+        public string? AssignedBy { get; set; }  
+        public DateTime? AssignedOnTime { get; set; } = DateTime.UtcNow;
 
-        //public long? AssignedBy { get; set; }
 
-        //public short? AssignedStatus { get; set; }
+
     }
 }

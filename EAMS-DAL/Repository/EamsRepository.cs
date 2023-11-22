@@ -238,30 +238,35 @@ namespace EAMS_DAL.Repository
             return await boothlist.ToListAsync();
         }
 
-        public  string AddBooth(BoothMaster boothMaster)
+        public string AddBooth(BoothMaster boothMaster)
         {
             try
             {
-                
-
-                var boothExist =  _context.BoothMaster
-    .Where(p => p.BoothCode_No == boothMaster.BoothCode_No || p.BoothName == boothMaster.BoothName).FirstOrDefault();
-
+                // Check for uniqueness
+                var boothExist = _context.BoothMaster
+                    .FirstOrDefault(p => p.BoothCode_No == boothMaster.BoothCode_No || p.BoothName == boothMaster.BoothName);
 
                 if (boothExist == null)
                 {
+                    // Set UTC time directly in the model
+                    boothMaster.BoothCreatedAt = DateTime.UtcNow;
+                    boothMaster.BoothUpdatedAt = DateTime.UtcNow;
+                    boothMaster.BoothDeletedAt = DateTime.UtcNow;
+
                     _context.BoothMaster.Add(boothMaster);
-                     _context.SaveChanges();
+                    _context.SaveChanges();
+
                     return "Booth " + boothMaster.BoothName + " added successfully!";
                 }
                 else
                 {
-                    return "Booth " + boothMaster.BoothName + " with the same name already exists.";
+                    return "Booth " + boothMaster.BoothName + " with the same name or code already exists.";
                 }
             }
             catch (Exception ex)
             {
-                // Handle the exception appropriately, logging or other actions.
+                // Log the exception details for troubleshooting
+                Console.WriteLine(ex.Message);
                 return "An error occurred while processing the request.";
             }
         }

@@ -33,7 +33,14 @@ public partial class EamsContext :IdentityDbContext<UserRegistration>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<StateMaster>().Property(p => p.StateName).ValueGeneratedOnAdd();
+        modelBuilder.Entity<StateMaster>().Property(p => p.StateMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<DistrictMaster>().Property(p => p.DistrictMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<ParliamentConstituencyMaster>().Property(p => p.PCMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<AssemblyMaster>().Property(p => p.AssemblyMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<BoothMaster>().Property(p => p.BoothMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<EventMaster>().Property(p => p.EventMasterId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<SectorOfficerMaster>().Property(p => p.SOMasterId).ValueGeneratedOnAdd();
+
         base.OnModelCreating(modelBuilder);
 
 

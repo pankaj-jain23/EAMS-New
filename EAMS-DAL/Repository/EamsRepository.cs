@@ -124,14 +124,14 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region SO Master
-        public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId)
+        public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
         {
 
             var solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
                          join asem in _context.AssemblyMaster
                          on so.SoAssemblyCode equals asem.AssemblyCode
                          join dist in _context.DistrictMaster
-                         on asem.DistrictMasterId equals dist.DistrictMasterId // key selector
+                         on asem.DistrictMasterId equals dist.DistrictMasterId where asem.DistrictMasterId ==Convert.ToInt32(districtMasterId) && asem.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) // key selector
                          join state in _context.StateMaster
                           on dist.StateMasterId equals state.StateMasterId
 
@@ -158,16 +158,15 @@ namespace EAMS_DAL.Repository
         {
 
             var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId== Convert.ToInt32(districtMasterId) && d.AssemblyMasterId== Convert.ToInt32(assemblyMasterId)) // outer sequenc)
-                                                                                                                               //            var solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
                          join asem in _context.AssemblyMaster
                          on bt.AssemblyMasterId equals asem.AssemblyMasterId
                          join dist in _context.DistrictMaster
-                         on asem.DistrictMasterId equals dist.DistrictMasterId // key selector
+                         on asem.DistrictMasterId equals dist.DistrictMasterId  
                          join state in _context.StateMaster
                           on dist.StateMasterId equals state.StateMasterId
 
                          select new CombinedMaster
-                         { // result selector 
+                         {  
                              StateName = state.StateName,
                              DistrictId = dist.DistrictMasterId,
                              DistrictName = dist.DistrictName,
@@ -175,7 +174,7 @@ namespace EAMS_DAL.Repository
                              AssemblyId = asem.AssemblyMasterId,
                              AssemblyName = asem.AssemblyName,
                              AssemblyCode = asem.AssemblyCode,
-                                BoothMasterId=bt.Id,
+                             BoothMasterId=bt.Id,
                             BoothName=bt.BoothName,
                             BoothAuxy=bt.BoothNoAuxy
 

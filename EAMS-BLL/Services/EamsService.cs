@@ -63,9 +63,9 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region  SO Master
-        public Task<List<CombinedMaster>> GetSectorOfficersListById(string stateId)
+        public Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            return _eamsRepository.GetSectorOfficersListById(stateId);
+            return _eamsRepository.GetSectorOfficersListById(stateMasterId,districtMasterId,assemblyMasterId);
         }
         #endregion
 

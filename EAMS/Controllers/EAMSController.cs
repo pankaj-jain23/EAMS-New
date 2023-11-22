@@ -1,7 +1,9 @@
-﻿using EAMS.ViewModels;
+﻿using AutoMapper;
+using EAMS.ViewModels;
 using EAMS_ACore;
 using EAMS_ACore.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EAMS.Controllers
 {
@@ -9,11 +11,13 @@ namespace EAMS.Controllers
     [ApiController]
     public class EAMSController : ControllerBase
     {
-        private readonly IEamsService _EAMSService; 
-         
-        public EAMSController(IEamsService eamsService )
+        private readonly IEamsService _EAMSService;
+        private readonly IMapper _mapper;
+
+        public EAMSController(IEamsService eamsService ,IMapper mapper)
         {
             _EAMSService = eamsService;
+            _mapper = mapper;
             
         }
 
@@ -22,24 +26,32 @@ namespace EAMS.Controllers
         [Route("StateList")]
         public async Task<IActionResult> StateList()
         {
-            var st = await _EAMSService.GetState();
-            return Ok(st);
+            var stateList = await _EAMSService.GetState();
+            var mappedData = _mapper.Map<List<StateMasterViewModel>>(stateList);
+
+            var data = new
+            {
+              count= mappedData.Count,
+              data= mappedData
+            };
+            return Ok(data);
         }
 
 
         [HttpPut]
         [Route("UpdateStateById")]
-        public async Task<IActionResult> UpdateStateById(StateViewModel stateViewModel)
+        public async Task<IActionResult> UpdateStateById(StateMasterViewModel stateViewModel)
         {
             StateMaster stateMaster = new StateMaster()
             {
                 StateMasterId = stateViewModel.StateId,
                 StateCode = stateViewModel.StateCode,
-                StateName = stateViewModel.Name
+                StateName = stateViewModel.StateName
             };
             var state = _EAMSService.UpdateStateById(stateMaster);
             return Ok();
         }
+
         #endregion
 
         #region District Master
@@ -47,8 +59,13 @@ namespace EAMS.Controllers
         [Route("DistrictList")]
         public async Task<IActionResult> DistrictListById(string stateMasterId)
         { 
-            var sd = await _EAMSService.GetDistrictById(stateMasterId);   
-            return Ok(sd);
+            var districtList = await _EAMSService.GetDistrictById(stateMasterId);
+            var data = new
+            {
+                count= districtList.Count,
+                data= districtList
+            };
+            return Ok(data);
         }
 
         [HttpPut]
@@ -74,8 +91,13 @@ namespace EAMS.Controllers
         [Route("GetAssembliesListById")]
         public async Task<IActionResult> AssembliesListById(string stateId, string districtId)
         {
-            var st = await _EAMSService.GetAssemblies(stateId,districtId);  // Corrected to await the asynchronous method
-            return Ok(st);
+            var assemblyList = await _EAMSService.GetAssemblies(stateId,districtId);  // Corrected to await the asynchronous method
+            var data = new
+            {
+                count=assemblyList.Count,
+                data= assemblyList
+            };
+            return Ok(data);
         }
 
         [HttpPut]
@@ -97,14 +119,20 @@ namespace EAMS.Controllers
         #endregion
 
         #region  SO Master
-
         [HttpGet]
         [Route("GetSectorOfficersListById")]
-        public async Task<IActionResult> SectorOfficersListById(string stateId)
+        public async Task<IActionResult> SectorOfficersListById(string stateMasterId,string districtMasterId,string assemblyMasterId)
         {
-            var st = await _EAMSService.GetSectorOfficersListById(stateId);  // Corrected to await the asynchronous method
-            return Ok(st);
+            var soList = await _EAMSService.GetSectorOfficersListById(stateMasterId,districtMasterId,assemblyMasterId);  // Corrected to await the asynchronous method
+            var data = new
+            {
+                count = soList.Count,
+                data = soList
+            };
+            return Ok(data);
         }
+        
+        
         #endregion
 
         #region Booth Master
@@ -113,8 +141,13 @@ namespace EAMS.Controllers
         [Route("GetBoothListById")]
         public async Task<IActionResult> BoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
         {
-            var st = await _EAMSService.GetBoothListById(stateMasterId,districtMasterId,assemblyMasterId);  // Corrected to await the asynchronous method
-            return Ok(st);
+            var boothList = await _EAMSService.GetBoothListById(stateMasterId,districtMasterId,assemblyMasterId);  // Corrected to await the asynchronous method
+            var data = new
+            {
+                count=boothList.Count,
+                data= boothList
+            };
+            return Ok(data);
         }
 
         #endregion

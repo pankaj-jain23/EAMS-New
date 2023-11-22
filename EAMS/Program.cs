@@ -1,3 +1,5 @@
+using EAMS.Helper;
+using AutoMapper;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.Interfaces;
@@ -20,6 +22,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
+
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IEamsService, EamsService>();
 builder.Services.AddTransient<IEamsRepository, EamsRepository>();
@@ -85,18 +89,16 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
- 
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors(); // Make sure this is before UseAuthentication and UseAuthorization
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
+

@@ -27,7 +27,7 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region SO Master
-        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateId);
+        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
         #endregion
 
         #region BoothMaster

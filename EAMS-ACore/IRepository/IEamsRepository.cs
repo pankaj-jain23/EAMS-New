@@ -21,6 +21,7 @@ namespace EAMS_ACore.IRepository
 
         #region Assembly Master
         Task<List<CombinedMaster>> GetAssemblies(string stateId, string districtId);
+        Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster);
         #endregion
 
         #region SO Master

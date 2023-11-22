@@ -19,6 +19,20 @@ namespace EAMS_BLL.Services
             _eamsRepository = eamsRepository;
         }
 
+        #region State Master
+
+        public Task<List<StateMaster>> GetState()
+        {
+            return _eamsRepository.GetState();
+        }
+
+        public Task<StateMaster> UpdateStateById(StateMaster stateMaster)
+        {
+            return _eamsRepository.UpdateStateById(stateMaster);
+        }
+
+        #endregion
+
         #region District Master
 
         public Task<List<CombinedMaster>> GetDistrictById(string stateMasterId)
@@ -34,24 +48,17 @@ namespace EAMS_BLL.Services
         }
         #endregion
 
-        #region State Master
-
-        public Task<List<StateMaster>> GetState()
-        {
-            return _eamsRepository.GetState();
-        }
-
-        public Task<StateMaster> UpdateStateById(StateMaster stateMaster)
-        {
-            return _eamsRepository.UpdateStateById(stateMaster);
-        }
-
-        #endregion
+      
 
         #region Assembly  Master
         public Task<List<CombinedMaster>> GetAssemblies(string stateId, string districtId)
         {
             return _eamsRepository.GetAssemblies(stateId, districtId);
+        }
+
+        public Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster) 
+        {
+            return _eamsRepository.UpdateAssembliesById(assemblyMaster);
         }
         #endregion
 
@@ -68,6 +75,10 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
+
+       
         #endregion
+
+
     }
 }

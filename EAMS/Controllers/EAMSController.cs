@@ -57,6 +57,7 @@ namespace EAMS.Controllers
         {
             DistrictMaster districtMaster = new DistrictMaster()
             {
+                StateMasterId = districtViewModel.StateMasterId,
                 DistrictMasterId = districtViewModel.DistrictMasterId,
                 DistrictCode = districtViewModel.DistrictCode,
                 DistrictName = districtViewModel.Name
@@ -77,6 +78,22 @@ namespace EAMS.Controllers
             return Ok(st);
         }
 
+        [HttpPut]
+        [Route("UpdateAssembliesById")]
+        public async Task<IActionResult> UpdateAssembliesById(AssemblyMasterViewModel assemblyViewModel)
+        {
+            AssemblyMaster assemblyMaster = new AssemblyMaster()
+            {
+                StateMasterId = assemblyViewModel.StateMasterId,
+                DistrictMasterId = assemblyViewModel.DistrictMasterId,
+                AssemblyMasterId = assemblyViewModel.AssemblyMasterId,
+                AssemblyCode = assemblyViewModel.AssemblyCode,
+                AssemblyName = assemblyViewModel.AssemblyName,
+                AssemblyType = assemblyViewModel.AssemblyType,
+            };
+            var assembly = await _EAMSService.UpdateAssembliesById(assemblyMaster);
+            return Ok(assembly);
+        }
         #endregion
 
         #region  SO Master

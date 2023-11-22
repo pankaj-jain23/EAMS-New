@@ -106,6 +106,21 @@ namespace EAMS_DAL.Repository
 
             return await innerJoin.ToListAsync();
         }
+
+        public async Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster)
+        { 
+            var assembliesMasterRecord = _context.AssemblyMaster.Where(d =>d.AssemblyMasterId == assemblyMaster.AssemblyMasterId).FirstOrDefault();
+            //assembliesMaster.AssemblyMasterId=assemblyMaster.AssemblyMasterId;
+            assembliesMasterRecord.AssemblyName = assemblyMaster.AssemblyName;
+            assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;
+            assembliesMasterRecord.AssemblyType = assemblyMaster.AssemblyType;
+            assembliesMasterRecord.AssemblyStatus = assemblyMaster.AssemblyStatus;
+
+           var ss=  _context.AssemblyMaster.Update(assembliesMasterRecord);
+            _context.SaveChanges();
+            return assembliesMasterRecord;
+        }
+
         #endregion
 
         #region SO Master

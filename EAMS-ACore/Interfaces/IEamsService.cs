@@ -23,6 +23,7 @@ namespace EAMS_ACore.Interfaces
 
         #region Assembly Master
         Task<List<CombinedMaster>> GetAssemblies(string stateId, string assemblyId);
+        Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster);
         #endregion
 
         #region SO Master

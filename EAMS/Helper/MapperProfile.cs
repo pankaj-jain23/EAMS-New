@@ -19,6 +19,7 @@ namespace EAMS.Helper
                 .ReverseMap();
 
             #endregion
+            
 
             #region CombinedMaster and DistrictMasterViewModel  
 
@@ -52,7 +53,8 @@ namespace EAMS.Helper
                 .ForMember(dest => dest.BoothStatus, opt => opt.MapFrom(src => src.BoothStatus))
                 .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Latitude))
                 .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Longitude))
-               
+                .ForMember(dest => dest.TotalVoters, opt => opt.MapFrom(src => src.TotalVoters))
+
              .ReverseMap();
             #endregion
         }

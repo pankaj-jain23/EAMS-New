@@ -28,9 +28,15 @@ public partial class EamsContext :IdentityDbContext<UserRegistration>
 
     public virtual DbSet<StateMaster> StateMaster { get; set; }
     public virtual DbSet<SectorOfficerMaster> SectorOfficerMaster { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<StateMaster>().Property(p => p.StateName).ValueGeneratedOnAdd();
         base.OnModelCreating(modelBuilder);
+
+
         // Add your custom model configurations here
     }
 }

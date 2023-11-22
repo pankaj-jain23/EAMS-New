@@ -48,6 +48,33 @@ namespace EAMS_DAL.Repository
             _context.SaveChanges();
             return stateMaster;
         }
+
+        public string AddState(StateMaster stateMaster)
+        {
+            try
+           {
+
+                var stateExist = _context.StateMaster
+    .Where(p => p.StateCode == stateMaster.StateCode || p.StateName == stateMaster.StateName).FirstOrDefault();
+
+
+                if (stateExist == null)
+                {
+                    _context.StateMaster.Add(stateMaster);
+                    _context.SaveChanges();
+                    return "State " + stateExist.StateName + " added successfully!";
+                }
+                else
+                {
+                    return "State " + stateExist.StateName + " with the same name already exists.";
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception appropriately, logging or other actions.
+                return "An error occurred while processing the request.";
+            }
+        }
         #endregion
 
         #region District Master
@@ -76,8 +103,6 @@ namespace EAMS_DAL.Repository
         {
             var districtMaster = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster1.DistrictMasterId).FirstOrDefault();
             districtMaster.DistrictName = districtMaster1.DistrictName;
-
-
             _context.DistrictMaster.Update(districtMaster);
             _context.SaveChanges();
             return districtMaster;
@@ -175,7 +200,7 @@ namespace EAMS_DAL.Repository
                                 AssemblyId = asem.AssemblyMasterId,
                                 AssemblyName = asem.AssemblyName,
                                 AssemblyCode = asem.AssemblyCode,
-                                BoothMasterId = bt.Id,
+                                BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy
 
@@ -204,7 +229,7 @@ namespace EAMS_DAL.Repository
                                 AssemblyId = asem.AssemblyMasterId,
                                 AssemblyName = asem.AssemblyName,
                                 AssemblyCode = asem.AssemblyCode,
-                                BoothMasterId = bt.Id,
+                                BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy
 

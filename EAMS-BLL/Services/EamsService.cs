@@ -30,6 +30,11 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.UpdateStateById(stateMaster);
         }
+        public string AddState(StateMaster stateMaster)
+        {
+            return _eamsRepository.AddState(stateMaster);
+
+        }
 
         #endregion
 

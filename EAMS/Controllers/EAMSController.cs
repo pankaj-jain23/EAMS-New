@@ -53,6 +53,18 @@ namespace EAMS.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("AddState")]
+        public async Task<IActionResult> AddState(StateMasterViewModel stateMasterViewModel)
+        {
+            var insertstate = _mapper.Map<StateMasterViewModel, StateMaster>(stateMasterViewModel);
+            var result = _EAMSService.AddState(insertstate);
+
+
+            return Ok(result);
+        }
+
+
         #endregion
 
         #region District Master
@@ -133,6 +145,13 @@ namespace EAMS.Controllers
         #endregion
 
         #region Booth Master
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stateMasterId"></param>
+        /// <param name="districtMasterId"></param>
+        /// <param name="assemblyMasterId"></param>
+        /// <returns></returns>
 
         [HttpGet]
         [Route("GetBoothListById")]

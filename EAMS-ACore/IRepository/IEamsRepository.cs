@@ -12,6 +12,7 @@ namespace EAMS_ACore.IRepository
         #region State Master
         Task<List<StateMaster>> GetState();
         Task<StateMaster> UpdateStateById(StateMaster stateMaster);
+        string AddState(StateMaster stateMaster);
         #endregion
 
         #region District Master

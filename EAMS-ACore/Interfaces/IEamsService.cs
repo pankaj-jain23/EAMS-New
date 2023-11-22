@@ -12,7 +12,7 @@ namespace EAMS_ACore.Interfaces
         #region State Master
         Task<List<StateMaster>> GetState();
         Task<StateMaster> UpdateStateById(StateMaster stateMaster);
-
+        string AddState(StateMaster stateMaster);
 
         #endregion
 
@@ -35,6 +35,7 @@ namespace EAMS_ACore.Interfaces
         Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId);
 
         string AddBooth(BoothMaster boothMaster);
+        
 
         #endregion
 

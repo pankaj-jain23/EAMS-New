@@ -60,10 +60,12 @@ namespace EAMS.Controllers
         public async Task<IActionResult> DistrictListById(string stateMasterId)
         { 
             var districtList = await _EAMSService.GetDistrictById(stateMasterId);
+            var mappedData = _mapper.Map<List<DistrictMasterViewModel>>(districtList);
+
             var data = new
             {
-                count= districtList.Count,
-                data= districtList
+                count= mappedData.Count,
+                data= mappedData
             };
             return Ok(data);
         }
@@ -72,14 +74,8 @@ namespace EAMS.Controllers
         [Route("UpdateDistrictById")]
         public async Task<IActionResult> UpdateDistrictById(DistrictMasterViewModel districtViewModel)
         {
-            DistrictMaster districtMaster = new DistrictMaster()
-            {
-                StateMasterId = districtViewModel.StateMasterId,
-                DistrictMasterId = districtViewModel.DistrictMasterId,
-                DistrictCode = districtViewModel.DistrictCode,
-                DistrictName = districtViewModel.Name
-            };
-            var district = _EAMSService.UpdateDistrictById(districtMaster);
+            var mappedData = _mapper.Map<DistrictMasterViewModel,DistrictMaster>(districtViewModel);           
+            var district = _EAMSService.UpdateDistrictById(mappedData);
             return Ok(district);
         }
 

@@ -4,9 +4,10 @@
     {
         public int StateMasterId { get; set; }
         public int DistrictMasterId { get; set; }
-        public string Name { get; set; }
+        public string StateName { get; set; }
+        public string DistrictName { get; set; }
         public string DistrictCode { get; set; }
-        public bool Status { get; set; } = true;
+        public bool DistrictStatus { get; set; } = true;
        
 
     }

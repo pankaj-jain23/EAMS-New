@@ -17,6 +17,31 @@ namespace EAMS.Controllers
             
         }
 
+        #region State master
+        [HttpGet]
+        [Route("StateList")]
+        public async Task<IActionResult> StateList()
+        {
+            var st = await _EAMSService.GetState();
+            return Ok(st);
+        }
+
+
+        [HttpPut]
+        [Route("UpdateStateById")]
+        public async Task<IActionResult> UpdateStateById(StateViewModel stateViewModel)
+        {
+            StateMaster stateMaster = new StateMaster()
+            {
+                StateMasterId = stateViewModel.StateId,
+                StateCode = stateViewModel.StateCode,
+                StateName = stateViewModel.Name
+            };
+            var state = _EAMSService.UpdateStateById(stateMaster);
+            return Ok();
+        }
+        #endregion
+
         #region District Master
         [HttpGet]
         [Route("DistrictList")]
@@ -26,58 +51,9 @@ namespace EAMS.Controllers
             return Ok(sd);
         }
 
-        #endregion
-
-        [HttpGet]
-        [Route("StateList")]
-        public async Task<IActionResult> StateList()
-        {
-            var st = await _EAMSService.GetState();   
-            return Ok(st);
-        }
-
-        [HttpGet]
-        [Route("GetAssembliesListById")]
-        public async Task<IActionResult> AssembliesListById(string stateId, string districtId)
-        {
-            var st = await _EAMSService.GetAssemblies(stateId,districtId);  // Corrected to await the asynchronous method
-            return Ok(st);
-        }
-
-        [HttpGet]
-        [Route("GetSectorOfficersListById")]
-        public async Task<IActionResult> SectorOfficersListById(string stateId)
-        {
-            var st = await _EAMSService.GetSectorOfficersListById(stateId);  // Corrected to await the asynchronous method
-            return Ok(st);
-        }
-        [HttpGet]
-        [Route("GetBoothListById")]
-        public async Task<IActionResult> BoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
-        {
-            var st = await _EAMSService.GetBoothListById(stateMasterId,districtMasterId,assemblyMasterId);  // Corrected to await the asynchronous method
-            return Ok(st);
-        }
-
-        
-        [HttpPut]
-        [Route("UpdateStateById")]
-        public async Task<IActionResult> UpdateStateById(StateViewModel stateViewModel)
-        {
-            StateMaster stateMaster=new StateMaster()
-            {
-                StateMasterId=stateViewModel.StateId,
-                StateCode = stateViewModel.StateCode,
-                StateName=stateViewModel.Name
-            };
-            var state=_EAMSService.UpdateStateById(stateMaster);
-            return Ok();
-        }
-
-        //Akash
         [HttpPut]
         [Route("UpdateDistrictById")]
-        public async Task<IActionResult> UpdateDistrictById(DistrictMasterViewModel districtViewModel) 
+        public async Task<IActionResult> UpdateDistrictById(DistrictMasterViewModel districtViewModel)
         {
             DistrictMaster districtMaster = new DistrictMaster()
             {
@@ -88,5 +64,45 @@ namespace EAMS.Controllers
             var district = _EAMSService.UpdateDistrictById(districtMaster);
             return Ok(district);
         }
+
+        #endregion
+             
+        #region Assembliy Master
+
+        [HttpGet]
+        [Route("GetAssembliesListById")]
+        public async Task<IActionResult> AssembliesListById(string stateId, string districtId)
+        {
+            var st = await _EAMSService.GetAssemblies(stateId,districtId);  // Corrected to await the asynchronous method
+            return Ok(st);
+        }
+
+        #endregion
+
+        #region  SO Master
+
+        [HttpGet]
+        [Route("GetSectorOfficersListById")]
+        public async Task<IActionResult> SectorOfficersListById(string stateId)
+        {
+            var st = await _EAMSService.GetSectorOfficersListById(stateId);  // Corrected to await the asynchronous method
+            return Ok(st);
+        }
+        #endregion
+
+        #region Booth Master
+
+        [HttpGet]
+        [Route("GetBoothListById")]
+        public async Task<IActionResult> BoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
+        {
+            var st = await _EAMSService.GetBoothListById(stateMasterId,districtMasterId,assemblyMasterId);  // Corrected to await the asynchronous method
+            return Ok(st);
+        }
+
+        #endregion
+
+         
+       
     }
 }

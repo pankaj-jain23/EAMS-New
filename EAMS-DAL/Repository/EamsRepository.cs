@@ -18,10 +18,10 @@ namespace EAMS_DAL.Repository
         public EamsRepository(EamsContext context)
         {
             _context = context;
-        }
-        #region
-        //StateMethods
+        }  
+        
 
+        #region State Master
  
         public async Task<List<StateMaster>> GetState()
         {
@@ -38,7 +38,19 @@ namespace EAMS_DAL.Repository
 
             return stateList;
         }
+        public async Task<StateMaster> UpdateStateById(StateMaster stateMaster1)
+        {
+            var stateMaster = _context.StateMaster.Where(d => d.StateMasterId == stateMaster1.StateMasterId).FirstOrDefault();
+            stateMaster.StateName = stateMaster1.StateName;
 
+
+            _context.StateMaster.Update(stateMaster);
+            _context.SaveChanges();
+            return stateMaster;
+        }
+        #endregion
+
+        #region District Master
         public async Task<List<CombinedMaster>> GetDistrictById(string stateMasterId)
         {
 
@@ -60,8 +72,19 @@ namespace EAMS_DAL.Repository
 
             return stateData;
         }
+        public async Task<DistrictMaster> UpdateDistrictById(DistrictMaster districtMaster1)
+        {
+            var districtMaster = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster1.DistrictMasterId).FirstOrDefault();
+            districtMaster.DistrictName = districtMaster1.DistrictName;
 
 
+            _context.DistrictMaster.Update(districtMaster);
+            _context.SaveChanges();
+            return districtMaster;
+        }
+        #endregion
+
+        #region Assembly Master
         public async Task<List<CombinedMaster>> GetAssemblies(string stateId, string districtId)
         {
             var innerJoin = from asemb in _context.AssemblyMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId)) // outer sequence
@@ -83,6 +106,9 @@ namespace EAMS_DAL.Repository
 
             return await innerJoin.ToListAsync();
         }
+        #endregion
+
+        #region SO Master
         public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId)
         {
 
@@ -110,8 +136,9 @@ namespace EAMS_DAL.Repository
 
             return await solist.ToListAsync();
         }
+        #endregion
 
-
+        #region Booth Master
         public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
         {
 
@@ -141,25 +168,7 @@ namespace EAMS_DAL.Repository
             var count = boothlist.Count();
             return await boothlist.ToListAsync();
         }
-        public async Task<StateMaster> UpdateStateById(StateMaster stateMaster1)
-        {
-            var stateMaster = _context.StateMaster.Where(d => d.StateMasterId == stateMaster1.StateMasterId).FirstOrDefault();
-            stateMaster.StateName = stateMaster1.StateName;
 
-
-            _context.StateMaster.Update(stateMaster);
-            _context.SaveChanges();
-            return stateMaster;
-        }
-        public async Task<DistrictMaster> UpdateDistrictById(DistrictMaster districtMaster1)
-        {
-            var districtMaster = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster1.DistrictMasterId).FirstOrDefault();
-            districtMaster.DistrictName = districtMaster1.DistrictName;
-
-
-            _context.DistrictMaster.Update(districtMaster);
-            _context.SaveChanges();
-            return districtMaster;
-        }
+        #endregion
     }
 }

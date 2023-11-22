@@ -10,12 +10,17 @@ namespace EAMS.Helper
         public MapperProfile()
         {
             // CreateMap should be called directly on the MapperConfigurationExpression
+            #region StateMasterViewModel and  StateMaster 
             CreateMap<StateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))
                 .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => src.StateCode))
                 .ForMember(dest => dest.StateStatus, opt => opt.MapFrom(src => src.StateStatus))
                 .ReverseMap();
+
+            #endregion
+
+            #region CombinedMaster and DistrictMasterViewModel  
 
             CreateMap<CombinedMaster, DistrictMasterViewModel > ()
                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId)) 
@@ -25,11 +30,17 @@ namespace EAMS.Helper
                .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode)) 
                .ReverseMap();
 
+            #endregion
+
+            #region DistrictMasterViewModel and DistrictMaster 
             CreateMap<DistrictMasterViewModel, DistrictMaster>() 
              .ReverseMap();
-            #region
-//            BoothMasterViewModel and BoothMaster
+
             #endregion
+
+            #region  BoothMasterViewModel and BoothMaster
+
+
 
             CreateMap<BoothMasterViewModel, BoothMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
@@ -43,6 +54,7 @@ namespace EAMS.Helper
                 .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Longitude))
                
              .ReverseMap();
+            #endregion
         }
     }
 }

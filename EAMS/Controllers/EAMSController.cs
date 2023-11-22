@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EAMS.ViewModels;
 using EAMS_ACore;
+using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -145,10 +146,27 @@ namespace EAMS.Controllers
             };
             return Ok(data);
         }
+        /// <summary>
+        /// Insert Booth Under Assembly, District, State
+        /// </summary>
+        /// <param name="stateViewModel"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("AddBooth")]
+        public async Task<IActionResult> AddBooth(BoothMasterViewModel BoothMasterViewModel)
+        {
+            var mappedData = _mapper.Map<BoothMasterViewModel, BoothMaster>(BoothMasterViewModel);
+            var result =  _EAMSService.AddBooth(mappedData);
+
+
+            return Ok(result);
+        }
+
 
         #endregion
 
-         
-       
+
+
     }
 }

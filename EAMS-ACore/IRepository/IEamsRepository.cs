@@ -30,7 +30,7 @@ namespace EAMS_ACore.IRepository
 
         #region Booth Master
         Task<List<CombinedMaster>> GetBoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
-
+        string AddBooth(BoothMaster boothMaster);
         #endregion
 
 

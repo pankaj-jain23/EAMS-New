@@ -2,6 +2,9 @@
 {
     public class BoothMasterViewModel
     {
+        public int StateMasterId { get; set; }
+        public int DistrictMasterId { get; set; }
+        public int AssemblyMasterId { get; set; }
         public string BoothCode_No { get; set; }
 
         public int? TotalVoters { get; set; }
@@ -14,12 +17,10 @@
 
         public double? Longitude { get; set; }
 
-        public short Status { get; set; }
+        public bool BoothStatus { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        
 
-        public DateTime? UpdatedAt { get; set; }
-
-        public DateTime? DeletedAt { get; set; }
+       
     }
 }

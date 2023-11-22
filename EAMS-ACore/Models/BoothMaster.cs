@@ -52,11 +52,11 @@ namespace EAMS_ACore
 
         public bool BoothStatus { get; set; }
 
-        public DateTime? BoothCreatedAt { get; set; }
+        public DateTime? BoothCreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? BoothUpdatedAt { get; set; }
+        public DateTime? BoothUpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? BoothDeletedAt { get; set; }
+        public DateTime? BoothDeletedAt { get; set; } = DateTime.UtcNow;
 
         //public long? AssignedTo { get; set; }
 

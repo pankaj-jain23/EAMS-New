@@ -70,13 +70,17 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region Booth Master
-
+        
         public Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
             return _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
+        public string AddBooth(BoothMaster boothMaster)
+        {
+            return _eamsRepository.AddBooth(boothMaster);
 
-       
+        }
+
         #endregion
 
 

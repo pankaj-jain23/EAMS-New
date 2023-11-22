@@ -27,6 +27,22 @@ namespace EAMS.Helper
 
             CreateMap<DistrictMasterViewModel, DistrictMaster>() 
              .ReverseMap();
+            #region
+//            BoothMasterViewModel and BoothMaster
+            #endregion
+
+            CreateMap<BoothMasterViewModel, BoothMaster>()
+                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
+                .ForMember(dest => dest.BoothCode_No, opt => opt.MapFrom(src => src.BoothCode_No))
+                .ForMember(dest => dest.BoothNoAuxy, opt => opt.MapFrom(src => src.BoothNoAuxy))
+                .ForMember(dest => dest.BoothStatus, opt => opt.MapFrom(src => src.BoothStatus))
+                .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Latitude))
+                .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Longitude))
+               
+             .ReverseMap();
         }
     }
 }

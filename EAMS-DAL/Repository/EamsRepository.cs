@@ -18,11 +18,11 @@ namespace EAMS_DAL.Repository
         public EamsRepository(EamsContext context)
         {
             _context = context;
-        }  
-        
+        }
+
 
         #region State Master
- 
+
         public async Task<List<StateMaster>> GetState()
         {
             var stateList = await _context.StateMaster
@@ -108,15 +108,15 @@ namespace EAMS_DAL.Repository
         }
 
         public async Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster)
-        { 
-            var assembliesMasterRecord = _context.AssemblyMaster.Where(d =>d.AssemblyMasterId == assemblyMaster.AssemblyMasterId).FirstOrDefault();
+        {
+            var assembliesMasterRecord = _context.AssemblyMaster.Where(d => d.AssemblyMasterId == assemblyMaster.AssemblyMasterId).FirstOrDefault();
             //assembliesMaster.AssemblyMasterId=assemblyMaster.AssemblyMasterId;
             assembliesMasterRecord.AssemblyName = assemblyMaster.AssemblyName;
             assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;
             assembliesMasterRecord.AssemblyType = assemblyMaster.AssemblyType;
             assembliesMasterRecord.AssemblyStatus = assemblyMaster.AssemblyStatus;
 
-           var ss=  _context.AssemblyMaster.Update(assembliesMasterRecord);
+            var ss = _context.AssemblyMaster.Update(assembliesMasterRecord);
             _context.SaveChanges();
             return assembliesMasterRecord;
         }
@@ -124,14 +124,15 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region SO Master
-        public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
+        public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
 
             var solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
                          join asem in _context.AssemblyMaster
                          on so.SoAssemblyCode equals asem.AssemblyCode
                          join dist in _context.DistrictMaster
-                         on asem.DistrictMasterId equals dist.DistrictMasterId where asem.DistrictMasterId ==Convert.ToInt32(districtMasterId) && asem.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) // key selector
+                         on asem.DistrictMasterId equals dist.DistrictMasterId
+                         where asem.DistrictMasterId == Convert.ToInt32(districtMasterId) && asem.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) // key selector
                          join state in _context.StateMaster
                           on dist.StateMasterId equals state.StateMasterId
 
@@ -145,7 +146,7 @@ namespace EAMS_DAL.Repository
                              AssemblyName = asem.AssemblyName,
                              AssemblyCode = asem.AssemblyCode,
                              soName = so.SoName,
-                             soMobile=so.SoMobile
+                             soMobile = so.SoMobile
 
                          };
 
@@ -154,33 +155,90 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region Booth Master
-        public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId)
+        public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
 
-            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId== Convert.ToInt32(districtMasterId) && d.AssemblyMasterId== Convert.ToInt32(assemblyMasterId)) // outer sequenc)
-                         join asem in _context.AssemblyMaster
-                         on bt.AssemblyMasterId equals asem.AssemblyMasterId
-                         join dist in _context.DistrictMaster
-                         on asem.DistrictMasterId equals dist.DistrictMasterId  
-                         join state in _context.StateMaster
-                          on dist.StateMasterId equals state.StateMasterId
+            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)) // outer sequenc)
+                            join asem in _context.AssemblyMaster
+                            on bt.AssemblyMasterId equals asem.AssemblyMasterId
+                            join dist in _context.DistrictMaster
+                            on asem.DistrictMasterId equals dist.DistrictMasterId
+                            join state in _context.StateMaster
+                             on dist.StateMasterId equals state.StateMasterId
 
-                         select new CombinedMaster
-                         {  
-                             StateName = state.StateName,
-                             DistrictId = dist.DistrictMasterId,
-                             DistrictName = dist.DistrictName,
-                             DistrictCode = dist.DistrictCode,
-                             AssemblyId = asem.AssemblyMasterId,
-                             AssemblyName = asem.AssemblyName,
-                             AssemblyCode = asem.AssemblyCode,
-                             BoothMasterId=bt.Id,
-                            BoothName=bt.BoothName,
-                            BoothAuxy=bt.BoothNoAuxy
+                            select new CombinedMaster
+                            {
+                                StateName = state.StateName,
+                                DistrictId = dist.DistrictMasterId,
+                                DistrictName = dist.DistrictName,
+                                DistrictCode = dist.DistrictCode,
+                                AssemblyId = asem.AssemblyMasterId,
+                                AssemblyName = asem.AssemblyName,
+                                AssemblyCode = asem.AssemblyCode,
+                                BoothMasterId = bt.Id,
+                                BoothName = bt.BoothName,
+                                BoothAuxy = bt.BoothNoAuxy
 
-                         };
+                            };
             var count = boothlist.Count();
             return await boothlist.ToListAsync();
+        }
+
+        public async Task<List<CombinedMaster>> GetBoothListByAssemblyId(string stateMasterId, string districtMasterId, string assemblyMasterId)
+        {
+
+            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)) // outer sequenc)
+                            join asem in _context.AssemblyMaster
+                            on bt.AssemblyMasterId equals asem.AssemblyMasterId
+                            join dist in _context.DistrictMaster
+                            on asem.DistrictMasterId equals dist.DistrictMasterId
+                            join state in _context.StateMaster
+                             on dist.StateMasterId equals state.StateMasterId
+
+                            select new CombinedMaster
+                            {
+                                StateName = state.StateName,
+                                DistrictId = dist.DistrictMasterId,
+                                DistrictName = dist.DistrictName,
+                                DistrictCode = dist.DistrictCode,
+                                AssemblyId = asem.AssemblyMasterId,
+                                AssemblyName = asem.AssemblyName,
+                                AssemblyCode = asem.AssemblyCode,
+                                BoothMasterId = bt.Id,
+                                BoothName = bt.BoothName,
+                                BoothAuxy = bt.BoothNoAuxy
+
+                            };
+            var count = boothlist.Count();
+            return await boothlist.ToListAsync();
+        }
+
+        public  string AddBooth(BoothMaster boothMaster)
+        {
+            try
+            {
+                
+
+                var boothExist =  _context.BoothMaster
+    .Where(p => p.BoothCode_No == boothMaster.BoothCode_No || p.BoothName == boothMaster.BoothName).FirstOrDefault();
+
+
+                if (boothExist == null)
+                {
+                    _context.BoothMaster.Add(boothMaster);
+                     _context.SaveChanges();
+                    return "Booth " + boothMaster.BoothName + " added successfully!";
+                }
+                else
+                {
+                    return "Booth " + boothMaster.BoothName + " with the same name already exists.";
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception appropriately, logging or other actions.
+                return "An error occurred while processing the request.";
+            }
         }
 
         #endregion

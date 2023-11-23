@@ -5,7 +5,6 @@ namespace EAMS_ACore
     public class BoothMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BoothMasterId { get; set; }
         public int StateMasterId
         {

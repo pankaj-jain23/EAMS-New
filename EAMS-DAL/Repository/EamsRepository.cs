@@ -1,6 +1,7 @@
 ﻿using EAMS_ACore;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
+using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -62,7 +63,7 @@ namespace EAMS_DAL.Repository
                 {
                     _context.StateMaster.Add(stateMaster);
                     _context.SaveChanges();
-                    return "State " + stateExist.StateName + " added successfully!";
+                    return "State " + stateMaster.StateName + " added successfully!";
                 }
                 else
                 {
@@ -204,6 +205,55 @@ namespace EAMS_DAL.Repository
 
             return await solist.ToListAsync();
         }
+        public async Task<string> AddSectorOfficer(SectorOfficerMaster addSectorOfficerMaster)
+        {
+            var soUserExist = _context.SectorOfficerMaster.Where(d => d.SoMobile == addSectorOfficerMaster.SoMobile).FirstOrDefault();
+            if (soUserExist == null)
+            {
+                _context.SectorOfficerMaster.Add(addSectorOfficerMaster);
+                _context.SaveChanges();
+                return "SO User " + addSectorOfficerMaster.SoName + "added successfully!";
+            }
+            else
+            {
+                return "SO User " + addSectorOfficerMaster.SoName + "already exists.";
+            }
+        }
+
+        public async Task<string> UpdateSectorOfficer(SectorOfficerMaster updatedSectorOfficer)
+        {
+            var existingSectorOfficer = await _context.SectorOfficerMaster
+                                                       .FirstOrDefaultAsync(so => so.SOMasterId == updatedSectorOfficer.SOMasterId);
+
+            if (existingSectorOfficer == null)
+            {
+                return "SO User not found.";
+            }
+
+            // Check if the mobile number is unique among other sector officers (excluding the current one being updated)
+            var isMobileUnique = await _context.SectorOfficerMaster
+                              .AnyAsync(so => so.SoMobile == updatedSectorOfficer.SoMobile);
+
+            if (isMobileUnique==false)
+            {
+                existingSectorOfficer.SoName = updatedSectorOfficer.SoName;
+                existingSectorOfficer.SoMobile = updatedSectorOfficer.SoMobile;
+                existingSectorOfficer.SoOfficeName = updatedSectorOfficer.SoOfficeName;
+                existingSectorOfficer.SoAssemblyCode = updatedSectorOfficer.SoAssemblyCode;
+                existingSectorOfficer.SoDesignation= updatedSectorOfficer.SoDesignation;
+                existingSectorOfficer.SOUpdatedAt = updatedSectorOfficer.SOUpdatedAt;
+
+                _context.SectorOfficerMaster.Update(existingSectorOfficer);
+                await _context.SaveChangesAsync();
+
+                return "SO User " + existingSectorOfficer.SoName + " updated successfully!";
+            }
+            else
+            {
+                return "SO User with the given mobile number already exists.";
+            }
+        }
+
         #endregion
 
         #region Booth Master
@@ -317,6 +367,8 @@ namespace EAMS_DAL.Repository
             return eventData;
       
         }
+
+       
 
         #endregion
     }

@@ -2,6 +2,7 @@
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
+using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -71,14 +72,23 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region  SO Master
-        public Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
+        public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            return _eamsRepository.GetSectorOfficersListById(stateMasterId,districtMasterId,assemblyMasterId);
+            return await _eamsRepository.GetSectorOfficersListById(stateMasterId,districtMasterId,assemblyMasterId);
+        }
+        public async Task<string> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster)
+        {
+            return await _eamsRepository.AddSectorOfficer(sectorOfficerMaster);
+        }
+
+        public async Task<string> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster)
+        {
+            return await _eamsRepository.UpdateSectorOfficer(sectorOfficerMaster);
         }
         #endregion
 
         #region Booth Master
-        
+
         public Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
             return _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
@@ -96,6 +106,7 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.GetEventListById(eventMasterId);
         }
+
         #endregion
 
 

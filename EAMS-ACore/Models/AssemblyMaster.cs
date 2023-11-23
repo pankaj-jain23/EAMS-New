@@ -5,7 +5,6 @@ namespace EAMS_ACore
     public class AssemblyMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AssemblyMasterId { get; set; }
         public string AssemblyName { get; set; }
         public int AssemblyCode { get; set; }

@@ -6,7 +6,6 @@ namespace EAMS_ACore
     public class DistrictMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DistrictMasterId { get; set; }
         public int StateMasterId
         {

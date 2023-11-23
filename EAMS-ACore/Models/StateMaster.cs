@@ -6,7 +6,6 @@ namespace EAMS_ACore
     public class StateMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int StateMasterId { get; set; }
 
         public string StateName { get; set; } 

@@ -1,4 +1,5 @@
 ﻿using EAMS_ACore.HelperModels;
+using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,8 @@ namespace EAMS_ACore.Interfaces
 
         #region SO Master
         Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
+        Task<string> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
+        Task<string> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         #endregion
 
         #region BoothMaster

@@ -6,7 +6,6 @@ namespace EAMS_ACore
     public class EventMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EventMasterId { get; set; }
 
         public string EventName { get; set; } 

@@ -10,9 +10,7 @@ namespace EAMS_ACore.Models
 {
     public class SectorOfficerMaster
     {
-
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SOMasterId { get; set; }
         public int StateMasterId
         {

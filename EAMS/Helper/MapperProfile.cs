@@ -2,6 +2,7 @@
 using EAMS.ViewModels;
 using EAMS_ACore;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.Models;
 
 namespace EAMS.Helper
 {
@@ -67,6 +68,17 @@ namespace EAMS.Helper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ReverseMap();
 
+            #endregion
+            #region SectorOfficerViewModel SectorOfficerMaster
+            CreateMap<SectorOfficerViewModel, SectorOfficerMaster>()
+              .ForMember(dest => dest.SOMasterId, opt => opt.MapFrom(src => src.SoId))
+              .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+              .ForMember(dest => dest.SoOfficeName, opt => opt.MapFrom(src => src.SoOfficeName))
+              .ForMember(dest => dest.SoName, opt => opt.MapFrom(src => src.SoName))
+              .ForMember(dest => dest.SoMobile, opt => opt.MapFrom(src => src.SoMobile))
+              .ForMember(dest => dest.SoDesignation, opt => opt.MapFrom(src => src.SoDesignation))
+              .ForMember(dest => dest.SoAssemblyCode, opt => opt.MapFrom(src => src.SoAssemblyCode))
+              .ReverseMap();
             #endregion
         }
     }

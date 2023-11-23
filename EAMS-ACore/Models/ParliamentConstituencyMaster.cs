@@ -6,7 +6,6 @@ namespace EAMS_ACore
     public class ParliamentConstituencyMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PCMasterId { get; set; }
 
         public int StateMasterId

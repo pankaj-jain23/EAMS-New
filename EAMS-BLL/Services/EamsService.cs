@@ -94,9 +94,9 @@ namespace EAMS_BLL.Services
 
         #region Booth Master
 
-        public Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
+        public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            return _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
+            return  await _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
         public string AddBooth(BoothMaster boothMaster)
         {

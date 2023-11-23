@@ -107,6 +107,31 @@ namespace EAMS_DAL.Repository
             _context.SaveChanges();
             return districtMaster;
         }
+
+        public string AddDistrict(DistrictMaster districtMaster)
+        {
+            try
+            {
+                var districtExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName).FirstOrDefault();
+
+                if (districtExist == null)
+                {
+                    _context.DistrictMaster.Add(districtMaster);
+                    _context.SaveChanges();
+                    return "District" + districtMaster.DistrictName + "Added Successfully !";
+                }
+                else
+                {
+                    return "District" + districtMaster.DistrictName + "Same District Already Exists !";
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception appropriately, logging or other actions.
+                return "An error occurred while processing the request.";
+            }
+        }
+
         #endregion
 
         #region Assembly Master
@@ -145,6 +170,8 @@ namespace EAMS_DAL.Repository
             _context.SaveChanges();
             return assembliesMasterRecord;
         }
+
+    
 
         #endregion
 
@@ -269,6 +296,26 @@ namespace EAMS_DAL.Repository
                 Console.WriteLine(ex.Message);
                 return "An error occurred while processing the request.";
             }
+        }
+
+        #endregion
+
+        #region Event Master
+
+        public async Task<List<EventMaster>> GetEventListById(string eventMasterId) 
+        {
+            var eventData = await _context.EventMaster.Where(d => d.EventMasterId == Convert.ToInt32(eventMasterId)).Select(d => new EventMaster
+
+            {
+                EventMasterId = d.EventMasterId,
+                EventName = d.EventName,
+                EventSequence = d.EventSequence,
+                Status = d.Status
+            })
+
+            .ToListAsync();
+            return eventData;
+      
         }
 
         #endregion

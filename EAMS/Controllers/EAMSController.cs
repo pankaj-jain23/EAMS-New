@@ -91,7 +91,14 @@ namespace EAMS.Controllers
             var district = _EAMSService.UpdateDistrictById(mappedData);
             return Ok(district);
         }
-
+        [HttpPost]
+        [Route("AddDistrict")]
+        public async Task<IActionResult> AddDistrict(DistrictMasterViewModel districtViewModel)
+        {
+            var mappedData = _mapper.Map<DistrictMasterViewModel, DistrictMaster>(districtViewModel);
+            var add = _EAMSService.AddDistrict(mappedData);
+            return Ok(add);
+        }
         #endregion
              
         #region Assembliy Master
@@ -177,15 +184,26 @@ namespace EAMS.Controllers
         {
             var mappedData = _mapper.Map<BoothMasterViewModel, BoothMaster>(BoothMasterViewModel);
             var result =  _EAMSService.AddBooth(mappedData);
-
-
             return Ok(result);
         }
 
 
         #endregion
 
-
-
+        #region Event Master
+        [HttpGet]
+        [Route("GetEventListById")]
+        public async Task<IActionResult> EventListById(string eventMasterId) 
+        {
+            var eventList = await _EAMSService.GetEventListById(eventMasterId);
+            var mappedEvent = _mapper.Map<List<EventMasterViewModel>>(eventList);
+            var data = new
+            {
+                count = mappedEvent.Count,
+                data = mappedEvent
+            };
+            return Ok(data);
+        }
+        #endregion
     }
 }

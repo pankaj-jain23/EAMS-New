@@ -19,7 +19,8 @@ namespace EAMS_ACore.Interfaces
         #region District Master
         Task<List<CombinedMaster>> GetDistrictById(string stateMasterId);
         Task<DistrictMaster> UpdateDistrictById(DistrictMaster districtMaster);
-       
+        string AddDistrict(DistrictMaster districtMaster);
+
         #endregion
 
         #region Assembly Master
@@ -36,6 +37,11 @@ namespace EAMS_ACore.Interfaces
 
         string AddBooth(BoothMaster boothMaster);
         
+
+        #endregion
+
+        #region EventMaster
+        Task<List<EventMaster>> GetEventListById(string eventMasterId);
 
         #endregion
 

@@ -13,9 +13,9 @@ namespace EAMS_BLL.Services
 {
     public class EamsService : IEamsService
     {
-        private readonly IEamsRepository _eamsRepository; 
-        public EamsService(IEamsRepository eamsRepository) 
-        { 
+        private readonly IEamsRepository _eamsRepository;
+        public EamsService(IEamsRepository eamsRepository)
+        {
             _eamsRepository = eamsRepository;
         }
 
@@ -42,7 +42,7 @@ namespace EAMS_BLL.Services
 
         public Task<List<CombinedMaster>> GetDistrictById(string stateMasterId)
         {
-         return _eamsRepository.GetDistrictById(stateMasterId);
+            return _eamsRepository.GetDistrictById(stateMasterId);
         }
 
 
@@ -51,9 +51,12 @@ namespace EAMS_BLL.Services
             return _eamsRepository.UpdateDistrictById(districtMaster);
 
         }
-        #endregion
 
-      
+        public string AddDistrict(DistrictMaster districtMaster)
+        {
+            return _eamsRepository.AddDistrict(districtMaster);
+        }
+        #endregion   
 
         #region Assembly  Master
         public Task<List<CombinedMaster>> GetAssemblies(string stateId, string districtId)
@@ -86,6 +89,13 @@ namespace EAMS_BLL.Services
 
         }
 
+        #endregion
+
+        #region Event Master
+        public Task<List<EventMaster>> GetEventListById(string eventMasterId) 
+        {
+            return _eamsRepository.GetEventListById(eventMasterId);
+        }
         #endregion
 
 

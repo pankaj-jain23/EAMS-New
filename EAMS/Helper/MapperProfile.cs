@@ -57,6 +57,17 @@ namespace EAMS.Helper
 
              .ReverseMap();
             #endregion
+
+            #region EventMasterViewModel and EventMaster
+
+            CreateMap<EventMasterViewModel, EventMaster>()
+                .ForMember(dest => dest.EventMasterId, opt => opt.MapFrom(src => src.EventMasterId))
+                .ForMember(dest => dest.EventName, opt => opt.MapFrom(src => src.EventName))
+                .ForMember(dest => dest.EventSequence, opt => opt.MapFrom(src => src.EventSequence))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ReverseMap();
+
+            #endregion
         }
     }
 }

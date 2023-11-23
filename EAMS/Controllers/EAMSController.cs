@@ -122,17 +122,33 @@ namespace EAMS.Controllers
         [Route("UpdateAssembliesById")]
         public async Task<IActionResult> UpdateAssembliesById(AssemblyMasterViewModel assemblyViewModel)
         {
-            AssemblyMaster assemblyMaster = new AssemblyMaster()
+            if (ModelState.IsValid)
             {
-                StateMasterId = assemblyViewModel.StateMasterId,
-                DistrictMasterId = assemblyViewModel.DistrictMasterId,
-                AssemblyMasterId = assemblyViewModel.AssemblyMasterId,
-                AssemblyCode = assemblyViewModel.AssemblyCode,
-                AssemblyName = assemblyViewModel.AssemblyName,
-                AssemblyType = assemblyViewModel.AssemblyType,
-            };
-            var assembly = await _EAMSService.UpdateAssembliesById(assemblyMaster);
-            return Ok(assembly);
+                var mappedData = _mapper.Map<AssemblyMasterViewModel, AssemblyMaster>(assemblyViewModel);
+                var update = _EAMSService.AddAssemblies(mappedData);
+                return Ok(update);
+            }
+            else
+            { 
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        [Route("AddAssemblies")]
+
+        public async Task<IActionResult> AddAssemblies(AssemblyMasterViewModel assemblyMasterViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<AssemblyMasterViewModel, AssemblyMaster>(assemblyMasterViewModel);
+            var add = _EAMSService.AddAssemblies(mappedData);
+            return Ok(add);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
         #endregion
 
@@ -239,6 +255,16 @@ namespace EAMS.Controllers
             };
             return Ok(data);
         }
+
+        [HttpPut]
+        [Route("UpdateEventById")]
+        public async Task<IActionResult> UpdateEventById(EventMasterViewModel eventMaster)
+        {
+            var mappedeventData = _mapper.Map<EventMasterViewModel, EventMaster>(eventMaster);
+            var eventUplist = _EAMSService.UpdateEventById(mappedeventData);
+            return Ok(eventUplist);
+        }
+
         #endregion
     }
 }

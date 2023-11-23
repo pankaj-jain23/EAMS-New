@@ -172,6 +172,29 @@ namespace EAMS_DAL.Repository
             return assembliesMasterRecord;
         }
 
+        public string AddAssemblies(AssemblyMaster assemblyMaster) 
+        {
+            try 
+            {
+                var assemblieExist = _context.AssemblyMaster.Where(p => p.AssemblyCode == assemblyMaster.AssemblyCode || p.AssemblyName == assemblyMaster.AssemblyName).FirstOrDefault();
+
+                if (assemblieExist == null)
+                {
+                    _context.AssemblyMaster.Add(assemblyMaster);
+                    _context.SaveChanges();
+                    return "Assemblies" + assemblyMaster.AssemblyName + "Added Successfully !";
+                }
+                else 
+                {
+                    return "Assemblies" + assemblyMaster.AssemblyName + "Same District Already Exists";
+                }
+            }
+
+            catch (Exception ex) 
+            {
+                return "An error occurred while processing the request.";
+            }
+        }
     
 
         #endregion
@@ -367,8 +390,16 @@ namespace EAMS_DAL.Repository
             return eventData;
       
         }
+ 
+        public async Task<EventMaster> UpdateEventById(EventMaster eventMaster1)
+        { 
+            var eventMaster = _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();
+            eventMaster.EventName = eventMaster1.EventName;
+            _context.EventMaster.Update(eventMaster);
+            _context.SaveChanges();
+            return eventMaster;
 
-       
+        } 
 
         #endregion
     }

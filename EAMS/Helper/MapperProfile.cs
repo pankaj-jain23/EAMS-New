@@ -21,7 +21,6 @@ namespace EAMS.Helper
 
             #endregion
             
-
             #region CombinedMaster and DistrictMasterViewModel  
 
             CreateMap<CombinedMaster, DistrictMasterViewModel > ()
@@ -32,6 +31,11 @@ namespace EAMS.Helper
                .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode)) 
                .ReverseMap();
 
+            #endregion
+
+            #region AssemblyMasterViewModel AssemblyMaster
+            CreateMap<AssemblyMasterViewModel, AssemblyMaster>()
+                .ReverseMap();
             #endregion
 
             #region DistrictMasterViewModel and DistrictMaster 
@@ -69,6 +73,7 @@ namespace EAMS.Helper
                 .ReverseMap();
 
             #endregion
+
             #region SectorOfficerViewModel SectorOfficerMaster
             CreateMap<SectorOfficerViewModel, SectorOfficerMaster>()
               .ForMember(dest => dest.SOMasterId, opt => opt.MapFrom(src => src.SoId))
@@ -80,6 +85,7 @@ namespace EAMS.Helper
               .ForMember(dest => dest.SoAssemblyCode, opt => opt.MapFrom(src => src.SoAssemblyCode))
               .ReverseMap();
             #endregion
+
         }
     }
 }

@@ -69,6 +69,11 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.UpdateAssembliesById(assemblyMaster);
         }
+
+        public string AddAssemblies(AssemblyMaster assemblyMaster)
+        {
+            return _eamsRepository.AddAssemblies(assemblyMaster);
+        }
         #endregion
 
         #region  SO Master
@@ -107,6 +112,11 @@ namespace EAMS_BLL.Services
             return _eamsRepository.GetEventListById(eventMasterId);
         }
 
+ 
+        public Task<EventMaster> UpdateEventById(EventMaster eventMaster)
+        { 
+            return _eamsRepository.UpdateEventById(eventMaster);
+        } 
         #endregion
 
 

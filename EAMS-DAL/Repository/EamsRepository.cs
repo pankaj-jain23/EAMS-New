@@ -222,7 +222,8 @@ namespace EAMS_DAL.Repository
                              AssemblyName = asem.AssemblyName,
                              AssemblyCode = asem.AssemblyCode,
                              soName = so.SoName,
-                             soMobile = so.SoMobile
+                             soMobile = so.SoMobile,
+                             soMasterId=so.SOMasterId
 
                          };
 

@@ -104,6 +104,11 @@ namespace EAMS_BLL.Services
 
         }
 
+        public async Task<string> UpdateBooth(BoothMaster boothMaster)
+        {
+            return await _eamsRepository.UpdateBooth(boothMaster);
+        }
+
         #endregion
 
         #region Event Master

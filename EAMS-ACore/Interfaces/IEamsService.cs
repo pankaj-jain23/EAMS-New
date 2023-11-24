@@ -40,7 +40,7 @@ namespace EAMS_ACore.Interfaces
         Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId);
 
         string AddBooth(BoothMaster boothMaster);
-        
+        Task<string> UpdateBooth(BoothMaster boothMaster);
 
         #endregion
 

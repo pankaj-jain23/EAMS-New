@@ -332,6 +332,7 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy
+                               
 
                             };
             var count = boothlist.Count();
@@ -370,6 +371,41 @@ namespace EAMS_DAL.Repository
                 return "An error occurred while processing the request.";
             }
         }
+
+        public async Task<string> UpdateBooth(BoothMaster boothMaster)
+        {
+            if (boothMaster.BoothName != string.Empty)
+            {
+                var existingbooth = await _context.BoothMaster
+                                                           .FirstOrDefaultAsync(so => so.BoothMasterId == boothMaster.BoothMasterId);
+
+                if (existingbooth == null)
+                {
+                    return "Booth Record not found.";
+                }
+                else
+                {
+                    existingbooth.BoothName = boothMaster.BoothName;
+                    existingbooth.BoothCode_No = boothMaster.BoothCode_No;
+                    existingbooth.BoothNoAuxy = boothMaster.BoothNoAuxy;
+                    existingbooth.Longitude = boothMaster.Longitude;
+                    existingbooth.Latitude = boothMaster.Latitude;
+                    existingbooth.BoothUpdatedAt = boothMaster.BoothUpdatedAt;
+                    existingbooth.TotalVoters = boothMaster.TotalVoters;
+                   
+                    _context.BoothMaster.Update(existingbooth);
+                    await _context.SaveChangesAsync();
+
+                    return "SO User " + existingbooth.BoothName.Trim() + " updated successfully!";
+                }
+            }
+            else
+            {
+                return "Booth updated successfully!";
+            }
+
+        }
+
 
         #endregion
 

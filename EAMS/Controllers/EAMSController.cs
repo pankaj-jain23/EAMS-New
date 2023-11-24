@@ -238,6 +238,24 @@ namespace EAMS.Controllers
             return Ok(result);
         }
 
+        [HttpPut]
+        [Route("UpdateBooth")]
+        public async Task<IActionResult> UpdateBooth(BoothMasterViewModel boothMasterViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<BoothMaster>(boothMasterViewModel);
+
+                var boothupdate = await _EAMSService.UpdateBooth(mappedData);
+
+                return Ok(boothupdate);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
 
         #endregion
 

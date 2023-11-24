@@ -243,10 +243,10 @@ namespace EAMS.Controllers
 
         #region Event Master
         [HttpGet]
-        [Route("GetEventListById")]
-        public async Task<IActionResult> EventListById(string eventMasterId)
+        [Route("GetEventList")]
+        public async Task<IActionResult> GetEventList()
         {
-            var eventList = await _EAMSService.GetEventListById(eventMasterId);
+            var eventList = await _EAMSService.GetEventList();
             var mappedEvent = _mapper.Map<List<EventMasterViewModel>>(eventList);
             var data = new
             {

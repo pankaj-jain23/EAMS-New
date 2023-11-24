@@ -45,7 +45,7 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region EventMaster
-        Task<List<EventMaster>> GetEventListById(string eventMasterId);
+        Task<List<EventMaster>> GetEventList();
         Task<EventMaster> UpdateEventById(EventMaster eventMaster);
 
         

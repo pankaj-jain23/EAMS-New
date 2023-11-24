@@ -375,22 +375,23 @@ namespace EAMS_DAL.Repository
 
         #region Event Master
 
-        public async Task<List<EventMaster>> GetEventListById(string eventMasterId) 
+        public async Task<List<EventMaster>> GetEventList()
         {
-            var eventData = await _context.EventMaster.Where(d => d.EventMasterId == Convert.ToInt32(eventMasterId)).Select(d => new EventMaster
+            var eventData = await _context.EventMaster
+                .OrderBy(d => d.EventSequence) // Add this line for ordering
+                .Select(d => new EventMaster
+                {
+                    EventMasterId = d.EventMasterId,
+                    EventName = d.EventName,
+                    EventSequence = d.EventSequence,
+                    Status = d.Status
+                })
+                .ToListAsync();
 
-            {
-                EventMasterId = d.EventMasterId,
-                EventName = d.EventName,
-                EventSequence = d.EventSequence,
-                Status = d.Status
-            })
-
-            .ToListAsync();
             return eventData;
-      
         }
- 
+
+
         public async Task<EventMaster> UpdateEventById(EventMaster eventMaster1)
         { 
             var eventMaster = _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();

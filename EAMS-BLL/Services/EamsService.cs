@@ -107,9 +107,9 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region Event Master
-        public Task<List<EventMaster>> GetEventListById(string eventMasterId) 
+        public Task<List<EventMaster>> GetEventList() 
         {
-            return _eamsRepository.GetEventListById(eventMasterId);
+            return _eamsRepository.GetEventList();
         }
 
  

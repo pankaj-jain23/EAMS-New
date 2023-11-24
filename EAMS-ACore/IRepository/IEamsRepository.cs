@@ -41,7 +41,7 @@ namespace EAMS_ACore.IRepository
         #endregion
 
         #region Event Master
-        Task<List<EventMaster>> GetEventListById(string eventMasterId);
+        Task<List<EventMaster>> GetEventList();
         Task<EventMaster> UpdateEventById(EventMaster eventMaster);
         #endregion
 

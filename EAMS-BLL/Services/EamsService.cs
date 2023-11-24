@@ -121,9 +121,15 @@ namespace EAMS_BLL.Services
         public Task<EventMaster> UpdateEventById(EventMaster eventMaster)
         { 
             return _eamsRepository.UpdateEventById(eventMaster);
-        } 
+        }
         #endregion
 
+        #region PCMaster
+        public Task<List<ParliamentConstituencyMaster>> GetPCList()
+        {
+            return _eamsRepository.GetPCList();
+        }
+        #endregion
 
     }
 }

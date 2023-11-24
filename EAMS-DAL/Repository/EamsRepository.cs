@@ -436,7 +436,25 @@ namespace EAMS_DAL.Repository
             _context.SaveChanges();
             return eventMaster;
 
-        } 
+        }
+
+        #endregion
+
+        #region PCMaster
+
+        public async Task<List<ParliamentConstituencyMaster>> GetPCList()
+        { 
+            var pcData = await _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId).Select(d => new ParliamentConstituencyMaster 
+            { 
+                PCMasterId = d.PCMasterId,
+                PcCodeNo  = d.PcCodeNo,
+                PcName = d.PcName,
+                PcType = d.PcType,
+                PcStatus = d.PcStatus
+            })
+                .ToListAsync();
+            return pcData;
+        }
 
         #endregion
     }

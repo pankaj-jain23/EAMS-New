@@ -46,6 +46,8 @@ namespace EAMS_ACore.IRepository
         Task<EventMaster> UpdateEventById(EventMaster eventMaster);
         #endregion
 
-
+        #region PCMaster
+        Task<List<ParliamentConstituencyMaster>> GetPCList();
+        #endregion
     }
 }

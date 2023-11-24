@@ -284,5 +284,22 @@ namespace EAMS.Controllers
         }
 
         #endregion
+
+        #region
+        [HttpGet]
+        [Route("GetPCList")]
+        public async Task<IActionResult> GetPCList()
+        {
+            var pcList = await _EAMSService.GetPCList();
+            var mappedData = _mapper.Map<List<PCViewModel>>(pcList);
+
+            var pcData = new 
+            { 
+                count = mappedData.Count,
+                pcList = mappedData
+            };
+            return Ok(pcData);
+        }
+        #endregion
     }
 }

@@ -86,6 +86,11 @@ namespace EAMS.Helper
               .ReverseMap();
             #endregion
 
+            #region PCMaster
+            CreateMap<PCViewModel, ParliamentConstituencyMaster>()
+                .ReverseMap();
+            #endregion
+
         }
     }
 }

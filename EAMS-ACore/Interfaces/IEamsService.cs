@@ -48,7 +48,12 @@ namespace EAMS_ACore.Interfaces
         Task<List<EventMaster>> GetEventList();
         Task<EventMaster> UpdateEventById(EventMaster eventMaster);
 
-        
+
+        #endregion
+
+        #region PCMaster
+
+        Task<List<ParliamentConstituencyMaster>> GetPCList();
         #endregion
 
     }

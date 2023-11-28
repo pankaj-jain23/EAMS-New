@@ -41,6 +41,8 @@ namespace EAMS_ACore.Interfaces
 
         string AddBooth(BoothMaster boothMaster);
         Task<string> UpdateBooth(BoothMaster boothMaster);
+        Task<string> BoothMapping(List<BoothMaster> boothMaster);
+
 
         #endregion
 

@@ -27,6 +27,7 @@ namespace EAMS_ACore.HelperModels
         public int BoothMasterId { get; set; }
         public string BoothName { get; set; }
         public string BoothAuxy { get; set; }
+        public bool IsAssigned { get; set; }
     }
 }
 

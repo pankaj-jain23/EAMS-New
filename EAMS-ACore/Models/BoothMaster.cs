@@ -63,6 +63,7 @@ namespace EAMS_ACore
         public string? AssignedTo { get; set; }
         public string? AssignedBy { get; set; }  
         public DateTime? AssignedOnTime { get; set; } = DateTime.UtcNow;
+        public bool IsAssigned { get; set; }
 
 
 

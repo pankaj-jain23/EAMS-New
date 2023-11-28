@@ -6,6 +6,7 @@ using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -303,7 +304,9 @@ namespace EAMS_DAL.Repository
                                 AssemblyCode = asem.AssemblyCode,
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
-                                BoothAuxy = bt.BoothNoAuxy
+                                BoothAuxy = bt.BoothNoAuxy,
+                                IsAssigned=bt.IsAssigned
+
 
                             };
             var count = boothlist.Count();
@@ -407,6 +410,33 @@ namespace EAMS_DAL.Repository
 
         }
 
+        public async Task<string> BoothMapping(List<BoothMaster> boothMasters)
+        { 
+            foreach (var boothMaster in boothMasters)
+            { 
+                var existingBooth = _context.BoothMaster.Where(d =>
+                        d.StateMasterId == boothMaster.StateMasterId &&
+                        d.DistrictMasterId == boothMaster.DistrictMasterId &&
+                        d.AssemblyMasterId == boothMaster.AssemblyMasterId && d.BoothMasterId==boothMaster.BoothMasterId).FirstOrDefault();
+
+                if (existingBooth != null)
+                { 
+                        existingBooth.AssignedBy = boothMaster.AssignedBy;
+                        existingBooth.AssignedTo = boothMaster.AssignedTo;
+                        existingBooth.AssignedOnTime = DateTime.UtcNow;
+                        existingBooth.IsAssigned = boothMaster.IsAssigned;
+                        _context.BoothMaster.Update(existingBooth);
+                        _context.SaveChanges();
+                   
+                }
+                else
+                {
+                    return "Booth Not Found";
+                }
+            }
+
+            return "Booths assigned successfully!";
+        }
 
         #endregion
 
@@ -458,5 +488,41 @@ namespace EAMS_DAL.Repository
         }
 
         #endregion
+
+
+        private DateTime? ConvertStringToUtcDateTime(string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                return null;
+            }
+
+            DateTime dateTime = DateTime.ParseExact(dateString, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            var dateTime1 = ConvertToUtc(dateTime);
+
+            return dateTime1;
+        }
+
+
+
+
+        private DateTime? ConvertToUtc(DateTime? dateTime)
+        {
+
+            if (dateTime.HasValue)
+            {
+                // Specify the time zone for India (Indian Standard Time, IST)
+                TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+                // Convert the local time to UTC
+                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(dateTime.Value, indianTimeZone);
+
+                // Ensure the kind of the resulting DateTime is DateTimeKind.Utc
+                return DateTime.SpecifyKind(utcTime, DateTimeKind.Utc);
+            }
+
+            return null;
+        }
+
     }
 }

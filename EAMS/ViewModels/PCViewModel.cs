@@ -14,6 +14,6 @@
 
         public DateTime? DeletedAt { get; set; }
 
-        public bool Status { get; set; } = false;
+        public bool IsStatus { get; set; } 
     }
 }

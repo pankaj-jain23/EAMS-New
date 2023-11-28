@@ -1,8 +1,7 @@
 ﻿namespace EAMS.ViewModels
 {
-    public class AssemblyMasterViewModel
-    {
-        public int AssemblyMasterId { get; set; }   
+    public class AddAssemblyMasterViewModel
+    { 
         public string AssemblyName { get; set; }
         public int AssemblyCode { get; set; }
         public int StateMasterId { get; set; }

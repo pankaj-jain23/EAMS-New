@@ -20,7 +20,7 @@
 
         public double? Longitude { get; set; }
 
-        public bool BoothStatus { get; set; }
+        public bool IsStatus { get; set; }
 
         
 

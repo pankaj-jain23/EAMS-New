@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CsvHelper.Configuration;
+using EAMS.Helper;
 using EAMS.ViewModels;
 using EAMS_ACore;
 using EAMS_ACore.Interfaces;
@@ -57,9 +58,9 @@ namespace EAMS.Controllers
 
         [HttpPost]
         [Route("AddState")]
-        public async Task<IActionResult> AddState(StateMasterViewModel stateMasterViewModel)
+        public async Task<IActionResult> AddState(AddStateMasterViewModel addStateMasterViewModel)
         {
-            var insertstate = _mapper.Map<StateMasterViewModel, StateMaster>(stateMasterViewModel);
+            var insertstate = _mapper.Map<AddStateMasterViewModel, StateMaster>(addStateMasterViewModel);
             var result = _EAMSService.AddState(insertstate);
 
 
@@ -95,9 +96,9 @@ namespace EAMS.Controllers
         }
         [HttpPost]
         [Route("AddDistrict")]
-        public async Task<IActionResult> AddDistrict(DistrictMasterViewModel districtViewModel)
+        public async Task<IActionResult> AddDistrict(AddDistrictMasterViewModel addDistrictViewModel)
         {
-            var mappedData = _mapper.Map<DistrictMasterViewModel, DistrictMaster>(districtViewModel);
+            var mappedData = _mapper.Map<AddDistrictMasterViewModel, DistrictMaster>(addDistrictViewModel);
             var add = _EAMSService.AddDistrict(mappedData);
             return Ok(add);
         }
@@ -136,12 +137,11 @@ namespace EAMS.Controllers
 
         [HttpPost]
         [Route("AddAssemblies")]
-
-        public async Task<IActionResult> AddAssemblies(AssemblyMasterViewModel assemblyMasterViewModel)
+        public async Task<IActionResult> AddAssemblies(AddAssemblyMasterViewModel addAssemblyMasterViewModel)
         {
             if (ModelState.IsValid)
             {
-                var mappedData = _mapper.Map<AssemblyMasterViewModel, AssemblyMaster>(assemblyMasterViewModel);
+                var mappedData = _mapper.Map<AddAssemblyMasterViewModel, AssemblyMaster>(addAssemblyMasterViewModel);
             var add = _EAMSService.AddAssemblies(mappedData);
             return Ok(add);
             }
@@ -167,11 +167,11 @@ namespace EAMS.Controllers
         }
         [HttpPost]
         [Route("AddSOUser")]
-        public async Task<IActionResult> AddSoUser(SectorOfficerViewModel sectorOfficerViewModel)
+        public async Task<IActionResult> AddSoUser(AddSectorOfficerViewModel addSectorOfficerViewModel)
         {
             if (ModelState.IsValid)
             {
-                var mappedData = _mapper.Map<SectorOfficerMaster>(sectorOfficerViewModel);
+                var mappedData = _mapper.Map<SectorOfficerMaster>(addSectorOfficerViewModel);
                 var soUser = await _EAMSService.AddSectorOfficer(mappedData);
 
                 return Ok(soUser);
@@ -257,6 +257,49 @@ namespace EAMS.Controllers
         }
 
 
+
+        [HttpPost]
+        [Route("BoothMapping")]
+        public async Task<IActionResult> BoothMapping(BoothMappingViewModel boothMappingViewModel)
+        {
+            // Check if BoothMasterId is not null and contains values
+            if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any())
+            {
+                // Create a list to store BoothMaster objects
+                List<BoothMaster> boothMasters = new List<BoothMaster>();
+
+                // Iterate through BoothMasterId list and create BoothMaster objects
+                foreach (var boothMasterId in boothMappingViewModel.BoothMasterId)
+                {
+                    // Create a new BoothMaster object
+                    var boothMaster = new BoothMaster
+                    {
+                        // Set other properties of BoothMaster using your logic
+                        BoothMasterId = boothMasterId,
+                        StateMasterId = boothMappingViewModel.StateMasterId,
+                        DistrictMasterId = boothMappingViewModel.DistrictMasterId,
+                        AssemblyMasterId = boothMappingViewModel.AssemblyMasterId,
+                        AssignedBy = boothMappingViewModel.AssignedBy,
+                        AssignedTo = boothMappingViewModel.AssignedTo,
+                        IsAssigned = boothMappingViewModel.IsAssigned,
+                        // Set other properties as needed
+                    };
+
+                    // Add the BoothMaster object to the list
+                    boothMasters.Add(boothMaster);
+                }
+
+                // Now you can use the list of BoothMaster objects as needed, for example, pass it to a service method
+                var result = _EAMSService.BoothMapping(boothMasters);
+                return Ok(new Response { Status = "Response", Message = result .Result});
+                 
+            }
+            else
+            {
+                return BadRequest(new Response { Status = "Bad Request", Message = "Booth Id is Null" });
+            }
+        }
+
         #endregion
 
         #region Event Master
@@ -285,7 +328,7 @@ namespace EAMS.Controllers
 
         #endregion
 
-        #region
+        #region PC 
         [HttpGet]
         [Route("GetPCList")]
         public async Task<IActionResult> GetPCList()
@@ -296,10 +339,11 @@ namespace EAMS.Controllers
             var pcData = new 
             { 
                 count = mappedData.Count,
-                pcList = mappedData
+                data = mappedData
             };
             return Ok(pcData);
         }
         #endregion
+
     }
 }

@@ -326,6 +326,8 @@ namespace EAMS.Controllers
             return Ok(eventUplist);
         }
 
+
+
         #endregion
 
         #region PC 
@@ -343,6 +345,10 @@ namespace EAMS.Controllers
             };
             return Ok(pcData);
         }
+        #endregion
+
+        #region Event Activity
+
         #endregion
 
     }

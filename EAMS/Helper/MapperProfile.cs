@@ -134,6 +134,20 @@ namespace EAMS.Helper
                 .ReverseMap();
             #endregion
 
+            #region Event Activity
+
+            CreateMap<ElectionInfoViewModel, ElectionInfoMaster>()
+         .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId)) 
+         .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId)) 
+         .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId)) 
+         .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))  
+         .ForMember(dest => dest.IsPartyDispatched, opt => opt.MapFrom(src => src.EventStatus))  
+         .ForMember(dest => dest.IsPartyReached, opt => opt.MapFrom(src => src.EventStatus))  
+
+
+         .ReverseMap();
+            #endregion
+
         }
     }
 }

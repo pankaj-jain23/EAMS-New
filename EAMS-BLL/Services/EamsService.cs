@@ -65,7 +65,7 @@ namespace EAMS_BLL.Services
             return _eamsRepository.GetAssemblies(stateId, districtId);
         }
 
-        public Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster) 
+        public Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster)
         {
             return _eamsRepository.UpdateAssembliesById(assemblyMaster);
         }
@@ -79,7 +79,7 @@ namespace EAMS_BLL.Services
         #region  SO Master
         public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            return await _eamsRepository.GetSectorOfficersListById(stateMasterId,districtMasterId,assemblyMasterId);
+            return await _eamsRepository.GetSectorOfficersListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
         public async Task<string> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster)
         {
@@ -96,7 +96,7 @@ namespace EAMS_BLL.Services
 
         public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            return  await _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
+            return await _eamsRepository.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
         public string AddBooth(BoothMaster boothMaster)
         {
@@ -116,14 +116,14 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region Event Master
-        public Task<List<EventMaster>> GetEventList() 
+        public Task<List<EventMaster>> GetEventList()
         {
             return _eamsRepository.GetEventList();
         }
 
- 
+
         public Task<EventMaster> UpdateEventById(EventMaster eventMaster)
-        { 
+        {
             return _eamsRepository.UpdateEventById(eventMaster);
         }
         #endregion
@@ -132,6 +132,71 @@ namespace EAMS_BLL.Services
         public Task<List<ParliamentConstituencyMaster>> GetPCList()
         {
             return _eamsRepository.GetPCList();
+        }
+        #endregion
+
+        #region EventActivity
+
+        public async Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster)
+        {
+            var electionInfoRecord = _eamsRepository.EventUpdationStatus(electionInfoMaster);
+            if (electionInfoRecord.Result != null)
+            {
+                switch (electionInfoMaster.EventMasterId)
+                {
+                    case 1: //party Dispatch
+
+                        if (electionInfoRecord.Result.IsPartyReached == false || electionInfoRecord.Result.IsPartyReached == null)
+                        {
+                            if (electionInfoRecord.Result.IsPartyDispatched==false) {
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                            }
+                            else
+                            {
+                                return null; //Already Yes
+                            }
+                        }
+                        else
+                        {
+                            return null;// party alteady arrived, cnt change status!
+                        }
+                    case 2:
+                        if (electionInfoRecord.Result.IsPartyDispatched == true)
+                        {
+                            if (electionInfoRecord.Result.IsPartyReached == false)
+                            {
+                                if (electionInfoRecord.Result.IsSetupOfPolling == false)
+                                {
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+                                    return null;// SSetup of poliing already status Yes
+                                }
+
+                            }
+                            else
+                            {
+                                return null;// already status Yes
+                            }
+                        }
+                        else
+                        {
+                            return null;//Party not dispatched yet
+                        }
+
+
+
+                    default:
+                        // Handle the case when EventMasterId doesn't match any known case
+                        return null;
+                }
+            }
+            else
+            {
+                return await _eamsRepository.EventActivity(electionInfoMaster);
+            }
+
         }
         #endregion
 

@@ -3,6 +3,7 @@ using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,13 +31,13 @@ namespace EAMS_ACore.IRepository
         #endregion
 
         #region SO Master
-        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
+        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId);
         Task<string> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<string> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         #endregion
 
         #region Booth Master
-        Task<List<CombinedMaster>> GetBoothListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
+        Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId);
         string AddBooth(BoothMaster boothMaster);
         Task<string> UpdateBooth(BoothMaster boothMaster);
         Task<string> BoothMapping(List<BoothMaster> boothMaster);
@@ -49,6 +50,21 @@ namespace EAMS_ACore.IRepository
 
         #region PCMaster
         Task<List<ParliamentConstituencyMaster>> GetPCList();
+        #endregion
+
+
+        #region Event Activity
+        Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster);
+        Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
+        // eventid = 2
+        // prev= 1, nxt=3
+
+        // getprev== true
+        //{// nxt== false} 
+         
+
+        
+
         #endregion
     }
 }

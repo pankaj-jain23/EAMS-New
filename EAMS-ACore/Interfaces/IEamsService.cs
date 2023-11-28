@@ -58,5 +58,9 @@ namespace EAMS_ACore.Interfaces
         Task<List<ParliamentConstituencyMaster>> GetPCList();
         #endregion
 
+        #region Event Activity
+        Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster);
+        #endregion
+
     }
 }

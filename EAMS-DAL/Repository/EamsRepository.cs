@@ -54,7 +54,7 @@ namespace EAMS_DAL.Repository
         public string AddState(StateMaster stateMaster)
         {
             try
-           {
+            {
 
                 var stateExist = _context.StateMaster
     .Where(p => p.StateCode == stateMaster.StateCode || p.StateName == stateMaster.StateName).FirstOrDefault();
@@ -173,9 +173,9 @@ namespace EAMS_DAL.Repository
             return assembliesMasterRecord;
         }
 
-        public string AddAssemblies(AssemblyMaster assemblyMaster) 
+        public string AddAssemblies(AssemblyMaster assemblyMaster)
         {
-            try 
+            try
             {
                 var assemblieExist = _context.AssemblyMaster.Where(p => p.AssemblyCode == assemblyMaster.AssemblyCode || p.AssemblyName == assemblyMaster.AssemblyName).FirstOrDefault();
 
@@ -185,18 +185,18 @@ namespace EAMS_DAL.Repository
                     _context.SaveChanges();
                     return "Assemblies" + assemblyMaster.AssemblyName + "Added Successfully !";
                 }
-                else 
+                else
                 {
                     return "Assemblies" + assemblyMaster.AssemblyName + "Same District Already Exists";
                 }
             }
 
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return "An error occurred while processing the request.";
             }
         }
-    
+
 
         #endregion
 
@@ -224,7 +224,7 @@ namespace EAMS_DAL.Repository
                              AssemblyCode = asem.AssemblyCode,
                              soName = so.SoName,
                              soMobile = so.SoMobile,
-                             soMasterId=so.SOMasterId
+                             soMasterId = so.SOMasterId
 
                          };
 
@@ -259,13 +259,13 @@ namespace EAMS_DAL.Repository
             var isMobileUnique = await _context.SectorOfficerMaster
                               .AnyAsync(so => so.SoMobile == updatedSectorOfficer.SoMobile);
 
-            if (isMobileUnique==false)
+            if (isMobileUnique == false)
             {
                 existingSectorOfficer.SoName = updatedSectorOfficer.SoName;
                 existingSectorOfficer.SoMobile = updatedSectorOfficer.SoMobile;
                 existingSectorOfficer.SoOfficeName = updatedSectorOfficer.SoOfficeName;
                 existingSectorOfficer.SoAssemblyCode = updatedSectorOfficer.SoAssemblyCode;
-                existingSectorOfficer.SoDesignation= updatedSectorOfficer.SoDesignation;
+                existingSectorOfficer.SoDesignation = updatedSectorOfficer.SoDesignation;
                 existingSectorOfficer.SOUpdatedAt = updatedSectorOfficer.SOUpdatedAt;
 
                 _context.SectorOfficerMaster.Update(existingSectorOfficer);
@@ -305,7 +305,7 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
-                                IsAssigned=bt.IsAssigned
+                                IsAssigned = bt.IsAssigned
 
 
                             };
@@ -336,7 +336,7 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy
-                               
+
 
                             };
             var count = boothlist.Count();
@@ -396,7 +396,7 @@ namespace EAMS_DAL.Repository
                     existingbooth.Latitude = boothMaster.Latitude;
                     existingbooth.BoothUpdatedAt = boothMaster.BoothUpdatedAt;
                     existingbooth.TotalVoters = boothMaster.TotalVoters;
-                   
+
                     _context.BoothMaster.Update(existingbooth);
                     await _context.SaveChangesAsync();
 
@@ -411,23 +411,23 @@ namespace EAMS_DAL.Repository
         }
 
         public async Task<string> BoothMapping(List<BoothMaster> boothMasters)
-        { 
+        {
             foreach (var boothMaster in boothMasters)
-            { 
+            {
                 var existingBooth = _context.BoothMaster.Where(d =>
                         d.StateMasterId == boothMaster.StateMasterId &&
                         d.DistrictMasterId == boothMaster.DistrictMasterId &&
-                        d.AssemblyMasterId == boothMaster.AssemblyMasterId && d.BoothMasterId==boothMaster.BoothMasterId).FirstOrDefault();
+                        d.AssemblyMasterId == boothMaster.AssemblyMasterId && d.BoothMasterId == boothMaster.BoothMasterId).FirstOrDefault();
 
                 if (existingBooth != null)
-                { 
-                        existingBooth.AssignedBy = boothMaster.AssignedBy;
-                        existingBooth.AssignedTo = boothMaster.AssignedTo;
-                        existingBooth.AssignedOnTime = DateTime.UtcNow;
-                        existingBooth.IsAssigned = boothMaster.IsAssigned;
-                        _context.BoothMaster.Update(existingBooth);
-                        _context.SaveChanges();
-                   
+                {
+                    existingBooth.AssignedBy = boothMaster.AssignedBy;
+                    existingBooth.AssignedTo = boothMaster.AssignedTo;
+                    existingBooth.AssignedOnTime = DateTime.UtcNow;
+                    existingBooth.IsAssigned = boothMaster.IsAssigned;
+                    _context.BoothMaster.Update(existingBooth);
+                    _context.SaveChanges();
+
                 }
                 else
                 {
@@ -460,7 +460,7 @@ namespace EAMS_DAL.Repository
 
 
         public async Task<EventMaster> UpdateEventById(EventMaster eventMaster1)
-        { 
+        {
             var eventMaster = _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();
             eventMaster.EventName = eventMaster1.EventName;
             _context.EventMaster.Update(eventMaster);
@@ -474,11 +474,11 @@ namespace EAMS_DAL.Repository
         #region PCMaster
 
         public async Task<List<ParliamentConstituencyMaster>> GetPCList()
-        { 
-            var pcData = await _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId).Select(d => new ParliamentConstituencyMaster 
-            { 
+        {
+            var pcData = await _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId).Select(d => new ParliamentConstituencyMaster
+            {
                 PCMasterId = d.PCMasterId,
-                PcCodeNo  = d.PcCodeNo,
+                PcCodeNo = d.PcCodeNo,
                 PcName = d.PcName,
                 PcType = d.PcType,
                 PcStatus = d.PcStatus
@@ -490,6 +490,42 @@ namespace EAMS_DAL.Repository
         #endregion
 
 
+
+        #region EventActivity
+
+        public async Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster)
+        {
+            var isExist = _context.ElectionInfoMaster.Any(d => d.StateMasterId == electionInfoMaster.StateMasterId &&
+                     d.DistrictMasterId == electionInfoMaster.DistrictMasterId && d.AssemblyMasterId == electionInfoMaster.AssemblyMasterId &&
+                     d.BoothMasterId == electionInfoMaster.BoothMasterId);
+
+            if (isExist)
+            {
+               
+                _context.ElectionInfoMaster.Update(electionInfoMaster);
+            }
+            else
+            {
+                _context.ElectionInfoMaster.Add(electionInfoMaster);
+            }
+            _context.SaveChanges();
+
+            return null;
+        }
+        public async Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster)
+        {
+            var electionInfoRecord = _context.ElectionInfoMaster.Where(d => d.StateMasterId == electionInfoMaster.StateMasterId
+            && d.DistrictMasterId == electionInfoMaster.DistrictMasterId &&
+            d.AssemblyMasterId == electionInfoMaster.AssemblyMasterId
+            && d.BoothMasterId == electionInfoMaster.BoothMasterId
+            ).FirstOrDefault();
+            return electionInfoRecord;
+        }
+
+
+        #endregion
+
+        #region Common method
         private DateTime? ConvertStringToUtcDateTime(string dateString)
         {
             if (string.IsNullOrEmpty(dateString))
@@ -502,9 +538,6 @@ namespace EAMS_DAL.Repository
 
             return dateTime1;
         }
-
-
-
 
         private DateTime? ConvertToUtc(DateTime? dateTime)
         {
@@ -523,6 +556,6 @@ namespace EAMS_DAL.Repository
 
             return null;
         }
-
+        #endregion
     }
 }

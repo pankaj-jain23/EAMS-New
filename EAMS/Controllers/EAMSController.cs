@@ -349,7 +349,63 @@ namespace EAMS.Controllers
 
         #region Event Activity
 
+        [HttpPost]
+        [Route("EventActivity")]
+        public async Task<IActionResult> EventActivity(ElectionInfoViewModel electionInfoViewModel)
+        {
+            switch (electionInfoViewModel.EventMasterId)
+            {
+                case 1:
+                    await PartyDispatch(electionInfoViewModel);
+                    break;
+                case 2:
+                    await PartyReached(electionInfoViewModel);
+                    break;
+                 
+
+                default:
+                    // Handle the case when EventMasterId doesn't match any known case
+                    return BadRequest("Invalid EventMasterId");
+            }
+
+            return Ok();
+        }
+
+        private async Task PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
+        { 
+            ElectionInfoMaster electionInfoMaster=new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId=electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId=electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId=electionInfoViewModel.BoothMasterId,
+                EventMasterId=electionInfoViewModel.EventMasterId,
+                IsPartyDispatched=electionInfoViewModel.EventStatus
+
+            };
+          var result=await  _EAMSService.EventActivity(electionInfoMaster);
+
+
+        }
+
+        private async Task PartyReached(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPartyReached = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+
+        }
+
         #endregion
+
 
     }
 }

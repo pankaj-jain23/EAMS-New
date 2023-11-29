@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using EAMS.AuthViewModels;
 using EAMS.ViewModels;
 using EAMS_ACore;
+using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
 
@@ -10,7 +12,24 @@ namespace EAMS.Helper
     {
         public MapperProfile()
         {
-            // CreateMap should be called directly on the MapperConfigurationExpression
+            #region LoginViewModel Login  
+            CreateMap<LoginViewModel, Login>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password)) 
+                .ReverseMap();
+            #endregion
+
+            #region UserRegistration UserRegistration  
+            CreateMap<UserRegistrationViewModel, UserRegistration>()
+                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
+                .ReverseMap();
+            #endregion
+
             #region StateMasterViewModel and  StateMaster 
             CreateMap<StateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))

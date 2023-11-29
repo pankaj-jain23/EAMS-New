@@ -161,19 +161,20 @@ namespace EAMS.Helper
               .ReverseMap();
             #endregion
 
-# region SectorOfficerBoothViewModel CombinedMaster
-            CreateMap<SectorOfficerBoothViewModel, CombinedMaster>()
-                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
-                .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
-                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
-                  .ForMember(dest => dest.soMasterId, opt => opt.MapFrom(src => src.SoId))
-                 .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
-                .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
-                .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
+            # region SectorOfficerBoothViewModel CombinedMaster
+                        CreateMap<SectorOfficerBoothViewModel, CombinedMaster>()
+                            .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
+                            .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                            .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                              .ForMember(dest => dest.soMasterId, opt => opt.MapFrom(src => src.SoId))
+                             .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
+                            .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+                            .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
 
 
-             .ReverseMap();
-            #endregion
+                         .ReverseMap();
+                        #endregion
+
             #region PCMaster
             CreateMap<PCViewModel, ParliamentConstituencyMaster>()
                 .ReverseMap();

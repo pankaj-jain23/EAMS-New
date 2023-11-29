@@ -1,4 +1,5 @@
-﻿using EAMS_ACore;
+﻿using EAMS.Helper;
+using EAMS_ACore;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
@@ -117,7 +118,7 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.BoothMapping(boothMaster);
         }
-        public async Task<string> ReleaseBooth(BoothMaster boothMaster)
+        public async Task<Response> ReleaseBooth(BoothMaster boothMaster)
         {
             return await _eamsRepository.ReleaseBooth(boothMaster);
         }

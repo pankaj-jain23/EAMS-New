@@ -1,4 +1,5 @@
-﻿using EAMS_ACore;
+﻿using EAMS.Helper;
+using EAMS_ACore;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -473,7 +475,7 @@ namespace EAMS_DAL.Repository
         }
 
 
-        public async Task<string> ReleaseBooth(BoothMaster boothMaster)
+        public async Task<Response> ReleaseBooth(BoothMaster boothMaster)
         {
             if (boothMaster.BoothMasterId != null)
             {
@@ -483,39 +485,38 @@ namespace EAMS_DAL.Repository
 
                     if (existingbooth == null)
                     {
-                        return "Booth Record not found.";
+                        return new Response { Status = RequestStatusEnum.NotFound, Message = "Booth Record not found." };
                     }
                     else
                     {
                         if (existingbooth.IsAssigned == true)
                         {
-
                             existingbooth.AssignedBy = string.Empty;
                             existingbooth.AssignedTo = string.Empty;
                             existingbooth.IsAssigned = boothMaster.IsAssigned;
                             _context.BoothMaster.Update(existingbooth);
                             await _context.SaveChangesAsync();
-                       
-                        
-                        return "Booth" + existingbooth.BoothName.Trim() + " Unassigned successfully!";
+
+                            return new Response { Status = RequestStatusEnum.OK, Message = "Booth " + existingbooth.BoothName.Trim() + " Unassigned successfully!" };
                         }
                         else
                         {
-                            return "Booth" + existingbooth.BoothName.Trim() + " already Unassigned!";
-
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth " + existingbooth.BoothName.Trim() + " already Unassigned!" };
                         }
                     }
                 }
                 else
                 {
-                    return "Please unassign first !";
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Please unassign first!" };
+
+                     
                 }
             }
             else
             {
-                return "Record not found!";
+                return new Response { Status = RequestStatusEnum.NotFound, Message = "Record not found!" };
+                 
             }
-
         }
 
         #endregion

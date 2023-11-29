@@ -305,12 +305,13 @@ namespace EAMS.Controllers
 
                 // Now you can use the list of BoothMaster objects as needed, for example, pass it to a service method
                 var result = _EAMSService.BoothMapping(boothMasters);
-                return Ok(new Response { Status = "Response", Message = result .Result});
+                return Ok(new Response { Status = RequestStatusEnum.OK, Message = result .Result});
                  
             }
             else
             {
-                return BadRequest(new Response { Status = "Bad Request", Message = "Booth Id is Null" });
+                return BadRequest(new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Id is Null" });
+          
             }
         }
 
@@ -321,17 +322,38 @@ namespace EAMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var mapperdata = _mapper.Map<BoothMaster>(boothReleaseViewModel);
-                var boothrelease = await _EAMSService.ReleaseBooth(mapperdata);
-                //var boothrelease = await _EAMSService.UpdateBooth(mapperdata);
+                try
+                {
+                    var mapperdata = _mapper.Map<BoothMaster>(boothReleaseViewModel);
+                    var boothReleaseResponse = await _EAMSService.ReleaseBooth(mapperdata);
 
-                return Ok(boothrelease);
+                    // Check the status and return appropriate HTTP status code
+                    switch (boothReleaseResponse.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(boothReleaseResponse);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(boothReleaseResponse);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(boothReleaseResponse);
+                        // Add more cases as needed
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    // Handle InvalidOperationException
+                    return BadRequest(ex.Message);
+                }
+                
             }
             else
-            {
+            { 
                 return BadRequest(ModelState);
             }
         }
+
 
 
         #endregion

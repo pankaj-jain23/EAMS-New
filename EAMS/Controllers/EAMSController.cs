@@ -131,7 +131,7 @@ namespace EAMS.Controllers
                 return Ok(update);
             }
             else
-            { 
+            {
                 return BadRequest();
             }
         }
@@ -143,8 +143,8 @@ namespace EAMS.Controllers
             if (ModelState.IsValid)
             {
                 var mappedData = _mapper.Map<AddAssemblyMasterViewModel, AssemblyMaster>(addAssemblyMasterViewModel);
-            var add = _EAMSService.AddAssemblies(mappedData);
-            return Ok(add);
+                var add = _EAMSService.AddAssemblies(mappedData);
+                return Ok(add);
             }
             else
             {
@@ -159,6 +159,7 @@ namespace EAMS.Controllers
         public async Task<IActionResult> SectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
             var soList = await _EAMSService.GetSectorOfficersListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
+
             var data = new
             {
                 count = soList.Count,
@@ -203,13 +204,16 @@ namespace EAMS.Controllers
         [Route("GetBoothListBySoId")]
         public async Task<IActionResult> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
         {
-            var boothList = await _EAMSService.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId,soId);  // Corrected to await the asynchronous method
+            var boothList = await _EAMSService.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId, soId);  // Corrected to await the asynchronous method
             var mappedData = _mapper.Map<List<SectorOfficerBoothViewModel>>(boothList);
-
+            var getUnassignedBoothList = await _EAMSService.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
+            var unAssignedMappedData = _mapper.Map<List<CombinedMasterViewModel>>(getUnassignedBoothList);
             var data = new
             {
-                count = mappedData.Count,
-                data = mappedData
+                AssignedCount = mappedData.Count,
+                UnAssignedCount = unAssignedMappedData.Count,
+                Assigned = mappedData,
+                Unassigned = unAssignedMappedData
             };
             return Ok(data);
         }
@@ -276,45 +280,53 @@ namespace EAMS.Controllers
         [Route("BoothMapping")]
         public async Task<IActionResult> BoothMapping(BoothMappingViewModel boothMappingViewModel)
         {
-            // Check if BoothMasterId is not null and contains values
-            if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any())
+            if (ModelState.IsValid)
             {
-                // Create a list to store BoothMaster objects
-                List<BoothMaster> boothMasters = new List<BoothMaster>();
-
-                // Iterate through BoothMasterId list and create BoothMaster objects
-                foreach (var boothMasterId in boothMappingViewModel.BoothMasterId)
+                if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any() && boothMappingViewModel.IsAssigned == true)
                 {
-                    // Create a new BoothMaster object
-                    var boothMaster = new BoothMaster
+                    List<BoothMaster> boothMasters = new List<BoothMaster>();
+
+                    foreach (var boothMasterId in boothMappingViewModel.BoothMasterId)
                     {
-                        // Set other properties of BoothMaster using your logic
-                        BoothMasterId = boothMasterId,
-                        StateMasterId = boothMappingViewModel.StateMasterId,
-                        DistrictMasterId = boothMappingViewModel.DistrictMasterId,
-                        AssemblyMasterId = boothMappingViewModel.AssemblyMasterId,
-                        AssignedBy = boothMappingViewModel.AssignedBy,
-                        AssignedTo = boothMappingViewModel.AssignedTo,
-                        IsAssigned = boothMappingViewModel.IsAssigned,
-                        // Set other properties as needed
-                    };
+                        var boothMaster = new BoothMaster
+                        {
+                            BoothMasterId = boothMasterId,
+                            StateMasterId = boothMappingViewModel.StateMasterId,
+                            DistrictMasterId = boothMappingViewModel.DistrictMasterId,
+                            AssemblyMasterId = boothMappingViewModel.AssemblyMasterId,
+                            AssignedBy = boothMappingViewModel.AssignedBy,
+                            AssignedTo = boothMappingViewModel.AssignedTo,
+                            IsAssigned = boothMappingViewModel.IsAssigned,
+                        };
 
-                    // Add the BoothMaster object to the list
-                    boothMasters.Add(boothMaster);
+                        boothMasters.Add(boothMaster);
+                    }
+
+                    // Assuming _EAMSService.BoothMapping is an asynchronous method returning Task<Response>
+                    var result = await _EAMSService.BoothMapping(boothMasters);
+                    switch (result.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(result.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(result.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(result.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
                 }
-
-                // Now you can use the list of BoothMaster objects as needed, for example, pass it to a service method
-                var result = _EAMSService.BoothMapping(boothMasters);
-                return Ok(new Response { Status = RequestStatusEnum.OK, Message = result .Result});
-                 
+                else
+                {
+                    return BadRequest(new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Id is Null" });
+                }
             }
             else
             {
-                return BadRequest(new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Id is Null" });
-          
+                return BadRequest(ModelState);
             }
         }
-
 
         [HttpPut]
         [Route("ReleaseBooth")]
@@ -327,29 +339,27 @@ namespace EAMS.Controllers
                     var mapperdata = _mapper.Map<BoothMaster>(boothReleaseViewModel);
                     var boothReleaseResponse = await _EAMSService.ReleaseBooth(mapperdata);
 
-                    // Check the status and return appropriate HTTP status code
                     switch (boothReleaseResponse.Status)
                     {
                         case RequestStatusEnum.OK:
-                            return Ok(boothReleaseResponse);
+                            return Ok(boothReleaseResponse.Message);
                         case RequestStatusEnum.BadRequest:
-                            return BadRequest(boothReleaseResponse);
+                            return BadRequest(boothReleaseResponse.Message);
                         case RequestStatusEnum.NotFound:
-                            return NotFound(boothReleaseResponse);
-                        // Add more cases as needed
+                            return NotFound(boothReleaseResponse.Message);
+
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
                 }
                 catch (InvalidOperationException ex)
                 {
-                    // Handle InvalidOperationException
                     return BadRequest(ex.Message);
                 }
-                
+
             }
             else
-            { 
+            {
                 return BadRequest(ModelState);
             }
         }
@@ -394,8 +404,8 @@ namespace EAMS.Controllers
             var pcList = await _EAMSService.GetPCList();
             var mappedData = _mapper.Map<List<PCViewModel>>(pcList);
 
-            var pcData = new 
-            { 
+            var pcData = new
+            {
                 count = mappedData.Count,
                 data = mappedData
             };
@@ -417,7 +427,7 @@ namespace EAMS.Controllers
                 case 2:
                     await PartyReached(electionInfoViewModel);
                     break;
-                 
+
 
                 default:
                     // Handle the case when EventMasterId doesn't match any known case
@@ -428,18 +438,18 @@ namespace EAMS.Controllers
         }
 
         private async Task PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
-        { 
-            ElectionInfoMaster electionInfoMaster=new ElectionInfoMaster()
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
             {
                 StateMasterId = electionInfoViewModel.StateMasterId,
-                DistrictMasterId=electionInfoViewModel.DistrictMasterId,
-                AssemblyMasterId=electionInfoViewModel.AssemblyMasterId,
-                BoothMasterId=electionInfoViewModel.BoothMasterId,
-                EventMasterId=electionInfoViewModel.EventMasterId,
-                IsPartyDispatched=electionInfoViewModel.EventStatus
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPartyDispatched = electionInfoViewModel.EventStatus
 
             };
-          var result=await  _EAMSService.EventActivity(electionInfoMaster);
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
 
 
         }

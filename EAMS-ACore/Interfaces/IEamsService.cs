@@ -1,4 +1,5 @@
-﻿using EAMS_ACore.HelperModels;
+﻿using EAMS.Helper;
+using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
@@ -42,9 +43,9 @@ namespace EAMS_ACore.Interfaces
 
         string AddBooth(BoothMaster boothMaster);
         Task<string> UpdateBooth(BoothMaster boothMaster);
-        Task<string> BoothMapping(List<BoothMaster> boothMaster);
+        Task<Response> BoothMapping(List<BoothMaster> boothMaster);
 
-        Task<string> ReleaseBooth(BoothMaster boothMaster);
+        Task<Response> ReleaseBooth(BoothMaster boothMaster);
         #endregion
 
         #region EventMaster

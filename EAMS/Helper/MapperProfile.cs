@@ -173,7 +173,20 @@ namespace EAMS.Helper
 
 
                          .ReverseMap();
-                        #endregion
+            #endregion
+
+            #region CombineMasterViewModel CombinedMaster
+            CreateMap<CombinedMasterViewModel, CombinedMaster>()
+                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId)) 
+                 .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
+                .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+                .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
+
+
+             .ReverseMap();
+            #endregion    
 
             #region PCMaster
             CreateMap<PCViewModel, ParliamentConstituencyMaster>()

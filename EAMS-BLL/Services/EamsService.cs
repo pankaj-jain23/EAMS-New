@@ -114,7 +114,7 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.UpdateBooth(boothMaster);
         }
-        public async Task<string> BoothMapping(List<BoothMaster> boothMaster)
+        public async Task<Response> BoothMapping(List<BoothMaster> boothMaster)
         {
             return await _eamsRepository.BoothMapping(boothMaster);
         }

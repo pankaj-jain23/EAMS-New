@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using EAMS.Helper;
 using EAMS.ViewModels;
 using EAMS_ACore;
+using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -198,7 +199,20 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+        [HttpGet]
+        [Route("GetBoothListBySoId")]
+        public async Task<IActionResult> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
+        {
+            var boothList = await _EAMSService.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId,soId);  // Corrected to await the asynchronous method
+            var mappedData = _mapper.Map<List<SectorOfficerBoothViewModel>>(boothList);
 
+            var data = new
+            {
+                count = mappedData.Count,
+                data = mappedData
+            };
+            return Ok(data);
+        }
 
         #endregion
 
@@ -299,6 +313,26 @@ namespace EAMS.Controllers
                 return BadRequest(new Response { Status = "Bad Request", Message = "Booth Id is Null" });
             }
         }
+
+
+        [HttpPut]
+        [Route("ReleaseBooth")]
+        public async Task<IActionResult> ReleaseBooth(BoothReleaseViewModel boothReleaseViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mapperdata = _mapper.Map<BoothMaster>(boothReleaseViewModel);
+                var boothrelease = await _EAMSService.ReleaseBooth(mapperdata);
+                //var boothrelease = await _EAMSService.UpdateBooth(mapperdata);
+
+                return Ok(boothrelease);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
 
         #endregion
 

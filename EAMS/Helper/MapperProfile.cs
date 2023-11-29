@@ -95,6 +95,19 @@ namespace EAMS.Helper
              .ReverseMap();
             #endregion
 
+            #region BoothReleaseViewModel BoothMaster
+
+            CreateMap<BoothReleaseViewModel, BoothMaster>()
+                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+                .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
+
+
+             .ReverseMap();
+            #endregion
+
             #region EventMasterViewModel and EventMaster
 
             CreateMap<EventMasterViewModel, EventMaster>()
@@ -129,6 +142,19 @@ namespace EAMS.Helper
               .ReverseMap();
             #endregion
 
+# region SectorOfficerBoothViewModel CombinedMaster
+            CreateMap<SectorOfficerBoothViewModel, CombinedMaster>()
+                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                  .ForMember(dest => dest.soMasterId, opt => opt.MapFrom(src => src.SoId))
+                 .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
+                .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+                .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
+
+
+             .ReverseMap();
+            #endregion
             #region PCMaster
             CreateMap<PCViewModel, ParliamentConstituencyMaster>()
                 .ReverseMap();

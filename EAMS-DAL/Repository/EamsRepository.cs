@@ -279,6 +279,38 @@ namespace EAMS_DAL.Repository
             }
         }
 
+
+        public async Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
+        {
+
+            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) && d.AssignedTo == soId)
+                            join asem in _context.AssemblyMaster
+                            on bt.AssemblyMasterId equals asem.AssemblyMasterId
+                            join dist in _context.DistrictMaster
+                            on asem.DistrictMasterId equals dist.DistrictMasterId
+                            join state in _context.StateMaster
+                             on dist.StateMasterId equals state.StateMasterId
+
+                            select new CombinedMaster
+                            {
+                                StateName = state.StateName,
+                                DistrictId = dist.DistrictMasterId,
+                                DistrictName = dist.DistrictName,
+                                DistrictCode = dist.DistrictCode,
+                                AssemblyId = asem.AssemblyMasterId,
+                                AssemblyName = asem.AssemblyName,
+                                AssemblyCode = asem.AssemblyCode,
+                                BoothMasterId = bt.BoothMasterId,
+                                BoothName = bt.BoothName,
+                                BoothAuxy = bt.BoothNoAuxy,
+                                IsAssigned = bt.IsAssigned,
+                                soMasterId = Convert.ToInt32(soId)
+
+
+                            };
+            var count = boothlist.Count();
+            return await boothlist.ToListAsync();
+        }
         #endregion
 
         #region Booth Master
@@ -295,6 +327,7 @@ namespace EAMS_DAL.Repository
 
                             select new CombinedMaster
                             {
+                                StateId= Convert.ToInt32(stateMasterId),
                                 StateName = state.StateName,
                                 DistrictId = dist.DistrictMasterId,
                                 DistrictName = dist.DistrictName,
@@ -400,7 +433,7 @@ namespace EAMS_DAL.Repository
                     _context.BoothMaster.Update(existingbooth);
                     await _context.SaveChangesAsync();
 
-                    return "SO User " + existingbooth.BoothName.Trim() + " updated successfully!";
+                    return "Booth" + existingbooth.BoothName.Trim() + " updated successfully!";
                 }
             }
             else
@@ -436,6 +469,52 @@ namespace EAMS_DAL.Repository
             }
 
             return "Booths assigned successfully!";
+        }
+
+
+        public async Task<string> ReleaseBooth(BoothMaster boothMaster)
+        {
+            if (boothMaster.BoothMasterId != null)
+            {
+                if (boothMaster.IsAssigned == false)
+                {
+                    var existingbooth = await _context.BoothMaster.FirstOrDefaultAsync(so => so.BoothMasterId == boothMaster.BoothMasterId && so.StateMasterId == boothMaster.StateMasterId && so.DistrictMasterId == so.DistrictMasterId && so.AssemblyMasterId == boothMaster.AssemblyMasterId);
+
+                    if (existingbooth == null)
+                    {
+                        return "Booth Record not found.";
+                    }
+                    else
+                    {
+                        if (existingbooth.IsAssigned == true)
+                        {
+
+                            existingbooth.AssignedBy = string.Empty;
+                            existingbooth.AssignedTo = string.Empty;
+                            existingbooth.IsAssigned = boothMaster.IsAssigned;
+                            _context.BoothMaster.Update(existingbooth);
+                            await _context.SaveChangesAsync();
+                       
+                        
+                        return "Booth" + existingbooth.BoothName.Trim() + " Unassigned successfully!";
+                        }
+                        else
+                        {
+                            return "Booth" + existingbooth.BoothName.Trim() + " already Unassigned!";
+
+                        }
+                    }
+                }
+                else
+                {
+                    return "Please unassign first !";
+                }
+            }
+            else
+            {
+                return "Record not found!";
+            }
+
         }
 
         #endregion

@@ -90,6 +90,11 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.UpdateSectorOfficer(sectorOfficerMaster);
         }
+        public async Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
+        {
+            return await _eamsRepository.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId, soId);
+        }
+
         #endregion
 
         #region Booth Master
@@ -111,6 +116,10 @@ namespace EAMS_BLL.Services
         public async Task<string> BoothMapping(List<BoothMaster> boothMaster)
         {
             return await _eamsRepository.BoothMapping(boothMaster);
+        }
+        public async Task<string> ReleaseBooth(BoothMaster boothMaster)
+        {
+            return await _eamsRepository.ReleaseBooth(boothMaster);
         }
 
         #endregion

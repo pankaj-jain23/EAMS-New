@@ -34,6 +34,7 @@ namespace EAMS_ACore.Interfaces
         Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
         Task<string> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<string> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
+        Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId);
         #endregion
 
         #region BoothMaster
@@ -43,7 +44,7 @@ namespace EAMS_ACore.Interfaces
         Task<string> UpdateBooth(BoothMaster boothMaster);
         Task<string> BoothMapping(List<BoothMaster> boothMaster);
 
-
+        Task<string> ReleaseBooth(BoothMaster boothMaster);
         #endregion
 
         #region EventMaster

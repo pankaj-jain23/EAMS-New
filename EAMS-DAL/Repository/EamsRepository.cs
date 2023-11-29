@@ -293,6 +293,7 @@ namespace EAMS_DAL.Repository
 
                             select new CombinedMaster
                             {
+                                StateId= Convert.ToInt32(stateMasterId),
                                 StateName = state.StateName,
                                 DistrictId = dist.DistrictMasterId,
                                 DistrictName = dist.DistrictName,

@@ -1,6 +1,8 @@
-﻿using EAMS_ACore.AuthInterfaces;
+﻿using EAMS.Helper;
+using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.IAuthRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -12,80 +14,47 @@ namespace EAMS_BLL.AuthServices
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<UserRegistration> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IAuthRepository _authRepository;
 
-        public AuthService(UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
+        public AuthService(IConfiguration configuration, IAuthRepository authRepository)
+        { 
             _configuration = configuration;
+            _authRepository = authRepository;
         }
+
+        #region AddDynamicRole && Get Role
+        public async Task<AuthServiceResponse> AddDynamicRole(Role role)
+        {
+             
+            return  await _authRepository.AddDynamicRole(role);
+        }
+
+        public async Task<List<Role>> GetRoles()
+        {
+             return await _authRepository.GetRoles();
+        }
+        #endregion
+
+        #region Login
         public async Task<AuthServiceResponse> LoginAsync(Login login)
         {
-            var user = await _userManager.FindByNameAsync(login.UserName);
-
-            if (user is null)
-                return new AuthServiceResponse()
-                {
-                    IsSucceed = false,
-                    Message = "Invalid Credentials"
-                };
-
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, login.Password);
-
-            if (!isPasswordCorrect)
-                return new AuthServiceResponse()
-                {
-                    IsSucceed = false,
-                    Message = "Invalid Credentials"
-                };
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("JWTID", Guid.NewGuid().ToString())
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var token = GenerateNewJsonWebToken(authClaims);
-
-            return new AuthServiceResponse()
-            {
-                IsSucceed = true,
-                Message = token
-            };
+            throw new NotImplementedException();
         }
+        #endregion
 
-         
+        #region Register
         public Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration)
         {
             throw new NotImplementedException();
         }
+        #endregion
 
-        private string GenerateNewJsonWebToken(List<Claim> claims)
+        #region ValidateMobile
+        public async Task<Response> ValidateMobile(ValidateMobile validateMobile, string otp)
         {
-            var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var tokenObject = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddHours(1),
-                    claims: claims,
-                    signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
-                );
-
-            string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-            return token;
+        return await _authRepository.ValidateMobile(validateMobile,otp);
         }
+        #endregion
     }
-} 
+}

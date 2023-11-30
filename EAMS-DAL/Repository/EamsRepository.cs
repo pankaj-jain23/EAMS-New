@@ -326,7 +326,7 @@ namespace EAMS_DAL.Repository
 
                             select new CombinedMaster
                             {
-                                StateId= Convert.ToInt32(stateMasterId),
+                                StateId = Convert.ToInt32(stateMasterId),
                                 StateName = state.StateName,
                                 DistrictId = dist.DistrictMasterId,
                                 DistrictName = dist.DistrictName,
@@ -351,7 +351,7 @@ namespace EAMS_DAL.Repository
         public async Task<List<CombinedMaster>> GetBoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
 
-            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)&& d.IsAssigned==false) // outer sequenc)
+            var boothlist = from bt in _context.BoothMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) && d.IsAssigned == false) // outer sequenc)
                             join asem in _context.AssemblyMaster
                             on bt.AssemblyMasterId equals asem.AssemblyMasterId
                             join dist in _context.DistrictMaster
@@ -361,8 +361,8 @@ namespace EAMS_DAL.Repository
 
                             select new CombinedMaster
                             {
-                                StateId= Convert.ToInt32(stateMasterId), 
-                                DistrictId = dist.DistrictMasterId,  
+                                StateId = Convert.ToInt32(stateMasterId),
+                                DistrictId = dist.DistrictMasterId,
                                 AssemblyId = asem.AssemblyMasterId,
                                 AssemblyName = asem.AssemblyName,
                                 AssemblyCode = asem.AssemblyCode,
@@ -447,8 +447,7 @@ namespace EAMS_DAL.Repository
         {
             if (boothMaster.BoothName != string.Empty)
             {
-                var existingbooth = await _context.BoothMaster
-                                                           .FirstOrDefaultAsync(so => so.BoothMasterId == boothMaster.BoothMasterId);
+                var existingbooth = await _context.BoothMaster.FirstOrDefaultAsync(so => so.BoothMasterId == boothMaster.BoothMasterId);
 
                 if (existingbooth == null)
                 {
@@ -501,11 +500,11 @@ namespace EAMS_DAL.Repository
                 else
                 {
                     return new Response { Status = RequestStatusEnum.NotFound, Message = "Booth Not Found" };
-                     
+
                 }
             }
             return new Response { Status = RequestStatusEnum.OK, Message = "Booths assigned successfully!" };
-             
+
         }
 
 
@@ -543,13 +542,13 @@ namespace EAMS_DAL.Repository
                 {
                     return new Response { Status = RequestStatusEnum.BadRequest, Message = "Please unassign first!" };
 
-                     
+
                 }
             }
             else
             {
                 return new Response { Status = RequestStatusEnum.NotFound, Message = "Record not found!" };
-                 
+
             }
         }
 
@@ -632,7 +631,7 @@ namespace EAMS_DAL.Repository
 
             if (isExist)
             {
-               
+
                 _context.ElectionInfoMaster.Update(electionInfoMaster);
             }
             else

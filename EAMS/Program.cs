@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EAMS_ACore.IAuthRepository;
+using EAMS_DAL.AuthRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
 
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IEamsService, EamsService>();
 builder.Services.AddTransient<IEamsRepository, EamsRepository>();
 builder.Services.AddDbContext<EamsContext>(options =>

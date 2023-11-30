@@ -22,7 +22,7 @@ namespace EAMS.AuthViewModels
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
         [Required(ErrorMessage = "Role is Required")]
-        public List<string>? Roles
+        public List<string>? RoleId
         {
             get;
             set;

@@ -7,18 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EAMS_ACore.AuthInterfaces
+namespace EAMS_ACore.IAuthRepository
 {
-    public interface IAuthService
+    public interface IAuthRepository
     {
-        Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration );
-        Task<AuthServiceResponse> LoginAsync(Login login );
+        Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration);
+        Task<AuthServiceResponse> LoginAsync(Login login);
 
         Task<AuthServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
-        Task<Response> ValidateMobile(ValidateMobile validateMobile,string otp);
-
-
-
+        Task<Response> ValidateMobile(ValidateMobile validateMobile, string otp);
     }
 }

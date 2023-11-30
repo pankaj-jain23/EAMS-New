@@ -15,7 +15,7 @@ namespace EAMS.Helper
             #region LoginViewModel Login  
             CreateMap<LoginViewModel, Login>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
-                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password)) 
+                .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
                 .ReverseMap();
             #endregion
 
@@ -30,6 +30,18 @@ namespace EAMS.Helper
                 .ReverseMap();
             #endregion
 
+            #region RoleViewModel Roles
+
+            CreateMap<RolesViewModel, Role>()
+                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role))
+                .ReverseMap();
+            #endregion
+
+            #region ValidateMobileViewModel ValidteMobile
+
+            CreateMap<ValidateMobileViewModel, ValidateMobile>().ReverseMap();
+            #endregion
+
             #region StateMasterViewModel and  StateMaster 
             CreateMap<StateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))
@@ -41,7 +53,7 @@ namespace EAMS.Helper
             #endregion
 
             #region AddStateMasterViewModel and  StateMaster 
-            CreateMap<AddStateMasterViewModel, StateMaster>() 
+            CreateMap<AddStateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName))
                 .ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => src.StateCode))
                 .ForMember(dest => dest.StateStatus, opt => opt.MapFrom(src => src.IsStatus))
@@ -151,7 +163,7 @@ namespace EAMS.Helper
             #endregion
 
             #region AddSectorOfficerViewModel SectorOfficerMaster
-            CreateMap<AddSectorOfficerViewModel, SectorOfficerMaster>() 
+            CreateMap<AddSectorOfficerViewModel, SectorOfficerMaster>()
               .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
               .ForMember(dest => dest.SoOfficeName, opt => opt.MapFrom(src => src.SoOfficeName))
               .ForMember(dest => dest.SoName, opt => opt.MapFrom(src => src.SoName))
@@ -161,25 +173,25 @@ namespace EAMS.Helper
               .ReverseMap();
             #endregion
 
-            # region SectorOfficerBoothViewModel CombinedMaster
-                        CreateMap<SectorOfficerBoothViewModel, CombinedMaster>()
-                            .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
-                            .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
-                            .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
-                              .ForMember(dest => dest.soMasterId, opt => opt.MapFrom(src => src.SoId))
-                             .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
-                            .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
-                            .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
+            #region SectorOfficerBoothViewModel CombinedMaster
+            CreateMap<SectorOfficerBoothViewModel, CombinedMaster>()
+                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                  .ForMember(dest => dest.soMasterId, opt => opt.MapFrom(src => src.SoId))
+                 .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
+                .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+                .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
 
 
-                         .ReverseMap();
+             .ReverseMap();
             #endregion
 
             #region CombineMasterViewModel CombinedMaster
             CreateMap<CombinedMasterViewModel, CombinedMaster>()
                 .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateMasterId))
                 .ForMember(dest => dest.DistrictId, opt => opt.MapFrom(src => src.DistrictMasterId))
-                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId)) 
+                .ForMember(dest => dest.AssemblyId, opt => opt.MapFrom(src => src.AssemblyMasterId))
                  .ForMember(dest => dest.BoothName, opt => opt.MapFrom(src => src.BoothName))
                 .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
                 .ForMember(dest => dest.IsAssigned, opt => opt.MapFrom(src => src.IsAssigned))
@@ -196,12 +208,12 @@ namespace EAMS.Helper
             #region Event Activity
 
             CreateMap<ElectionInfoViewModel, ElectionInfoMaster>()
-         .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId)) 
-         .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId)) 
-         .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId)) 
-         .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))  
-         .ForMember(dest => dest.IsPartyDispatched, opt => opt.MapFrom(src => src.EventStatus))  
-         .ForMember(dest => dest.IsPartyReached, opt => opt.MapFrom(src => src.EventStatus))  
+         .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+         .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+         .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+         .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.BoothMasterId))
+         .ForMember(dest => dest.IsPartyDispatched, opt => opt.MapFrom(src => src.EventStatus))
+         .ForMember(dest => dest.IsPartyReached, opt => opt.MapFrom(src => src.EventStatus))
 
 
          .ReverseMap();

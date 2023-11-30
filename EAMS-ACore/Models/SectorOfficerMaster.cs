@@ -17,7 +17,7 @@ namespace EAMS_ACore.Models
             get;
             set;
         }
-       
+
         public string SoName { get; set; }
 
         public string SoDesignation { get; set; }
@@ -30,6 +30,13 @@ namespace EAMS_ACore.Models
 
         public DateTime? SOUpdatedAt { get; set; } = DateTime.UtcNow;
         public bool SoStatus { get; set; }
-        
+
+        public DateTime? OTPGeneratedTime { get; set; }
+        public string? OTP { get; set; }
+        public DateTime? OTPExpireTime { get; set; }
+        public int OTPAttempts { get; set; }
+        public bool IsLocked { get; set; }
+
+
     }
 }

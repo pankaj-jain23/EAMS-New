@@ -42,18 +42,25 @@ namespace EAMS_DAL.Repository
 
             return stateList;
         }
-        public async Task<StateMaster> UpdateStateById(StateMaster stateMaster1)
+        public async Task<Response> UpdateStateById(StateMaster stateMaster)
         {
-            var stateMaster = _context.StateMaster.Where(d => d.StateMasterId == stateMaster1.StateMasterId).FirstOrDefault();
-            stateMaster.StateName = stateMaster1.StateName;
+            var stateMasterRecord = _context.StateMaster.Where(d => d.StateMasterId == stateMaster.StateMasterId).FirstOrDefault();
 
+            if (stateMasterRecord != null)
+            {
+                stateMasterRecord.StateName = stateMaster.StateName;
+                _context.StateMaster.Update(stateMasterRecord);
+                _context.SaveChanges();
+                return new Response { Status = RequestStatusEnum.OK, Message = "State Updated Successfully" + stateMaster.StateName };
 
-            _context.StateMaster.Update(stateMaster);
-            _context.SaveChanges();
-            return stateMaster;
+            }
+            else
+            {
+                return new Response { Status = RequestStatusEnum.NotFound, Message = "State Not Found" + stateMaster.StateName };
+            }
         }
 
-        public string AddState(StateMaster stateMaster)
+        public async Task<Response> AddState(StateMaster stateMaster)
         {
             try
             {
@@ -66,17 +73,19 @@ namespace EAMS_DAL.Repository
                 {
                     _context.StateMaster.Add(stateMaster);
                     _context.SaveChanges();
-                    return "State " + stateMaster.StateName + " added successfully!";
+                   
+                    return new Response { Status = RequestStatusEnum.OK, Message = "State Added Successfully" + stateMaster.StateName };
                 }
                 else
                 {
-                    return "State " + stateExist.StateName + " with the same name already exists.";
+                   
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "State Name Already Exists" + stateMaster.StateName };
                 }
             }
             catch (Exception ex)
             {
                 // Handle the exception appropriately, logging or other actions.
-                return "An error occurred while processing the request.";
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
         #endregion
@@ -103,16 +112,23 @@ namespace EAMS_DAL.Repository
 
             return stateData;
         }
-        public async Task<DistrictMaster> UpdateDistrictById(DistrictMaster districtMaster1)
+        public async Task<Response> UpdateDistrictById(DistrictMaster districtMaster)
         {
-            var districtMaster = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster1.DistrictMasterId).FirstOrDefault();
-            districtMaster.DistrictName = districtMaster1.DistrictName;
-            _context.DistrictMaster.Update(districtMaster);
-            _context.SaveChanges();
-            return districtMaster;
+            if (districtMaster != null)
+            {
+                var districtMasterRecord = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster.DistrictMasterId).FirstOrDefault();
+                districtMasterRecord.DistrictName = districtMaster.DistrictName;
+                _context.DistrictMaster.Update(districtMasterRecord);
+                _context.SaveChanges();
+                return new Response { Status = RequestStatusEnum.OK, Message = "District Updated Successfully" + districtMaster.DistrictName };
+            }
+            else
+            {
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "District Not Found" + districtMaster.DistrictName };
+            }
         }
 
-        public string AddDistrict(DistrictMaster districtMaster)
+        public async Task<Response> AddDistrict(DistrictMaster districtMaster)
         {
             try
             {
@@ -122,17 +138,17 @@ namespace EAMS_DAL.Repository
                 {
                     _context.DistrictMaster.Add(districtMaster);
                     _context.SaveChanges();
-                    return "District" + districtMaster.DistrictName + "Added Successfully !";
+                    return new Response { Status = RequestStatusEnum.OK, Message = "District Added Successfully" + districtMaster.DistrictName };
                 }
                 else
                 {
-                    return "District" + districtMaster.DistrictName + "Same District Already Exists !";
+                   
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Same District Already Exists" + districtMaster.DistrictName };
                 }
             }
             catch (Exception ex)
-            {
-                // Handle the exception appropriately, logging or other actions.
-                return "An error occurred while processing the request.";
+            {// Handle the exception appropriately, logging or other actions.
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
 
@@ -161,21 +177,29 @@ namespace EAMS_DAL.Repository
             return await innerJoin.ToListAsync();
         }
 
-        public async Task<AssemblyMaster> UpdateAssembliesById(AssemblyMaster assemblyMaster)
+        public async Task<Response> UpdateAssembliesById(AssemblyMaster assemblyMaster)
         {
             var assembliesMasterRecord = _context.AssemblyMaster.Where(d => d.AssemblyMasterId == assemblyMaster.AssemblyMasterId).FirstOrDefault();
-            //assembliesMaster.AssemblyMasterId=assemblyMaster.AssemblyMasterId;
-            assembliesMasterRecord.AssemblyName = assemblyMaster.AssemblyName;
-            assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;
-            assembliesMasterRecord.AssemblyType = assemblyMaster.AssemblyType;
-            assembliesMasterRecord.AssemblyStatus = assemblyMaster.AssemblyStatus;
 
-            var ss = _context.AssemblyMaster.Update(assembliesMasterRecord);
-            _context.SaveChanges();
-            return assembliesMasterRecord;
+            if (assembliesMasterRecord == null)
+            {
+                assembliesMasterRecord.AssemblyName = assemblyMaster.AssemblyName;
+                assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;
+                assembliesMasterRecord.AssemblyType = assemblyMaster.AssemblyType;
+                assembliesMasterRecord.AssemblyStatus = assemblyMaster.AssemblyStatus;
+
+                var ss = _context.AssemblyMaster.Update(assembliesMasterRecord);
+                _context.SaveChanges();
+                return new Response { Status = RequestStatusEnum.OK, Message = "Assembly Added Successfully" + assemblyMaster.AssemblyName };
+
+            }
+            else
+            {
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Assembly Not Found" + assemblyMaster.AssemblyName };
+            }
         }
 
-        public string AddAssemblies(AssemblyMaster assemblyMaster)
+        public async Task<Response> AddAssemblies(AssemblyMaster assemblyMaster)
         {
             try
             {
@@ -185,17 +209,19 @@ namespace EAMS_DAL.Repository
                 {
                     _context.AssemblyMaster.Add(assemblyMaster);
                     _context.SaveChanges();
-                    return "Assemblies" + assemblyMaster.AssemblyName + "Added Successfully !";
+                    
+                    return new Response { Status = RequestStatusEnum.OK, Message = assemblyMaster.AssemblyName + "Added Successfully" };
                 }
                 else
                 {
-                    return "Assemblies" + assemblyMaster.AssemblyName + "Same District Already Exists";
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = assemblyMaster.AssemblyName + "Same District Already Exists" };
+                    
                 }
             }
 
             catch (Exception ex)
             {
-                return "An error occurred while processing the request.";
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
 
@@ -232,29 +258,33 @@ namespace EAMS_DAL.Repository
 
             return await solist.ToListAsync();
         }
-        public async Task<string> AddSectorOfficer(SectorOfficerMaster addSectorOfficerMaster)
+        public async Task<Response> AddSectorOfficer(SectorOfficerMaster addSectorOfficerMaster)
         {
             var soUserExist = _context.SectorOfficerMaster.Where(d => d.SoMobile == addSectorOfficerMaster.SoMobile).FirstOrDefault();
             if (soUserExist == null)
             {
                 _context.SectorOfficerMaster.Add(addSectorOfficerMaster);
                 _context.SaveChanges();
-                return "SO User " + addSectorOfficerMaster.SoName + "added successfully!";
+                return new Response { Status = RequestStatusEnum.OK, Message = "SO User" + addSectorOfficerMaster.SoName +" "+"Added Successfully" };
+                
+
             }
             else
             {
-                return "SO User " + addSectorOfficerMaster.SoName + "already exists.";
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO User" + addSectorOfficerMaster.SoName + " " + "Already Exists" };
+                
             }
         }
 
-        public async Task<string> UpdateSectorOfficer(SectorOfficerMaster updatedSectorOfficer)
+        public async Task<Response> UpdateSectorOfficer(SectorOfficerMaster updatedSectorOfficer)
         {
             var existingSectorOfficer = await _context.SectorOfficerMaster
                                                        .FirstOrDefaultAsync(so => so.SOMasterId == updatedSectorOfficer.SOMasterId);
 
             if (existingSectorOfficer == null)
             {
-                return "SO User not found.";
+                
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO User" + updatedSectorOfficer.SoName + " " + "Not found" };
             }
 
             // Check if the mobile number is unique among other sector officers (excluding the current one being updated)
@@ -273,11 +303,12 @@ namespace EAMS_DAL.Repository
                 _context.SectorOfficerMaster.Update(existingSectorOfficer);
                 await _context.SaveChangesAsync();
 
-                return "SO User " + existingSectorOfficer.SoName + " updated successfully!";
+                
+                return new Response { Status = RequestStatusEnum.OK, Message = "SO User" + existingSectorOfficer.SoName + " " + "updated successfully" };
             }
             else
             {
-                return "SO User with the given mobile number already exists.";
+                return new Response { Status = RequestStatusEnum.OK, Message = "SO User WIth given Mobile Number : " + updatedSectorOfficer.SoMobile + " " + "Already Exists" };
             }
         }
 
@@ -376,7 +407,7 @@ namespace EAMS_DAL.Repository
             return await boothlist.ToListAsync();
         }
 
-        public string AddBooth(BoothMaster boothMaster)
+        public async Task<Response> AddBooth(BoothMaster boothMaster)
         {
             try
             {
@@ -394,22 +425,25 @@ namespace EAMS_DAL.Repository
                     _context.BoothMaster.Add(boothMaster);
                     _context.SaveChanges();
 
-                    return "Booth " + boothMaster.BoothName + " added successfully!";
+                    
+                    return new Response { Status = RequestStatusEnum.OK, Message = "Booth " + boothMaster.BoothName + " added successfully!" };
                 }
                 else
                 {
-                    return "Booth " + boothMaster.BoothName + " with the same name or code already exists.";
+                    
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth " + boothMaster.BoothName + " with the same name or code already exists." };
                 }
             }
             catch (Exception ex)
             {
                 // Log the exception details for troubleshooting
-                Console.WriteLine(ex.Message);
-                return "An error occurred while processing the request.";
+                
+
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
 
-        public async Task<string> UpdateBooth(BoothMaster boothMaster)
+        public async Task<Response> UpdateBooth(BoothMaster boothMaster)
         {
             if (boothMaster.BoothName != string.Empty)
             {
@@ -418,7 +452,7 @@ namespace EAMS_DAL.Repository
 
                 if (existingbooth == null)
                 {
-                    return "Booth Record not found.";
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Record Not Found" };
                 }
                 else
                 {
@@ -433,12 +467,14 @@ namespace EAMS_DAL.Repository
                     _context.BoothMaster.Update(existingbooth);
                     await _context.SaveChangesAsync();
 
-                    return "Booth" + existingbooth.BoothName.Trim() + " updated successfully!";
+                    
+                    return new Response { Status = RequestStatusEnum.OK, Message = "Booth" + existingbooth.BoothName.Trim() + " updated successfully!" };
                 }
             }
             else
             {
-                return "Booth updated successfully!";
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Name cannot Be Empty" };
+             
             }
 
         }
@@ -538,13 +574,31 @@ namespace EAMS_DAL.Repository
         }
 
 
-        public async Task<EventMaster> UpdateEventById(EventMaster eventMaster1)
+        public async Task<Response> UpdateEventById(EventMaster eventMaster1)
         {
-            var eventMaster = _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();
-            eventMaster.EventName = eventMaster1.EventName;
-            _context.EventMaster.Update(eventMaster);
-            _context.SaveChanges();
-            return eventMaster;
+            if(eventMaster1.EventName != null && eventMaster1.EventSequence != null)
+            {
+
+            var eventMaster =  _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();
+                if(eventMaster != null)
+                {
+                    eventMaster.EventName = eventMaster1.EventName;
+                    _context.EventMaster.Update(eventMaster);
+                    _context.SaveChanges();
+                    return new Response { Status = RequestStatusEnum.OK, Message = "Event+" +eventMaster1.EventName+" "+"added successfully" };
+                }
+                else
+                {
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Record not Found" };
+                }
+         
+            }
+
+            else
+            {
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Event Name & Sequence cannot Be Empty" };
+
+            }
 
         }
 

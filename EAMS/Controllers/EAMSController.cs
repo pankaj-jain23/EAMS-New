@@ -7,6 +7,8 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Mono.TextTemplating;
 using System.Globalization;
 using System.Text;
 
@@ -47,25 +49,67 @@ namespace EAMS.Controllers
         [Route("UpdateStateById")]
         public async Task<IActionResult> UpdateStateById(StateMasterViewModel stateViewModel)
         {
-            StateMaster stateMaster = new StateMaster()
+            if (ModelState.IsValid)
             {
-                StateMasterId = stateViewModel.StateId,
-                StateCode = stateViewModel.StateCode,
-                StateName = stateViewModel.StateName
-            };
-            var state = _EAMSService.UpdateStateById(stateMaster);
-            return Ok();
+                StateMaster stateMaster = new StateMaster()
+                {
+                    StateMasterId = stateViewModel.StateId,
+                    StateCode = stateViewModel.StateCode,
+                    StateName = stateViewModel.StateName
+                };
+                var state = await _EAMSService.UpdateStateById(stateMaster);
+                switch (state.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(state.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(state.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(state.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+
+
+
+            }
+            else
+
+            {
+                return BadRequest(ModelState);
+            }
         }
 
         [HttpPost]
         [Route("AddState")]
         public async Task<IActionResult> AddState(AddStateMasterViewModel addStateMasterViewModel)
         {
-            var insertstate = _mapper.Map<AddStateMasterViewModel, StateMaster>(addStateMasterViewModel);
-            var result = _EAMSService.AddState(insertstate);
+            if (ModelState.IsValid)
+            {
+                var insertstate = _mapper.Map<AddStateMasterViewModel, StateMaster>(addStateMasterViewModel);
+                var result = await _EAMSService.AddState(insertstate);
+
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
 
 
-            return Ok(result);
+
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
 
 
@@ -76,32 +120,84 @@ namespace EAMS.Controllers
         [Route("DistrictList")]
         public async Task<IActionResult> DistrictListById(string stateMasterId)
         {
-            var districtList = await _EAMSService.GetDistrictById(stateMasterId);
-            var mappedData = _mapper.Map<List<DistrictMasterViewModel>>(districtList);
-
-            var data = new
+            if (stateMasterId != null)
             {
-                count = mappedData.Count,
-                data = mappedData
-            };
-            return Ok(data);
+                var districtList = await _EAMSService.GetDistrictById(stateMasterId);
+                var mappedData = _mapper.Map<List<DistrictMasterViewModel>>(districtList);
+                if (stateMasterId != null)
+                {
+
+                    var data = new
+                    {
+                        count = mappedData.Count,
+                        data = mappedData
+                    };
+                    return Ok(data);
+                }
+                else
+                {
+                    return NotFound("Data Not Found");
+                }
+            }
+            else
+            {
+                return BadRequest(stateMasterId + "is null");
+            }
         }
 
         [HttpPut]
         [Route("UpdateDistrictById")]
         public async Task<IActionResult> UpdateDistrictById(DistrictMasterViewModel districtViewModel)
         {
-            var mappedData = _mapper.Map<DistrictMasterViewModel, DistrictMaster>(districtViewModel);
-            var district = _EAMSService.UpdateDistrictById(mappedData);
-            return Ok(district);
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<DistrictMasterViewModel, DistrictMaster>(districtViewModel);
+                var result = await _EAMSService.UpdateDistrictById(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
         [HttpPost]
         [Route("AddDistrict")]
         public async Task<IActionResult> AddDistrict(AddDistrictMasterViewModel addDistrictViewModel)
         {
-            var mappedData = _mapper.Map<AddDistrictMasterViewModel, DistrictMaster>(addDistrictViewModel);
-            var add = _EAMSService.AddDistrict(mappedData);
-            return Ok(add);
+            if (ModelState.IsValid)
+            {
+
+                var mappedData = _mapper.Map<AddDistrictMasterViewModel, DistrictMaster>(addDistrictViewModel);
+                var result = await _EAMSService.AddDistrict(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
         #endregion
 
@@ -111,13 +207,29 @@ namespace EAMS.Controllers
         [Route("GetAssembliesListById")]
         public async Task<IActionResult> AssembliesListById(string stateId, string districtId)
         {
-            var assemblyList = await _EAMSService.GetAssemblies(stateId, districtId);  // Corrected to await the asynchronous method
-            var data = new
+            if (stateId != null && districtId != null)
             {
-                count = assemblyList.Count,
-                data = assemblyList
-            };
-            return Ok(data);
+                var assemblyList = await _EAMSService.GetAssemblies(stateId, districtId);  // Corrected to await the asynchronous method
+                if (assemblyList != null)
+                {
+                    var data = new
+                    {
+                        count = assemblyList.Count,
+                        data = assemblyList
+                    };
+                    return Ok(data);
+                }
+                else
+                {
+                    return NotFound("Data Not Found");
+                }
+            }
+            else
+            {
+                return BadRequest("State and District Master Id's cannot be null");
+            }
+
+
         }
 
         [HttpPut]
@@ -127,12 +239,23 @@ namespace EAMS.Controllers
             if (ModelState.IsValid)
             {
                 var mappedData = _mapper.Map<AssemblyMasterViewModel, AssemblyMaster>(assemblyViewModel);
-                var update = _EAMSService.AddAssemblies(mappedData);
-                return Ok(update);
+                var result = await _EAMSService.UpdateAssembliesById(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
             }
             else
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
         }
 
@@ -143,12 +266,23 @@ namespace EAMS.Controllers
             if (ModelState.IsValid)
             {
                 var mappedData = _mapper.Map<AddAssemblyMasterViewModel, AssemblyMaster>(addAssemblyMasterViewModel);
-                var add = _EAMSService.AddAssemblies(mappedData);
-                return Ok(add);
+                var result = await _EAMSService.AddAssemblies(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
             }
             else
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
         }
         #endregion
@@ -159,13 +293,20 @@ namespace EAMS.Controllers
         public async Task<IActionResult> SectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
             var soList = await _EAMSService.GetSectorOfficersListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
-
-            var data = new
+            if (soList != null)
             {
-                count = soList.Count,
-                data = soList
-            };
-            return Ok(data);
+                var data = new
+                {
+                    count = soList.Count,
+                    data = soList
+                };
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+
         }
         [HttpPost]
         [Route("AddSOUser")]
@@ -174,9 +315,20 @@ namespace EAMS.Controllers
             if (ModelState.IsValid)
             {
                 var mappedData = _mapper.Map<SectorOfficerMaster>(addSectorOfficerViewModel);
-                var soUser = await _EAMSService.AddSectorOfficer(mappedData);
+                var result = await _EAMSService.AddSectorOfficer(mappedData);
 
-                return Ok(soUser);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
             }
             else
             {
@@ -191,9 +343,21 @@ namespace EAMS.Controllers
             {
                 var mappedData = _mapper.Map<SectorOfficerMaster>(sectorOfficerViewModel);
 
-                var soUser = await _EAMSService.UpdateSectorOfficer(mappedData);
+                var result = await _EAMSService.UpdateSectorOfficer(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
 
-                return Ok(soUser);
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+
+
             }
             else
             {
@@ -233,13 +397,30 @@ namespace EAMS.Controllers
         [Route("GetBoothListById")]
         public async Task<IActionResult> BoothListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
-            var boothList = await _EAMSService.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
-            var data = new
+            if (stateMasterId != null && districtMasterId != null && assemblyMasterId != null)
             {
-                count = boothList.Count,
-                data = boothList
-            };
-            return Ok(data);
+                var boothList = await _EAMSService.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
+                if (boothList != null)
+                {
+                    var data = new
+                    {
+                        count = boothList.Count,
+                        data = boothList
+                    };
+                    return Ok(data);
+
+                }
+                else
+                {
+                    return NotFound("Data Not Found");
+
+                }
+            }
+            else
+            {
+
+                return BadRequest("State, District and Assembly Master Id's cannot be null");
+            }
         }
         /// <summary>
         /// Insert Booth Under Assembly, District, State
@@ -251,9 +432,28 @@ namespace EAMS.Controllers
         [Route("AddBooth")]
         public async Task<IActionResult> AddBooth(BoothMasterViewModel BoothMasterViewModel)
         {
-            var mappedData = _mapper.Map<BoothMasterViewModel, BoothMaster>(BoothMasterViewModel);
-            var result = _EAMSService.AddBooth(mappedData);
-            return Ok(result);
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<BoothMasterViewModel, BoothMaster>(BoothMasterViewModel);
+                var result = await _EAMSService.AddBooth(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+
+            }
         }
 
         [HttpPut]
@@ -264,9 +464,20 @@ namespace EAMS.Controllers
             {
                 var mappedData = _mapper.Map<BoothMaster>(boothMasterViewModel);
 
-                var boothupdate = await _EAMSService.UpdateBooth(mappedData);
+                var result = await _EAMSService.UpdateBooth(mappedData);
 
-                return Ok(boothupdate);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
             }
             else
             {
@@ -374,22 +585,57 @@ namespace EAMS.Controllers
         public async Task<IActionResult> GetEventList()
         {
             var eventList = await _EAMSService.GetEventList();
-            var mappedEvent = _mapper.Map<List<EventMasterViewModel>>(eventList);
-            var data = new
+            if (eventList != null)
             {
-                count = mappedEvent.Count,
-                data = mappedEvent
-            };
-            return Ok(data);
+                var mappedEvent = _mapper.Map<List<EventMasterViewModel>>(eventList);
+                if (mappedEvent != null)
+                {
+                    var data = new
+                    {
+                        count = mappedEvent.Count,
+                        data = mappedEvent
+                    };
+                    return Ok(data);
+                }
+                else
+                {
+                    return BadRequest("No Record Found");
+                }
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
         }
 
         [HttpPut]
         [Route("UpdateEventById")]
         public async Task<IActionResult> UpdateEventById(EventMasterViewModel eventMaster)
         {
-            var mappedeventData = _mapper.Map<EventMasterViewModel, EventMaster>(eventMaster);
-            var eventUplist = _EAMSService.UpdateEventById(mappedeventData);
-            return Ok(eventUplist);
+            if (ModelState.IsValid)
+            {
+                var mappedeventData = _mapper.Map<EventMasterViewModel, EventMaster>(eventMaster);
+                var result = await _EAMSService.UpdateEventById(mappedeventData);
+
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            }
+            else
+
+            {
+                return BadRequest(ModelState);
+
+            }
         }
 
 
@@ -403,13 +649,19 @@ namespace EAMS.Controllers
         {
             var pcList = await _EAMSService.GetPCList();
             var mappedData = _mapper.Map<List<PCViewModel>>(pcList);
-
-            var pcData = new
+            if (mappedData != null)
             {
-                count = mappedData.Count,
-                data = mappedData
-            };
-            return Ok(pcData);
+                var pcData = new
+                {
+                    count = mappedData.Count,
+                    data = mappedData
+                };
+                return Ok(pcData);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
         }
         #endregion
 

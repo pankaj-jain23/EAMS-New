@@ -4,6 +4,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
+using EAMS_DAL.Migrations;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -147,59 +148,99 @@ namespace EAMS_BLL.Services
 
         #region EventActivity
 
-        public async Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster)
+        public async Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster)
         {
-            var electionInfoRecord = _eamsRepository.EventUpdationStatus(electionInfoMaster);
-            if (electionInfoRecord.Result != null)
+            var electionInfoRecord = await _eamsRepository.EventUpdationStatus(electionInfoMaster);
+            if (electionInfoRecord != null)
             {
                 switch (electionInfoMaster.EventMasterId)
                 {
                     case 1: //party Dispatch
 
-                        if (electionInfoRecord.Result.IsPartyReached == false || electionInfoRecord.Result.IsPartyReached == null)
+                        if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
                         {
-                            if (electionInfoRecord.Result.IsPartyDispatched==false) {
+                            if (electionInfoRecord.IsPartyDispatched==false) {
                                 return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                                return null; //Already Yes
+                               //Already Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Already Dispatched." };
+
                             }
                         }
                         else
                         {
-                            return null;// party alteady arrived, cnt change status!
+                            // party alteady arrived, cnt change status!
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Has Already Reached." };
                         }
                     case 2:
-                        if (electionInfoRecord.Result.IsPartyDispatched == true)
+                        if (electionInfoRecord.IsPartyDispatched == true)
                         {
-                            if (electionInfoRecord.Result.IsPartyReached == false)
+                            if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
                             {
-                                if (electionInfoRecord.Result.IsSetupOfPolling == false)
+                                if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
                                 {
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                    electionInfoRecord.IsPartyReached = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
                                 {
-                                    return null;// SSetup of poliing already status Yes
+                                    
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, SetUpPolling Already yes." };
+
                                 }
 
                             }
                             else
                             {
-                                return null;// already status Yes
+                                
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Reached Status Already Yes." };
                             }
                         }
                         else
                         {
-                            return null;//Party not dispatched yet
+                         
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Dispatched Yet." };
                         }
+                    case 3:
+                        if (electionInfoRecord.IsPartyReached == true)
+                        {
 
+                            if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
+                            {
+                                if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
+                                {
+                                    electionInfoRecord.IsSetupOfPolling = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+                                   
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, MockPoll Already yes." };
+                                }
 
+                            }
+                            else
+                            {
+                              // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SetUp Polling Status Already yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Reached Yet." };
+
+                        }
 
                     default:
                         // Handle the case when EventMasterId doesn't match any known case
                         return null;
+                        //return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Reached Yet." };
                 }
             }
             else

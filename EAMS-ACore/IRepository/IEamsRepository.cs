@@ -57,7 +57,7 @@ namespace EAMS_ACore.IRepository
 
 
         #region Event Activity
-        Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster);
+        Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
         // eventid = 2
         // prev= 1, nxt=3

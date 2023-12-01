@@ -61,7 +61,7 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region Event Activity
-        Task<ElectionInfoMaster> EventActivity(ElectionInfoMaster electionInfoMaster);
+        Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         #endregion
 
     }

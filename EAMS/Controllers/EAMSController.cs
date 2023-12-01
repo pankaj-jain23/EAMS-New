@@ -674,12 +674,51 @@ namespace EAMS.Controllers
             switch (electionInfoViewModel.EventMasterId)
             {
                 case 1:
-                    await PartyDispatch(electionInfoViewModel);
+                  var result =  await PartyDispatch(electionInfoViewModel);
+                    switch (result.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(result.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(result.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(result.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+
                     break;
                 case 2:
-                    await PartyReached(electionInfoViewModel);
-                    break;
+                    var result_part_reach=await PartyReached(electionInfoViewModel);
+                    switch (result_part_reach.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(result_part_reach.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(result_part_reach.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(result_part_reach.Message);
 
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+                case 3:
+                    var result_setup_polling=await SetupPollingStation(electionInfoViewModel);
+                    switch (result_setup_polling.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(result_setup_polling.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(result_setup_polling.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(result_setup_polling.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
 
                 default:
                     // Handle the case when EventMasterId doesn't match any known case
@@ -689,7 +728,7 @@ namespace EAMS.Controllers
             return Ok();
         }
 
-        private async Task PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
+        private async Task<Response> PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
         {
             ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
             {
@@ -702,11 +741,10 @@ namespace EAMS.Controllers
 
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);
-
-
+            return result;
         }
 
-        private async Task PartyReached(ElectionInfoViewModel electionInfoViewModel)
+        private async Task<Response> PartyReached(ElectionInfoViewModel electionInfoViewModel)
         {
             ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
             {
@@ -719,7 +757,23 @@ namespace EAMS.Controllers
 
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
 
+        private async Task<Response> SetupPollingStation(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsSetupOfPolling = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
         }
 
         #endregion

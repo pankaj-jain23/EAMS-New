@@ -16,7 +16,7 @@ namespace EAMS_ACore.AuthInterfaces
 
         Task<AuthServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
-        Task<Response> ValidateMobile(ValidateMobile validateMobile,string otp);
+        Task<Response> ValidateMobile(ValidateMobile validateMobile);
 
 
 

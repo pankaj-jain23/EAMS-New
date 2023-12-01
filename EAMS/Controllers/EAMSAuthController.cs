@@ -3,6 +3,7 @@ using EAMS.AuthViewModels;
 using EAMS.ViewModels;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
+using EAMS_ACore.HelperModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace EAMS.Controllers
             _mapper = mapper;
 
         }
+
         #region Register
 
         [HttpPost]
@@ -113,18 +115,34 @@ namespace EAMS.Controllers
         }
         #endregion
 
-        #region Validate Mobile && Generate Otp
-
+        #region Validate Mobile 
         [HttpPost]
         [Route("ValidateMobile")]
         public async Task<IActionResult> ValidateMobile(ValidateMobileViewModel validateMobileViewModel)
         {
             if (ModelState.IsValid)
-            {
+            { 
                 var mappedData = _mapper.Map<ValidateMobile>(validateMobileViewModel);
-                var optGenerated = GenerateOTP();
-                var result =await _authService.ValidateMobile(mappedData, optGenerated);
-                return Ok();
+
+                
+                var result = await _authService.ValidateMobile(mappedData);
+
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        var response = new
+                        {
+                            Message = result.Message,
+                            Token = result.Token,
+                        };
+                        return Ok(response);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
             }
             else
             {
@@ -132,13 +150,7 @@ namespace EAMS.Controllers
             }
         }
 
-        public static string GenerateOTP(int length = 6)
-        {
-            const string chars = "0123456789";
-            Random random = new Random();
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
+     
         #endregion
 
     }

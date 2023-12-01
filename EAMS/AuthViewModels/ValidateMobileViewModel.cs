@@ -4,8 +4,9 @@ namespace EAMS.AuthViewModels
 {
     public class ValidateMobileViewModel
     {
+        [Phone]
         [Required(ErrorMessage ="Please Enter Mobile Number")]
         public string MobileNumber { get; set; }
-        public string Otp { get; set; }
+        public int Otp { get; set; }
     }
 }

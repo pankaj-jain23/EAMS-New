@@ -2,6 +2,7 @@
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
+using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -116,31 +117,15 @@ namespace EAMS_DAL.AuthRepository
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
-            var token = GenerateNewJsonWebToken(authClaims);
+          //  var token = GenerateNewJsonWebToken(authClaims);
 
             return new AuthServiceResponse()
             {
                 IsSucceed = true,
-                Message = token
+               // Message = token
             };
         }
-        private string GenerateNewJsonWebToken(List<Claim> claims)
-        {
-            var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var tokenObject = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddHours(1),
-                    claims: claims,
-                    signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
-                );
-
-            string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-
-            return token;
-        }
-        #endregion
+         #endregion
 
         #region RegisterAsync
 
@@ -149,33 +134,52 @@ namespace EAMS_DAL.AuthRepository
             throw new NotImplementedException();
         }
 
+       
+
+
+
         #endregion
 
-        #region ValidateMobile
-        public async Task<Response> ValidateMobile(ValidateMobile validateMobile, string otp)
+        #region ValidateMobile && Sector Officer Master
+        public async Task<SectorOfficerMaster> ValidateMobile(ValidateMobile validateMobile)
         {
-            var isExist = await _context.SectorOfficerMaster.AnyAsync(d => d.SoMobile == validateMobile.MobileNumber);
-            var isOtpSame = await _context.SectorOfficerMaster.AnyAsync(d => d.OTP==otp);
-            if (isExist == true)
+            var soRecord = await _context.SectorOfficerMaster.Where(d => d.SoMobile == validateMobile.MobileNumber).FirstOrDefaultAsync();
+            return soRecord;
+        }
+        public async Task<AuthServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster)
+        {
+            var soRecord = _context.SectorOfficerMaster.Where(d => d.SoMobile == sectorOfficerMaster.SoMobile).FirstOrDefault();
+            if (soRecord != null)
             {
-                return new Response()
+                if (soRecord.IsLocked == false)
                 {
-                    Status = RequestStatusEnum.OK,
-                    Message = "OTP Sent Successfully"
+                    soRecord.SoMobile = sectorOfficerMaster.SoMobile;
+                    soRecord.IsLocked = false;
+                    soRecord.OTP = sectorOfficerMaster.OTP;
+                    soRecord.OTPGeneratedTime = DateTime.SpecifyKind(sectorOfficerMaster.OTPGeneratedTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+                    soRecord.OTPExpireTime = DateTime.SpecifyKind(sectorOfficerMaster.OTPExpireTime ?? DateTime.UtcNow, DateTimeKind.Utc);
+                    soRecord.OTPAttempts = sectorOfficerMaster.OTPAttempts;
+                }
+                else if (sectorOfficerMaster.IsLocked == true)
+                {
+                    soRecord.IsLocked = true;
 
+                }
+                _context.SectorOfficerMaster.Update(soRecord);
+                _context.SaveChanges();
+                return new AuthServiceResponse
+                {
+                    IsSucceed = true,
                 };
             }
             else
             {
-                return new Response()
+                return new AuthServiceResponse
                 {
-                    Status = RequestStatusEnum.BadRequest,
-                    Message = "Mobile Number not exist"
-
+                    IsSucceed = false,
                 };
-
             }
-            throw new NotImplementedException();
+        
         }
         #endregion
     }

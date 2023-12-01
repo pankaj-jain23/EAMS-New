@@ -2,7 +2,7 @@
 
 namespace EAMS.Helper
 {
-    public class Response
+    public class ResponseViewModel
     {
         public RequestStatusEnum Status { get; set; }
         public string? Message { get; set; }

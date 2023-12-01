@@ -1,6 +1,7 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace EAMS_ACore.IAuthRepository
 
         Task<AuthServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
-        Task<Response> ValidateMobile(ValidateMobile validateMobile, string otp);
+        Task<SectorOfficerMaster> ValidateMobile(ValidateMobile validateMobile);
+
+        Task<AuthServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster);
     }
 }

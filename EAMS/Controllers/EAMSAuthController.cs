@@ -19,62 +19,59 @@ namespace EAMS.Controllers
         {
             _authService = authService;
             _mapper = mapper;
-
         }
 
         #region Register
 
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationViewModel registerViewModel)
+        [Route("registeration")]
+        public async Task<IActionResult> Register(UserRegistrationViewModel registerViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest("Invalid payload");
                 var mappedData = _mapper.Map<UserRegistration>(registerViewModel);
-
-                var registerResult = await _authService.RegisterAsync(mappedData);
-
-                if (registerResult.IsSucceed)
+                var roleId=registerViewModel.RoleId;
+                var registerResult = await _authService.RegisterAsync(mappedData, roleId);
+                if (registerResult.IsSucceed == false)
                 {
-                    return Ok(registerResult);
+                    return BadRequest(registerResult.Message);
                 }
                 else
                 {
-
-                    return BadRequest();
+                    return Ok(registerResult.Message);
                 }
+
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
         #endregion
 
         #region Login
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel loginViewModel)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest("Invalid payload");
                 var mappedData = _mapper.Map<Login>(loginViewModel);
 
                 var loginResult = await _authService.LoginAsync(mappedData);
 
-                if (loginResult.IsSucceed)
-                {
-                    return Ok(loginResult);
-                }
-                else
-                {
-
-                    return Unauthorized();
-                }
+                if (loginResult.IsSucceed == false)
+                    return BadRequest(loginResult.Message);
+                return Ok(loginResult);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
         #endregion
@@ -100,9 +97,9 @@ namespace EAMS.Controllers
                     return Unauthorized(new { Message = roleResult.Message });
                 }
             }
-            else 
+            else
             {
-                return BadRequest(); 
+                return BadRequest();
             }
         }
         [HttpGet]
@@ -121,10 +118,10 @@ namespace EAMS.Controllers
         public async Task<IActionResult> ValidateMobile(ValidateMobileViewModel validateMobileViewModel)
         {
             if (ModelState.IsValid)
-            { 
+            {
                 var mappedData = _mapper.Map<ValidateMobile>(validateMobileViewModel);
 
-                
+
                 var result = await _authService.ValidateMobile(mappedData);
 
                 switch (result.Status)
@@ -150,8 +147,35 @@ namespace EAMS.Controllers
             }
         }
 
-     
+
         #endregion
 
+
+        #region Refresh Toke
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken(GetRefreshTokenViewModel refreshTokenViewModel)
+        {
+            try
+            {
+                if (refreshTokenViewModel is null)
+                {
+                    return BadRequest("Invalid client request");
+                }
+                var mapped = _mapper.Map<GetRefreshToken>(refreshTokenViewModel);
+
+                var result = await _authService.GetRefreshToken(mapped);
+                if (result.StatusCode == 0)
+                    return BadRequest(result.StatusMessage);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        #endregion
     }
 }

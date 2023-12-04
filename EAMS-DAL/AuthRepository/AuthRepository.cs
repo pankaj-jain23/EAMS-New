@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -117,15 +118,15 @@ namespace EAMS_DAL.AuthRepository
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
-          //  var token = GenerateNewJsonWebToken(authClaims);
+            //  var token = GenerateNewJsonWebToken(authClaims);
 
             return new AuthServiceResponse()
             {
                 IsSucceed = true,
-               // Message = token
+                // Message = token
             };
         }
-         #endregion
+        #endregion
 
         #region RegisterAsync
 
@@ -134,10 +135,152 @@ namespace EAMS_DAL.AuthRepository
             throw new NotImplementedException();
         }
 
-       
 
 
 
+
+        #endregion
+
+        #region FindUserByName
+        public async Task<AuthServiceResponse> FindUserByName(UserRegistration userRegistration)
+        {
+            var userExists = await _userManager.FindByNameAsync(userRegistration.UserName);
+            if (userExists != null)
+            {
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = false,
+                    Message = "User Already Exist"
+                };
+            }
+            else
+            {
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = true,
+                    Message = "User Not Exist"
+                };
+
+            }
+        }
+        #endregion
+
+
+        #region Check User Login
+        public async Task<AuthServiceResponse> CheckUserLogin(Login login)
+        {
+            var user = await _userManager.FindByNameAsync(login.UserName);
+
+            if (user == null)
+            {
+                // User not found
+                return new AuthServiceResponse { IsSucceed = false, Message = "User Not Found" };
+            } 
+            // Use PasswordHasher to verify the password
+            var passwordVerificationResult = await _userManager.CheckPasswordAsync(user, login.Password);
+
+            if (passwordVerificationResult==true)
+            {
+                // Password is correct
+                // You can perform additional checks, generate tokens, etc. here
+                return new AuthServiceResponse { IsSucceed = true, Message = "Login successful." };
+            }
+            else
+            {
+                // Password is incorrect
+                return new AuthServiceResponse { IsSucceed = false, Message = "Invalid username or password." };
+            }
+        }
+        #endregion
+
+        #region GetRoleByUser
+        public async Task<List<Role>> GetRoleByUser(Login login)
+        {
+            var user = await _userManager.FindByNameAsync(login.UserName);
+
+            if (user == null)
+            {
+                // Handle the case where the user is not found
+                return null;
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var rolesList = roles.Select(role => new Role
+            {
+                RoleId = role,
+                RoleName = role
+            }).ToList();
+
+            return rolesList;
+        }
+
+        #endregion
+
+        #region CreateUser
+        public async Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
+        {
+            try
+            { 
+                var createUserResult=await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
+                if (!createUserResult.Succeeded)
+                {
+                    return new AuthServiceResponse()
+                    {
+                        IsSucceed = false,
+                        Message = "User creation failed! Please check user details and try again.",
+                        // Log the error details for investigation
+                    };
+                }
+
+                var user = await _userManager.FindByNameAsync(userRegistration.UserName);
+
+                if (roleIds != null && roleIds.Any())
+                {
+                    var roles = await _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
+
+                    foreach (var role in roles)
+                    {
+                        var userRoleResult = await _userManager.AddToRoleAsync(user, role.Name);
+
+                        if (!userRoleResult.Succeeded)
+                        {
+                            // Handle role assignment failure
+                            return new AuthServiceResponse()
+                            {
+                                IsSucceed = false,
+                                Message = $"Failed to assign roles to user '{userRegistration.UserName}'.",
+                                // Log the error details for investigation
+                            };
+                        }
+                    }
+                }
+
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = true,
+                    Message = $"User '{userRegistration.UserName}' created successfully!."
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details for investigation
+                // Example: _logger.LogError(ex, "An error occurred while creating a user.");
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = false,
+                    Message = ex.Message,
+                };
+            }
+        }
+        #endregion
+
+        #region  UpdateUser
+        public async Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration)
+        {
+            var updateUser = await _userManager.UpdateAsync(userRegistration);
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region ValidateMobile && Sector Officer Master
@@ -179,8 +322,15 @@ namespace EAMS_DAL.AuthRepository
                     IsSucceed = false,
                 };
             }
-        
+
         }
+
+
+
+
+
+
+
         #endregion
     }
 }

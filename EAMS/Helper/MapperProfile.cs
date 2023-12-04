@@ -42,6 +42,14 @@ namespace EAMS.Helper
             CreateMap<ValidateMobileViewModel, ValidateMobile>().ReverseMap();
             #endregion
 
+            #region TokenViewModel Token
+            CreateMap<TokenViewModel, Token>().ReverseMap();
+            #endregion
+
+            #region GetRefreshTokenViewModel GetRefreshToken
+            CreateMap<GetRefreshTokenViewModel, GetRefreshToken>().ReverseMap();
+            #endregion
+
             #region StateMasterViewModel and  StateMaster 
             CreateMap<StateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))

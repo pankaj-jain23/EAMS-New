@@ -720,6 +720,132 @@ namespace EAMS.Controllers
                     }
                     break;
 
+
+                case 4:
+                    var result_mock_poll = await MockPollDone(electionInfoViewModel);
+                    switch (result_mock_poll.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(result_mock_poll.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(result_mock_poll.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(result_mock_poll.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+                case 5:
+                    var res_pollstarted = await PollStarted(electionInfoViewModel);
+                    switch (res_pollstarted.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_pollstarted.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_pollstarted.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_pollstarted.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+                case 8:
+                    var res_final_votes = await FinalVotes(electionInfoViewModel);
+                    switch (res_final_votes.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_final_votes.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_final_votes.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_final_votes.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+
+                case 9:
+                    var res_poll_ended = await PollEnded(electionInfoViewModel);
+                    switch (res_poll_ended.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_poll_ended.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_poll_ended.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_poll_ended.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+                case 10:
+                    var res_evm_swicthoff = await MCEVM(electionInfoViewModel);
+                    switch (res_evm_swicthoff.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_evm_swicthoff.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_evm_swicthoff.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_evm_swicthoff.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+                case 11:
+                    var res_party_departed = await PartyDeparted(electionInfoViewModel);
+                    switch (res_party_departed.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_party_departed.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_party_departed.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_party_departed.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+
+                case 12:
+                    var res_party_reachd_collection_centre = await PartyReachedCollectionCentre(electionInfoViewModel);
+                    switch (res_party_reachd_collection_centre.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_party_reachd_collection_centre.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_party_reachd_collection_centre.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_party_reachd_collection_centre.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+
+                case 13:
+                    var res_evm_deposited = await EVMDeposited(electionInfoViewModel);
+                    switch (res_evm_deposited.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_evm_deposited.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_evm_deposited.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_evm_deposited.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+
+
                 default:
                     // Handle the case when EventMasterId doesn't match any known case
                     return BadRequest("Invalid EventMasterId");
@@ -770,6 +896,129 @@ namespace EAMS.Controllers
                 BoothMasterId = electionInfoViewModel.BoothMasterId,
                 EventMasterId = electionInfoViewModel.EventMasterId,
                 IsSetupOfPolling = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+
+        private async Task<Response> MockPollDone(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsMockPollDone = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+
+        private async Task<Response> PollStarted(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPollStarted = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+        private async Task<Response> FinalVotes(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                FinalTVote = Convert.ToInt32(electionInfoViewModel.FinalVotes)
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+        private async Task<Response> PollEnded(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPollEnded = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+
+        private async Task<Response> MCEVM(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsMCESwitchOff = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+        private async Task<Response> PartyDeparted(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPartyDeparted = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+        private async Task<Response> PartyReachedCollectionCentre(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsPartyReachedCollectionCenter = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+        private async Task<Response> EVMDeposited(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                IsEVMDeposited = electionInfoViewModel.EventStatus
 
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);

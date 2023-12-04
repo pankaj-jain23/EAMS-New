@@ -72,7 +72,7 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.UpdateAssembliesById(assemblyMaster);
         }
 
-        public async Task<Response>  AddAssemblies(AssemblyMaster assemblyMaster)
+        public async Task<Response> AddAssemblies(AssemblyMaster assemblyMaster)
         {
             return await _eamsRepository.AddAssemblies(assemblyMaster);
         }
@@ -159,12 +159,13 @@ namespace EAMS_BLL.Services
 
                         if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
                         {
-                            if (electionInfoRecord.IsPartyDispatched==false) {
+                            if (electionInfoRecord.IsPartyDispatched == false)
+                            {
                                 return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                               //Already Yes
+                                //Already Yes
                                 return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Already Dispatched." };
 
                             }
@@ -187,7 +188,7 @@ namespace EAMS_BLL.Services
                                 }
                                 else
                                 {
-                                    
+
                                     return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, SetUpPolling Already yes." };
 
                                 }
@@ -195,13 +196,13 @@ namespace EAMS_BLL.Services
                             }
                             else
                             {
-                                
+
                                 return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Reached Status Already Yes." };
                             }
                         }
                         else
                         {
-                         
+
                             return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Dispatched Yet." };
                         }
                     case 3:
@@ -218,14 +219,14 @@ namespace EAMS_BLL.Services
                                 }
                                 else
                                 {
-                                   
+
                                     return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, MockPoll Already yes." };
                                 }
 
                             }
                             else
                             {
-                              // already status Yes
+                                // already status Yes
                                 return new Response { Status = RequestStatusEnum.BadRequest, Message = "SetUp Polling Status Already yes." };
 
                             }
@@ -236,20 +237,258 @@ namespace EAMS_BLL.Services
                             return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Reached Yet." };
 
                         }
+                    case 4:
+                        if (electionInfoRecord.IsSetupOfPolling == true) // mockpoll event 4th event
+                        {
 
-                    default:
-                        // Handle the case when EventMasterId doesn't match any known case
-                        return null;
-                        //return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Reached Yet." };
+                            if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
+                            {
+                                if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
+                                {
+                                    electionInfoRecord.IsMockPollDone = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Poll Started Already yes." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Mock poll Status Already yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Set Up Of Polling Not Done Yet." };
+
+                        }
+
+                    case 5:
+                        if (electionInfoRecord.IsMockPollDone == true) // poll started 5th event
+                        {
+
+                            if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
+                            {
+                                //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                                if (electionInfoRecord.FinalTVote == 0 || electionInfoRecord.FinalTVote == null)
+                                {
+                                    electionInfoRecord.IsPollStarted = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Voter Turn Out Status is Already Yes." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll Started Already yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Mock Poll Done is not Done Yet." };
+
+                        }
+
+                    case 8:
+                        // Final Votes
+                        if (electionInfoRecord.VoterInQueue > 0) //check queue
+                      {
+
+                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollStarted == null)
+                            {
+                                //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                               
+                                    electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                               
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Poll Ended Already." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter in queue is not updated Yet." };
+
+                        }
+
+                    case 9:
+                        if (electionInfoRecord.FinalTVote > 0) // Poll ended--
+                        {
+                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
+                            {
+                                if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
+                                {
+                                    electionInfoRecord.IsPollEnded = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Machine Closed & EVM Switched Off Already Yes." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll Is Already Ended." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes not Done yet." };
+
+                        }
+
+                    case 10:
+                        if (electionInfoRecord.IsPollEnded == true) // Machine Switch Off and EVM Cleared
+                        {
+                            if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
+                            {
+                                if (electionInfoRecord.IsPartyDeparted == false || electionInfoRecord.IsMCESwitchOff == null)
+                                {
+                                    electionInfoRecord.IsMCESwitchOff = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Party Already Departed." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Machine Closed and EVM Switched Off Already yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll Is Not Ended yet." };
+
+                        }
+
+                    case 11:
+                        if (electionInfoRecord.IsMCESwitchOff == true) // Machine Switch Off and EVM Cleared
+                        {
+                            if (electionInfoRecord.IsPartyDeparted == false || electionInfoRecord.IsPartyDeparted == null)
+                            {
+                                if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
+                                {
+                                    electionInfoRecord.IsPartyDeparted = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Party Already Reached at Collection Centre." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Departed Already Yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Machine Closed & EVM Not Switched Off yet." };
+
+                        }
+
+                    case 12:
+                        if (electionInfoRecord.IsPartyDeparted == true) // Machine Switch Off and EVM Cleared
+                        {
+                            if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
+                            {
+                                if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
+                                {
+                                    electionInfoRecord.IsPartyReached = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, EVM Deposited." };
+                                }
+
+                            }
+                            else
+                            {
+                                // already status Yes
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Reached Already Yes." };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Is Not Departed yet." };
+
+                        }
+
+                    case 13:
+                        if (electionInfoRecord.IsPartyReached == true) // Machine Switch Off and EVM Cleared
+                        {
+                            
+                                if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
+                                {
+                                    electionInfoRecord.IsEVMDeposited = true;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, EVM Already Deposited." };
+                                }
+
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Is Not Departed yet." };
+
+                        }
+
                 }
             }
-            else
-            {
-                return await _eamsRepository.EventActivity(electionInfoMaster);
-            }
-
+            return new Response { Status = RequestStatusEnum.BadRequest, Message = "something went wrong" };
         }
         #endregion
-
     }
 }

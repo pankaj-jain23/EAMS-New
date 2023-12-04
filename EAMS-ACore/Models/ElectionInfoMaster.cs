@@ -48,6 +48,8 @@ namespace EAMS_ACore.Models
         public DateTime? MCESwitchOffLastUpdate { get; set; }
         public bool? IsPartyDeparted { get; set; }
         public DateTime? PartyDepartedLastUpdate { get; set; }
+        public bool? IsPartyReachedCollectionCenter { get; set; }
+        public DateTime? PartyReachedCollectionCenterLastUpdate { get; set; }
 
         public bool? IsEVMDeposited { get; set; }
         public DateTime? EVMDepositedLastUpdate { get; set; }

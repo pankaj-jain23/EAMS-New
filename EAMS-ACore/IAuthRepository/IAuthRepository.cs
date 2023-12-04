@@ -21,7 +21,7 @@ namespace EAMS_ACore.IAuthRepository
 
         Task<AuthServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster);
         Task<AuthServiceResponse> FindUserByName(UserRegistration userRegistration);
-        Task<AuthServiceResponse> CheckUserLogin(Login login);
+        Task<UserRegistration> CheckUserLogin(Login login);
         Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
         Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);

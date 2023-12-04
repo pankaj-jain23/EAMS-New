@@ -166,9 +166,9 @@ namespace EAMS.Controllers
                 var mapped = _mapper.Map<GetRefreshToken>(refreshTokenViewModel);
 
                 var result = await _authService.GetRefreshToken(mapped);
-                if (result.StatusCode == 0)
-                    return BadRequest(result.StatusMessage);
-
+                if (result.IsSucceed is false)
+                    return BadRequest(result.Message);
+                else
                 return Ok(result);
             }
             catch (Exception ex)

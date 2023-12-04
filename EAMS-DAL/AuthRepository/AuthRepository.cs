@@ -167,28 +167,22 @@ namespace EAMS_DAL.AuthRepository
 
 
         #region Check User Login
-        public async Task<AuthServiceResponse> CheckUserLogin(Login login)
+        public async Task<UserRegistration> CheckUserLogin(Login login)
         {
             var user = await _userManager.FindByNameAsync(login.UserName);
 
-            if (user == null)
-            {
-                // User not found
-                return new AuthServiceResponse { IsSucceed = false, Message = "User Not Found" };
-            } 
             // Use PasswordHasher to verify the password
             var passwordVerificationResult = await _userManager.CheckPasswordAsync(user, login.Password);
 
-            if (passwordVerificationResult==true)
+            if (passwordVerificationResult == true)
             {
-                // Password is correct
-                // You can perform additional checks, generate tokens, etc. here
-                return new AuthServiceResponse { IsSucceed = true, Message = "Login successful." };
+                // Password is correct 
+                return user;
             }
             else
             {
                 // Password is incorrect
-                return new AuthServiceResponse { IsSucceed = false, Message = "Invalid username or password." };
+                return null;
             }
         }
         #endregion
@@ -221,8 +215,8 @@ namespace EAMS_DAL.AuthRepository
         public async Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
         {
             try
-            { 
-                var createUserResult=await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
+            {
+                var createUserResult = await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
                 if (!createUserResult.Succeeded)
                 {
                     return new AuthServiceResponse()
@@ -278,8 +272,42 @@ namespace EAMS_DAL.AuthRepository
         #region  UpdateUser
         public async Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration)
         {
-            var updateUser = await _userManager.UpdateAsync(userRegistration);
-            throw new NotImplementedException();
+            try
+            {
+                DateTime dateTime = DateTime.Now;
+                DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
+                DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+                var expireRefreshToken = hiINDateTime.AddDays(1);
+
+                // Set DateTimeKind to Utc explicitly
+                expireRefreshToken = DateTime.SpecifyKind(expireRefreshToken, DateTimeKind.Utc);
+
+                userRegistration.RefreshTokenExpiryTime = expireRefreshToken;
+                var updateUser = await _userManager.UpdateAsync(userRegistration);
+                if (updateUser.Succeeded is true)
+                {
+                    return new AuthServiceResponse()
+                    {
+                        IsSucceed = true,
+                        Message = "User Updated Succesfully"
+                    };
+                }
+                else
+                {
+                    return new AuthServiceResponse()
+                    {
+                        IsSucceed = false,
+                        Message = "User Updation Failed!!w"
+                    };
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+
         }
         #endregion
 

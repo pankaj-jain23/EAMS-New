@@ -45,42 +45,83 @@ namespace EAMS_BLL.AuthServices
         #endregion
 
         #region Login && Generate Token
-        public async Task<AuthServiceResponse> LoginAsync(Login login)
+        public async Task<Token> LoginAsync(Login login)
         {
-            Token _Token = new();  
-            var userExists = await _authRepository.CheckUserLogin(login);
+            Token _Token = new();
 
-            //if (userExists.IsSucceed == false)
-            //{  
-            //    return _TokenViewModel;
-            //}
+            // Check if the user exists
+            var user = await _authRepository.CheckUserLogin(login);
 
-
-            var userRoles = await _authRepository.GetRoleByUser(login);
-            var authClaims = new List<Claim>
+            if (user is null)
             {
-               new Claim(ClaimTypes.Name, login.UserName),
-               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole.RoleName));
+                // Return an appropriate response when the user is not found
+                return new Token()
+                {
+                    IsSucceed = false,
+                    Message = "User Name or Password is Invalid"
+                };
             }
-            _Token.AccessToken = GenerateToken(authClaims);
-            _Token.RefreshToken = GenerateRefreshToken();
-            _Token.StatusCode = 1;
-            _Token.StatusMessage = "Success";
+            else
+            {
+                // Retrieve user roles
+                var userRoles = await _authRepository.GetRoleByUser(login);
+                var authClaims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, login.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
 
-            var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration["JWTKey:RefreshTokenValidityInDays"]);
-           UserRegistration user=new UserRegistration();
-            user.RefreshToken = _Token.RefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
-            var updateUserResult=_authRepository.UpdateUser(user);
+                // Add user roles to authClaims
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole.RoleName));
+                }
 
+                // Generate tokens
+                _Token.AccessToken = GenerateToken(authClaims);
+                _Token.RefreshToken = GenerateRefreshToken();                
+                _Token.Message = "Success";
 
-            return null;
+                // Update user details with tokens
+                if (user != null)
+                {
+                    DateTime dateTime = DateTime.Now;
+                    DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
+                    DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+                    var expireRefreshToken = hiINDateTime.AddDays(1);
+
+                    var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration["JWTKey:RefreshTokenValidityInDays"]);
+                    user.RefreshToken = _Token.RefreshToken;
+                    user.RefreshTokenExpiryTime = expireRefreshToken;
+
+                    // Update user and handle any exceptions
+                    try
+                    {
+                        var updateUserResult = await _authRepository.UpdateUser(user);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception or handle it appropriately
+                        // You may also want to return an error response
+                        return new Token()
+                        {
+                            IsSucceed = false,
+                            Message = "Error updating user: " + ex.Message
+                        };
+                    }
+                }
+
+                // Return the generated token
+                return new Token()
+                {
+                    IsSucceed = true,
+                    Message="Success",
+                    AccessToken=_Token.AccessToken,
+                    RefreshToken=_Token.RefreshToken,
+                };
+            }
         }
+
         private string GenerateNewJsonWebToken(List<Claim> claims)
         {
             var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
@@ -105,8 +146,8 @@ namespace EAMS_BLL.AuthServices
         #region Register
         public async Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId)
         {
-            var userExists =await _authRepository.FindUserByName(userRegistration);
-            if (userExists.IsSucceed==false)
+            var userExists = await _authRepository.FindUserByName(userRegistration);
+            if (userExists.IsSucceed == false)
             {
                 return userExists;
 
@@ -115,7 +156,7 @@ namespace EAMS_BLL.AuthServices
             {
                 var createUserResult = await _authRepository.CreateUser(userRegistration, roleId);
 
-                if (createUserResult.IsSucceed==true)
+                if (createUserResult.IsSucceed == true)
                 {
                     return createUserResult;
 
@@ -268,20 +309,20 @@ namespace EAMS_BLL.AuthServices
 
             return hiINDateTime;
         }
-
+      
 
         #region GenerateToken && Refresh Token
         public async Task<Token> GetRefreshToken(GetRefreshToken model)
         {
             Token _TokenViewModel = new();
-            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            var principal =await GetPrincipalFromExpiredToken(model.AccessToken);
             string username = principal.Identity.Name;
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null || user.RefreshToken != model.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
-                _TokenViewModel.StatusCode = 0;
-                _TokenViewModel.StatusMessage = "Invalid access token or refresh token";
+                _TokenViewModel.IsSucceed = false;
+                _TokenViewModel.Message = "Invalid access token or refresh token";
                 return _TokenViewModel;
             }
 
@@ -296,22 +337,27 @@ namespace EAMS_BLL.AuthServices
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
 
-            _TokenViewModel.StatusCode = 1;
-            _TokenViewModel.StatusMessage = "Success";
+            _TokenViewModel.IsSucceed = true;
+            _TokenViewModel.Message = "Success";
             _TokenViewModel.AccessToken = newAccessToken;
             _TokenViewModel.RefreshToken = newRefreshToken;
             return _TokenViewModel;
         }
         private string GenerateToken(IEnumerable<Claim> claims)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTKey:Secret"]));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
             var _TokenExpiryTimeInHour = Convert.ToInt64(_configuration["JWTKey:TokenExpiryTimeInHour"]);
+            DateTime dateTime = DateTime.Now;
+            DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
+            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+
+            var expireAccessToken = hiINDateTime.AddHours(1);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = _configuration["JWTKey:ValidIssuer"],
-                Audience = _configuration["JWTKey:ValidAudience"],
-                //Expires = DateTime.UtcNow.AddHours(_TokenExpiryTimeInHour),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Issuer = "https://localhost:7082",
+                Audience = "https://localhost:3000", 
+                Expires = expireAccessToken,
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };
@@ -328,23 +374,41 @@ namespace EAMS_BLL.AuthServices
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
         }
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string? token)
+        private async Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string? token)
         {
+            var te = _configuration["JWTKey:Secret"];
             var tokenValidationParameters = new TokenValidationParameters
             {
-                ValidateAudience = false,
-                ValidateIssuer = false,
+                ValidateAudience = true,
+                ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTKey:Secret"])),
-                ValidateLifetime = false
+                ValidAudience = "https://localhost:3000",
+                ValidIssuer = "https://localhost:7082",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDFSADFdfafeitt32t2r457f4f8ewf4waefeafjewfweAEFSDAFFEWFWAEAFaffd")),
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
 
-            return principal;
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+
+                if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                    !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new SecurityTokenException("Invalid token");
+                }
+
+                // Log claims for debugging purposes
+                var tokenClaims = jwtSecurityToken.Claims.Select(c => $"{c.Type}: {c.Value}");
+                Console.WriteLine($"Token Claims: {string.Join(", ", tokenClaims)}");
+
+                return principal;
+            }
+            catch ( Exception ex )
+            {
+                throw ex;
+            }
         }
 
         #endregion

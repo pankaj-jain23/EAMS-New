@@ -19,6 +19,7 @@ namespace EAMS.ViewModels
         [Required(ErrorMessage = "Event Status is required")]
         public bool EventStatus { get; set; }
 
+        public string? VoterInQueue { get; set; }
         public string? FinalVotes { get; set; }
         //public string? SOUserId { get; set; }
         //public string? AROUserId { get; set; }

@@ -751,6 +751,22 @@ namespace EAMS.Controllers
                             return StatusCode(500, "Internal Server Error");
                     }
                     break;
+                case 7:
+                    var res_voter_in_queue = await VoterInQueue(electionInfoViewModel);
+                    switch (res_voter_in_queue.Status)
+                    {
+                        case RequestStatusEnum.OK:
+                            return Ok(res_voter_in_queue.Message);
+                        case RequestStatusEnum.BadRequest:
+                            return BadRequest(res_voter_in_queue.Message);
+                        case RequestStatusEnum.NotFound:
+                            return NotFound(res_voter_in_queue.Message);
+
+                        default:
+                            return StatusCode(500, "Internal Server Error");
+                    }
+                    break;
+
                 case 8:
                     var res_final_votes = await FinalVotes(electionInfoViewModel);
                     switch (res_final_votes.Status)
@@ -928,6 +944,23 @@ namespace EAMS.Controllers
                 BoothMasterId = electionInfoViewModel.BoothMasterId,
                 EventMasterId = electionInfoViewModel.EventMasterId,
                 IsPollStarted = electionInfoViewModel.EventStatus
+
+            };
+            var result = await _EAMSService.EventActivity(electionInfoMaster);
+            return result;
+        }
+
+        private async Task<Response> VoterInQueue(ElectionInfoViewModel electionInfoViewModel)
+        {
+            ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()
+            {
+                StateMasterId = electionInfoViewModel.StateMasterId,
+                DistrictMasterId = electionInfoViewModel.DistrictMasterId,
+                AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
+                BoothMasterId = electionInfoViewModel.BoothMasterId,
+                EventMasterId = electionInfoViewModel.EventMasterId,
+                VoterInQueue = Convert.ToInt32(electionInfoViewModel.VoterInQueue
+                )
 
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);

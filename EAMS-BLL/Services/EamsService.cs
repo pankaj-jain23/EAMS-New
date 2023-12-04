@@ -304,18 +304,44 @@ namespace EAMS_BLL.Services
 
                         }
 
+                    case 7:
+                        //queue
+
+                             //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                                if (electionInfoMaster.VoterInQueue != null && electionInfoMaster.VoterInQueue > 0)
+                                {
+                                    electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be Null." };
+                                }
+
+
+
+
+
                     case 8:
                         // Final Votes
                         if (electionInfoRecord.VoterInQueue > 0) //check queue
                       {
 
-                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollStarted == null)
+                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
                             {
                                 //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                               
+                               if(electionInfoMaster.FinalTVote != null && electionInfoMaster.FinalTVote > 0)
+                                {
                                     electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoMaster);
+                                }
+                               else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes Cannot be Null." };
+                                }
+                                    
                                
 
                             }
@@ -398,11 +424,11 @@ namespace EAMS_BLL.Services
                         }
 
                     case 11:
-                        if (electionInfoRecord.IsMCESwitchOff == true) // Machine Switch Off and EVM Cleared
+                        if (electionInfoRecord.IsMCESwitchOff == true) // party departed
                         {
                             if (electionInfoRecord.IsPartyDeparted == false || electionInfoRecord.IsPartyDeparted == null)
                             {
-                                if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
+                                if (electionInfoRecord.IsPartyReachedCollectionCenter == false || electionInfoRecord.IsPartyReachedCollectionCenter == null)
                                 {
                                     electionInfoRecord.IsPartyDeparted = true;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
@@ -430,13 +456,13 @@ namespace EAMS_BLL.Services
                         }
 
                     case 12:
-                        if (electionInfoRecord.IsPartyDeparted == true) // Machine Switch Off and EVM Cleared
+                        if (electionInfoRecord.IsPartyDeparted == true) 
                         {
-                            if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
+                            if (electionInfoRecord.IsPartyReachedCollectionCenter == false || electionInfoRecord.IsPartyReachedCollectionCenter == null)
                             {
                                 if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
                                 {
-                                    electionInfoRecord.IsPartyReached = true;
+                                    electionInfoRecord.IsPartyReachedCollectionCenter = true;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoMaster);
                                 }

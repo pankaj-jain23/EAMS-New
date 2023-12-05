@@ -79,7 +79,7 @@ namespace EAMS_BLL.AuthServices
 
                 // Generate tokens
                 _Token.AccessToken = GenerateToken(authClaims);
-                _Token.RefreshToken = GenerateRefreshToken();                
+                _Token.RefreshToken = GenerateRefreshToken();
                 _Token.Message = "Success";
 
                 // Update user details with tokens
@@ -115,31 +115,31 @@ namespace EAMS_BLL.AuthServices
                 return new Token()
                 {
                     IsSucceed = true,
-                    Message="Success",
-                    AccessToken=_Token.AccessToken,
-                    RefreshToken=_Token.RefreshToken,
+                    Message = "Success",
+                    AccessToken = _Token.AccessToken,
+                    RefreshToken = _Token.RefreshToken,
                 };
             }
         }
 
-        private string GenerateNewJsonWebToken(List<Claim> claims)
-        {
-            var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        //private string GenerateNewJsonWebToken(List<Claim> claims)
+        //{
+        //    var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-            DateTime tokenExpireTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now.AddHours(1), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+        //    DateTime tokenExpireTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.Now.AddHours(1), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
 
-            var tokenObject = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: tokenExpireTime,
-                    claims: claims,
-                    signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
-                );
+        //    var tokenObject = new JwtSecurityToken(
+        //            issuer: _configuration["JWT:ValidIssuer"],
+        //            audience: _configuration["JWT:ValidAudience"],
+        //            expires: tokenExpireTime,
+        //            claims: claims,
+        //            signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
+        //        );
 
-            string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
+        //    string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
 
-            return token;
-        }
+        //    return token;
+        //}
 
         #endregion
 
@@ -174,6 +174,7 @@ namespace EAMS_BLL.AuthServices
         #region ValidateMobile && Generate OTP && OTP ExpireTime
         public async Task<Response> ValidateMobile(ValidateMobile validateMobile)
         {
+            Response response = new();
             var soRecord = await _authRepository.ValidateMobile(validateMobile);
 
 
@@ -197,14 +198,13 @@ namespace EAMS_BLL.AuthServices
                                     new Claim("JWTID", Guid.NewGuid().ToString()),
                                     new Claim("Roles","SO")
                                 };
-                                var token = GenerateNewJsonWebToken(authClaims);
+                                // Generate tokens
+                                response.AccessToken = GenerateToken(authClaims);
+                                response.RefreshToken = GenerateRefreshToken();
+                                response.Message = "OTP Verified Successfully ";
+                                response.Status = RequestStatusEnum.OK;
 
-                                return new Response()
-                                {
-                                    Status = RequestStatusEnum.OK,
-                                    Message = "OTP Verified Successfully ",
-                                    Token = token
-                                };
+                                return response;
                             }
                             else
                             {
@@ -237,7 +237,7 @@ namespace EAMS_BLL.AuthServices
                             OTP = otp,
                             OTPAttempts = 1,
                             OTPGeneratedTime = BharatDateTime(),
-                            OTPExpireTime = OTPExpireTime()
+                            OTPExpireTime =  BharatTimeDynamic(0,0,0,0,30)
                         };
 
                         var isSucceed = await _authRepository.SectorOfficerMasterRecord(sectorOfficerMaster);
@@ -290,15 +290,7 @@ namespace EAMS_BLL.AuthServices
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private DateTime? OTPExpireTime()
-        {
-            DateTime dateTime = DateTime.Now.AddSeconds(30);
-            DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
-            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
-
-            return hiINDateTime;
-
-        }
+         
         #endregion
 
         private DateTime? BharatDateTime()
@@ -309,13 +301,52 @@ namespace EAMS_BLL.AuthServices
 
             return hiINDateTime;
         }
-      
+
+        /// <summary>
+        /// if developer want UTC Kind Time only for month just pass month and rest fill 00000
+        /// </summary>
+        /// <param name="month"></param>
+        /// <param name="day"></param>
+        /// <param name="minutes"></param>
+        /// <param name="seconds"></param>
+        /// <returns></returns>
+        private DateTime? BharatTimeDynamic(int month, int day,int hour, int minutes, int seconds)
+        {
+            DateTime dateTime = DateTime.Now;
+            DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
+            DateTime hiINDateTime = DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")), DateTimeKind.Utc);
+            if (month is not 0 && day is 0 && hour is 0 && minutes is 0 && seconds is 0)
+            {
+                return hiINDateTime.AddMonths(month);
+            }
+            else if (month is 0 && day is not 0 && hour is 0 && minutes is 0 && seconds is 0)
+            {
+                return hiINDateTime.AddDays(day);
+            }
+            else if (month is 0 && day is   0 && hour is not 0 && minutes is 0 && seconds is 0)
+            {
+                return hiINDateTime.AddHours(hour);
+            }
+            else if (month is 0 && day is 0 && hour is 0 && minutes is not 0 && seconds is 0)
+            {
+                return hiINDateTime.AddMinutes(minutes);
+            }
+            else if (month is 0 && day is 0 && hour is 0 && minutes is 0 && seconds is not 0)
+            {
+                return hiINDateTime.AddSeconds(seconds);
+            }
+            else
+            {
+                return hiINDateTime;
+            }
+
+        }
 
         #region GenerateToken && Refresh Token
         public async Task<Token> GetRefreshToken(GetRefreshToken model)
         {
             Token _TokenViewModel = new();
-            var principal =await GetPrincipalFromExpiredToken(model.AccessToken);
+            var principal = await GetPrincipalFromExpiredToken(model.AccessToken);
             string username = principal.Identity.Name;
             var user = await _userManager.FindByNameAsync(username);
 
@@ -333,8 +364,9 @@ namespace EAMS_BLL.AuthServices
             };
             var newAccessToken = GenerateToken(authClaims);
             var newRefreshToken = GenerateRefreshToken();
-
+           var expireRefreshToken = BharatTimeDynamic(0,1,0,0,0);
             user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = (DateTime)expireRefreshToken;
             await _userManager.UpdateAsync(user);
 
             _TokenViewModel.IsSucceed = true;
@@ -347,16 +379,13 @@ namespace EAMS_BLL.AuthServices
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
             var _TokenExpiryTimeInHour = Convert.ToInt64(_configuration["JWTKey:TokenExpiryTimeInHour"]);
-            DateTime dateTime = DateTime.Now;
-            DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
-            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
-
-            var expireAccessToken = hiINDateTime.AddHours(1);
+          
+            var expireAccessToken = BharatTimeDynamic(0, 0,1, 0, 0);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Issuer = "https://localhost:7082",
-                Audience = "https://localhost:3000", 
+                Audience = "https://localhost:3000",
                 Expires = expireAccessToken,
                 SigningCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
@@ -401,11 +430,10 @@ namespace EAMS_BLL.AuthServices
 
                 // Log claims for debugging purposes
                 var tokenClaims = jwtSecurityToken.Claims.Select(c => $"{c.Type}: {c.Value}");
-                Console.WriteLine($"Token Claims: {string.Join(", ", tokenClaims)}");
 
                 return principal;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
                 throw ex;
             }

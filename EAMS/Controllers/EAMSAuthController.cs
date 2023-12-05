@@ -130,7 +130,8 @@ namespace EAMS.Controllers
                         var response = new
                         {
                             Message = result.Message,
-                            Token = result.Token,
+                            AccessToken = result.AccessToken,
+                            RefreshToken = result.RefreshToken,
                         };
                         return Ok(response);
                     case RequestStatusEnum.BadRequest:

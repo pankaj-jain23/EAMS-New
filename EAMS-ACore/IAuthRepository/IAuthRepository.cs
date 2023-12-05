@@ -25,5 +25,9 @@ namespace EAMS_ACore.IAuthRepository
         Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
         Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);
+        Task<AuthServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId);
+
+        Task<SectorOfficerMaster>GetSOById(int soId);
+
     }
 }

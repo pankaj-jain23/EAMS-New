@@ -4,6 +4,7 @@ using EAMS.ViewModels;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -151,8 +152,7 @@ namespace EAMS.Controllers
 
         #endregion
 
-
-        #region Refresh Toke
+        #region Refresh Token
 
         [HttpPost]
         [Route("refresh-token")]
@@ -177,6 +177,44 @@ namespace EAMS.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+        #endregion
+
+        #region CreateSoPin
+        [HttpPost]
+        [Route("CreateSOPin")]
+        [Authorize (Roles ="SO")]
+        public async Task<IActionResult> CreateSOPin(CreateSOPinViewModel createSOPinViewModel)
+        {
+            // Retrieve SoId from the claims
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
+            if (soIdClaim == null)
+            {
+                // Handle the case where the SoId claim is not present
+                return BadRequest("SoId claim not found.");
+            }
+
+            var soID = soIdClaim.Value;
+
+            var mappedData = _mapper.Map<CreateSOPin>(createSOPinViewModel);
+            var result =await _authService.CreateSOPin(mappedData, soID);
+            if(result.IsSucceed is true)
+            {
+                return Ok(result);  
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+             
+        }
+
+
+        //[HttpPost]
+        //[Route("ForgetSOPin")]
+        //public async Task<IActionResult> ForgetSOPin()
+        //{
+        //    return Ok();
+        //}
         #endregion
     }
 }

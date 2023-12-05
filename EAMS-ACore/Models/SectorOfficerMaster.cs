@@ -37,6 +37,7 @@ namespace EAMS_ACore.Models
         public int OTPAttempts { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public int AppPin { get; set; }
         public bool IsLocked { get; set; }
 
         

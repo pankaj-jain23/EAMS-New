@@ -17,6 +17,7 @@ namespace EAMS_ACore.AuthInterfaces
         Task<List<Role>> GetRoles();
         Task<Response> ValidateMobile(ValidateMobile validateMobile);
         Task<Token> GetRefreshToken(GetRefreshToken getRefreshToken);
+        Task<AuthServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);
 
     }
 }

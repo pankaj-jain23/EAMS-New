@@ -3,9 +3,11 @@ using CsvHelper.Configuration;
 using EAMS.Helper;
 using EAMS.ViewModels;
 using EAMS_ACore;
+using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +34,7 @@ namespace EAMS.Controllers
         #region State master
         [HttpGet]
         [Route("StateList")]
+        [Authorize(Roles ="ECI")]
         public async Task<IActionResult> StateList()
         {
             var stateList = await _EAMSService.GetState();
@@ -1082,12 +1085,21 @@ namespace EAMS.Controllers
 
         #endregion
 
-        #region Event Booth Status
+        #region Event Wise Booth Status
         [HttpGet]
         [Route("EventWiseBoothStatus")]
-        public async Task<IActionResult> EventWiseBoothStatus(string soId)
-        {
-           var result = await _EAMSService.EventWiseBoothStatus(soId);
+        [Authorize(Roles ="SO")]
+        public async Task<IActionResult> EventWiseBoothStatus()
+        {    
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
+            if (soIdClaim == null)
+            {
+                // Handle the case where the SoId claim is not present
+                return BadRequest("SoId claim not found.");
+            }
+
+            var soId = soIdClaim.Value;
+            var result = await _EAMSService.EventWiseBoothStatus(soId);
 
             return Ok(result);
         }

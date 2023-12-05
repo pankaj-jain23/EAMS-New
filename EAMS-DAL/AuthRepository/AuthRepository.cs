@@ -330,6 +330,8 @@ namespace EAMS_DAL.AuthRepository
                     soRecord.OTPGeneratedTime = DateTime.SpecifyKind(sectorOfficerMaster.OTPGeneratedTime ?? DateTime.UtcNow, DateTimeKind.Utc);
                     soRecord.OTPExpireTime = DateTime.SpecifyKind(sectorOfficerMaster.OTPExpireTime ?? DateTime.UtcNow, DateTimeKind.Utc);
                     soRecord.OTPAttempts = sectorOfficerMaster.OTPAttempts;
+                    soRecord.RefreshToken = sectorOfficerMaster.RefreshToken;
+                    soRecord.RefreshTokenExpiryTime = sectorOfficerMaster.RefreshTokenExpiryTime;
                 }
                 else if (sectorOfficerMaster.IsLocked == true)
                 {
@@ -359,6 +361,49 @@ namespace EAMS_DAL.AuthRepository
 
 
 
+        #endregion
+
+        #region CreateSO Pin
+        public async Task<AuthServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soId)
+        {
+            var soRecord = _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soId)).FirstOrDefault();
+            if (soRecord == null)
+            {
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = false,
+                    Message = "SO User Not Exist"
+                };
+            }
+            else
+            {
+                soRecord.AppPin = createSOPin.ConfirmSOPin;
+                _context.SectorOfficerMaster.Update(soRecord);
+                _context.SaveChanges();
+                return new AuthServiceResponse()
+                {
+                    IsSucceed = true,
+                    Message = "PIN Created SuccessFully"
+                };
+
+            }
+        }
+
+        #endregion
+
+        #region GetSOByNumber
+        public async Task<SectorOfficerMaster> GetSOById(int soId)
+        {
+            var soRecord = _context.SectorOfficerMaster.Where(d => d.SOMasterId == soId).FirstOrDefault();
+            if (soRecord is not null)
+            {
+                return soRecord;
+            }
+            else
+            {
+                return null;
+            }
+        }
         #endregion
     }
 }

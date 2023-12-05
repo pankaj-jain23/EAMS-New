@@ -33,7 +33,8 @@ namespace EAMS_ACore.Interfaces
 
         #region SO Master
         Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
-        
+        Task<SectorOfficerProfile> GetSectorOfficerProfile(string soId);
+
         Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<Response> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId);

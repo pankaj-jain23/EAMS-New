@@ -259,6 +259,36 @@ namespace EAMS_DAL.Repository
 
             return await solist.ToListAsync();
         }
+
+        public async Task<SectorOfficerProfile> GetSectorOfficerProfile(string soId)
+        {
+
+            var solist = from so in _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soId)) // outer sequence
+                         join asem in _context.AssemblyMaster
+                         on so.SoAssemblyCode equals asem.AssemblyCode
+                         join dist in _context.DistrictMaster
+                         on asem.DistrictMasterId equals dist.DistrictMasterId
+                         //where asem.DistrictMasterId == Convert.ToInt32(districtMasterId) && asem.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) // key selector
+                         join state in _context.StateMaster
+                          on dist.StateMasterId equals state.StateMasterId
+
+
+                         select new SectorOfficerProfile
+                         {
+                             StateName = state.StateName,
+                             DistrictName = dist.DistrictName,
+                             AssemblyName = asem.AssemblyName,
+                             AssemblyCode = asem.AssemblyCode.ToString(),
+                             SoName = so.SoName,
+                             BoothNo = _context.BoothMaster.Where(p => p.AssignedTo == soId).Select(p => p.BoothCode_No.ToString()).ToList()
+
+
+                         };
+            var soProfile=solist.FirstOrDefault();
+
+
+            return soProfile;
+        }
         public async Task<Response> AddSectorOfficer(SectorOfficerMaster addSectorOfficerMaster)
         {
             var soUserExist = _context.SectorOfficerMaster.Where(d => d.SoMobile == addSectorOfficerMaster.SoMobile).FirstOrDefault();
@@ -808,7 +838,8 @@ namespace EAMS_DAL.Repository
                     model.Pending = pendingIsetUpPolling;
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
-                }else if (eventid.EventMasterId == 4)
+                }
+                else if (eventid.EventMasterId == 4)
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
@@ -874,7 +905,7 @@ namespace EAMS_DAL.Repository
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
                 }
-                             
+
             }
 
 

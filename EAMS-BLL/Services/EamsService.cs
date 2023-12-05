@@ -83,6 +83,10 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetSectorOfficersListById(stateMasterId, districtMasterId, assemblyMasterId);
         }
+        public async Task<SectorOfficerProfile> GetSectorOfficerProfile(string soId)
+        {
+            return await _eamsRepository.GetSectorOfficerProfile(soId);
+        }
         public async Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster)
         {
             return await _eamsRepository.AddSectorOfficer(sectorOfficerMaster);

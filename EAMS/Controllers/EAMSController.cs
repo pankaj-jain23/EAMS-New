@@ -309,6 +309,26 @@ namespace EAMS.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("GetSectorOfficerProfile")]
+        public async Task<IActionResult> GetSectorOfficerProfile(string soId)
+        {
+            var soList = await _EAMSService.GetSectorOfficerProfile(soId);  // Corrected to await the asynchronous method
+            if (soList != null)
+            {
+                var data = new
+                {
+                    data = soList
+                };
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+
+        }
         [HttpPost]
         [Route("AddSOUser")]
         public async Task<IActionResult> AddSoUser(AddSectorOfficerViewModel addSectorOfficerViewModel)

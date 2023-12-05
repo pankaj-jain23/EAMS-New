@@ -1062,6 +1062,16 @@ namespace EAMS.Controllers
 
         #endregion
 
+        #region Event Booth Status
+        [HttpGet]
+        [Route("EventWiseBoothStatus")]
+        public async Task<IActionResult> EventWiseBoothStatus(string soId)
+        {
+           var result = await _EAMSService.EventWiseBoothStatus(soId);
 
+            return Ok(result);
+        }
+
+        #endregion
     }
 }

@@ -4,6 +4,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
+using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -485,8 +486,8 @@ namespace EAMS_DAL.Repository
                         d.StateMasterId == boothMaster.StateMasterId &&
                         d.DistrictMasterId == boothMaster.DistrictMasterId &&
                         d.AssemblyMasterId == boothMaster.AssemblyMasterId && d.BoothMasterId == boothMaster.BoothMasterId).FirstOrDefault();
-                
-               
+
+
                 if (existingBooth != null)
                 {
                     var soExists = _context.SectorOfficerMaster.Any(p => p.SOMasterId == Convert.ToInt32(boothMaster.AssignedTo));
@@ -640,11 +641,11 @@ namespace EAMS_DAL.Repository
                 var electionRecord = await _context.ElectionInfoMaster.Where(d => d.StateMasterId == electionInfoMaster.StateMasterId &&
                          d.DistrictMasterId == electionInfoMaster.DistrictMasterId && d.AssemblyMasterId == electionInfoMaster.AssemblyMasterId &&
                          d.BoothMasterId == electionInfoMaster.BoothMasterId).FirstOrDefaultAsync();
-                
-                var boothExists = await _context.BoothMaster.AnyAsync(p => p.BoothMasterId == electionInfoMaster.BoothMasterId && p.StateMasterId== electionInfoMaster.StateMasterId && p.DistrictMasterId == electionInfoMaster.DistrictMasterId && p.BoothMasterId == electionInfoMaster.BoothMasterId && p.IsAssigned == true);
-                
+
+                var boothExists = await _context.BoothMaster.AnyAsync(p => p.BoothMasterId == electionInfoMaster.BoothMasterId && p.StateMasterId == electionInfoMaster.StateMasterId && p.DistrictMasterId == electionInfoMaster.DistrictMasterId && p.BoothMasterId == electionInfoMaster.BoothMasterId && p.IsAssigned == true);
+
                 if (electionRecord != null)
-                { 
+                {
                     _context.ElectionInfoMaster.Update(electionRecord);
                     _context.SaveChanges();
                     return new Response { Status = RequestStatusEnum.OK, Message = "Status Updated Successfully" };
@@ -653,7 +654,7 @@ namespace EAMS_DAL.Repository
                 {
                     if (boothExists == true)
                     {
-                        if(electionInfoMaster.EventMasterId == 1)
+                        if (electionInfoMaster.EventMasterId == 1)
                         {
                             _context.ElectionInfoMaster.Add(electionInfoMaster);
                             _context.SaveChanges();
@@ -663,8 +664,9 @@ namespace EAMS_DAL.Repository
                         {
                             return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Dispatched yet" };
                         }
-                       
-                    } else
+
+                    }
+                    else
                     {
                         return new Response { Status = RequestStatusEnum.NotFound, Message = "Record Not Found, Also Recheck Booth Assigned or not" };
                     }
@@ -689,6 +691,197 @@ namespace EAMS_DAL.Repository
 
 
         #endregion
+
+        public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
+        {
+            var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
+
+            List<EventWiseBoothStatus> list = new List<EventWiseBoothStatus>();
+
+            int totalPartyDispatched = 0; int totalPartyReached = 0; int totalIsetUpPolling = 0;
+            int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterinqueue = 0; int totalfinalvotes = 0;
+            int totalpollended = 0; int totalmcevm = 0; int totalpartdeparted = 0; int totalpartycollectoncentre = 0;
+            int totalevmdeposited = 0;
+
+            int pendingPartyDispatched = 0;
+            int pendingPartyReached = 0;
+            int pendingIsetUpPolling = 0;
+            int pendingMockPoll = 0;
+            int pendingPollStarted = 0;
+            int pendingVoterInQueue = 0;
+            int pendingFinalVotes = 0;
+            int pendingPollEnded = 0;
+            int pendingMCEVM = 0;
+            int pendingPartDeparted = 0;
+            int pendingPartyCollectOnCentre = 0;
+            int pendingEVMDeposited = 0;
+
+            //except voterturn out, queue and finl votes
+
+            foreach (var boothId in soTotalBooths)
+            {
+                var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
+                            d.BoothMasterId == boothId.BoothMasterId);
+                if (electioInfoRecord != null)
+                {
+                    if (electioInfoRecord.IsPartyDispatched == true)
+                    {
+                        totalPartyDispatched += 1;
+                    }
+
+                    if (electioInfoRecord.IsPartyReached == true)
+                    {
+                        totalPartyReached += 1;
+                    }
+                    if (electioInfoRecord.IsSetupOfPolling == true)
+                    {
+                        totalIsetUpPolling += 1;
+                    }
+                    if (electioInfoRecord.IsMockPollDone == true)
+                    {
+                        totalmockpoll += 1;
+                    }
+                    if (electioInfoRecord.IsPollStarted == true)
+                    {
+                        totalpollstarted += 1;
+                    }
+                    if (electioInfoRecord.IsPollEnded == true)
+                    {
+                        totalpollended += 1;
+                    }
+                    if (electioInfoRecord.IsMCESwitchOff == true)
+                    {
+                        totalmcevm += 1;
+                    }
+                    if (electioInfoRecord.IsPartyDeparted == true)
+                    {
+                        totalpartdeparted += 1;
+                    }
+                    if (electioInfoRecord.IsPartyReachedCollectionCenter == true)
+                    {
+                        totalpartycollectoncentre += 1;
+                    }
+                    if (electioInfoRecord.IsEVMDeposited == true)
+                    {
+                        totalevmdeposited += 1;
+                    }
+                }
+            }
+
+
+            pendingPartyDispatched = soTotalBooths.Count - totalPartyDispatched;
+            pendingPartyReached = soTotalBooths.Count - totalPartyReached;
+            pendingIsetUpPolling = soTotalBooths.Count - totalIsetUpPolling;
+            pendingMockPoll = soTotalBooths.Count - totalmockpoll;
+            pendingPollStarted = soTotalBooths.Count - totalpollstarted;
+            pendingPollEnded = soTotalBooths.Count - totalpollended;
+            pendingMCEVM = soTotalBooths.Count - totalmcevm;
+            pendingPartDeparted = soTotalBooths.Count - totalpartdeparted;
+            pendingPartyCollectOnCentre = soTotalBooths.Count - totalpartycollectoncentre;
+            pendingEVMDeposited = soTotalBooths.Count - totalevmdeposited;
+            var event_lits = _context.EventMaster.Where(p => p.Status == true).OrderBy(p => p.EventSequence).ToList();
+            foreach (var eventid in event_lits)
+            {
+                if (eventid.EventMasterId == 1)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalPartyDispatched;
+                    model.Pending = pendingPartyDispatched;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                else if (eventid.EventMasterId == 2)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalPartyReached;
+                    model.Pending = pendingPartyReached;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                else if (eventid.EventMasterId == 3)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalIsetUpPolling;
+                    model.Pending = pendingIsetUpPolling;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }else if (eventid.EventMasterId == 4)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalmockpoll;
+                    model.Pending = pendingMockPoll;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                else if (eventid.EventMasterId == 5)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalpollstarted;
+                    model.Pending = pendingPollStarted;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                else if (eventid.EventMasterId == 9)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalpollended;
+                    model.Pending = pendingPollEnded;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+
+                else if (eventid.EventMasterId == 10)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalmcevm;
+                    model.Pending = pendingMCEVM;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+
+                else if (eventid.EventMasterId == 11)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalpartdeparted;
+                    model.Pending = pendingPartDeparted;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                else if (eventid.EventMasterId == 12)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalpartycollectoncentre;
+                    model.Pending = pendingPartyCollectOnCentre;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+
+                else if (eventid.EventMasterId == 13)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.Completed = totalevmdeposited;
+                    model.Pending = pendingEVMDeposited;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
+                             
+            }
+
+
+            return list;
+        }
+
+
 
         #region Common method
         private DateTime? ConvertStringToUtcDateTime(string dateString)

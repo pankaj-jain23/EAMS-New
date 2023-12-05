@@ -63,6 +63,8 @@ namespace EAMS_ACore.Interfaces
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
+        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
+        // Task<List<eevent>> EventActivity(ElectionInfoMaster electionInfoMaster);
         #endregion
 
     }

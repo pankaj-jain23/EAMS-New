@@ -522,6 +522,11 @@ namespace EAMS_BLL.Services
             return new Response { Status = RequestStatusEnum.BadRequest, Message = "something went wrong" };
 
         }
+
+        public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
+        {
+            return await _eamsRepository.EventWiseBoothStatus(soId);
+        }
         #endregion
     }
 }

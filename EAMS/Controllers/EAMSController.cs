@@ -8,6 +8,7 @@ using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.IdentityModel.Tokens;
 using Mono.TextTemplating;
 using System.Globalization;
 using System.Text;
@@ -493,8 +494,9 @@ namespace EAMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any() && boothMappingViewModel.IsAssigned == true)
+                if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any() && boothMappingViewModel.IsAssigned == true && !string.IsNullOrWhiteSpace(boothMappingViewModel.AssignedTo))
                 {
+                   
                     List<BoothMaster> boothMasters = new List<BoothMaster>();
 
                     foreach (var boothMasterId in boothMappingViewModel.BoothMasterId)
@@ -530,7 +532,7 @@ namespace EAMS.Controllers
                 }
                 else
                 {
-                    return BadRequest(new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Id is Null" });
+                    return BadRequest(new Response { Status = RequestStatusEnum.BadRequest, Message = "Please Check the Parameters" });
                 }
             }
             else

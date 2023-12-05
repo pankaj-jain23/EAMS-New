@@ -485,15 +485,24 @@ namespace EAMS_DAL.Repository
                         d.StateMasterId == boothMaster.StateMasterId &&
                         d.DistrictMasterId == boothMaster.DistrictMasterId &&
                         d.AssemblyMasterId == boothMaster.AssemblyMasterId && d.BoothMasterId == boothMaster.BoothMasterId).FirstOrDefault();
-
+                
+               
                 if (existingBooth != null)
                 {
-                    existingBooth.AssignedBy = boothMaster.AssignedBy;
-                    existingBooth.AssignedTo = boothMaster.AssignedTo;
-                    existingBooth.AssignedOnTime = DateTime.UtcNow;
-                    existingBooth.IsAssigned = boothMaster.IsAssigned;
-                    _context.BoothMaster.Update(existingBooth);
-                    _context.SaveChanges();
+                    var soExists = _context.SectorOfficerMaster.Any(p => p.SOMasterId == Convert.ToInt32(boothMaster.AssignedTo));
+                    if (soExists == true)
+                    {
+                        existingBooth.AssignedBy = boothMaster.AssignedBy;
+                        existingBooth.AssignedTo = boothMaster.AssignedTo;
+                        existingBooth.AssignedOnTime = DateTime.UtcNow;
+                        existingBooth.IsAssigned = boothMaster.IsAssigned;
+                        _context.BoothMaster.Update(existingBooth);
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        return new Response { Status = RequestStatusEnum.NotFound, Message = "Sector Officer Not Found" };
+                    }
 
 
 
@@ -631,7 +640,9 @@ namespace EAMS_DAL.Repository
                 var electionRecord = await _context.ElectionInfoMaster.Where(d => d.StateMasterId == electionInfoMaster.StateMasterId &&
                          d.DistrictMasterId == electionInfoMaster.DistrictMasterId && d.AssemblyMasterId == electionInfoMaster.AssemblyMasterId &&
                          d.BoothMasterId == electionInfoMaster.BoothMasterId).FirstOrDefaultAsync();
-
+                
+                var boothExists = await _context.BoothMaster.AnyAsync(p => p.BoothMasterId == electionInfoMaster.BoothMasterId && p.StateMasterId== electionInfoMaster.StateMasterId && p.DistrictMasterId == electionInfoMaster.DistrictMasterId && p.BoothMasterId == electionInfoMaster.BoothMasterId && p.IsAssigned == true);
+                
                 if (electionRecord != null)
                 { 
                     _context.ElectionInfoMaster.Update(electionRecord);
@@ -640,9 +651,23 @@ namespace EAMS_DAL.Repository
                 }
                 else
                 {
-                    _context.ElectionInfoMaster.Add(electionInfoMaster);
-                    _context.SaveChanges();
-                    return new Response { Status = RequestStatusEnum.OK, Message = "Status Added Successfully" };
+                    if (boothExists == true)
+                    {
+                        if(electionInfoMaster.EventMasterId == 1)
+                        {
+                            _context.ElectionInfoMaster.Add(electionInfoMaster);
+                            _context.SaveChanges();
+                            return new Response { Status = RequestStatusEnum.OK, Message = "Status Added Successfully" };
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Dispatched yet" };
+                        }
+                       
+                    } else
+                    {
+                        return new Response { Status = RequestStatusEnum.NotFound, Message = "Record Not Found, Also Recheck Booth Assigned or not" };
+                    }
                 }
             }
             catch (Exception ex)

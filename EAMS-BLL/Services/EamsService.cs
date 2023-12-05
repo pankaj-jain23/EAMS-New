@@ -307,17 +307,17 @@ namespace EAMS_BLL.Services
                     case 7:
                         //queue
 
-                             //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                                if (electionInfoMaster.VoterInQueue != null && electionInfoMaster.VoterInQueue > 0)
-                                {
-                                    electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be Null." };
-                                }
+                        //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                        if (electionInfoMaster.VoterInQueue != null && electionInfoMaster.VoterInQueue > 0)
+                        {
+                            electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                            electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                            return await _eamsRepository.EventActivity(electionInfoMaster);
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be Null." };
+                        }
 
 
 
@@ -326,23 +326,23 @@ namespace EAMS_BLL.Services
                     case 8:
                         // Final Votes
                         if (electionInfoRecord.VoterInQueue > 0) //check queue
-                      {
+                        {
 
                             if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
                             {
                                 //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                               if(electionInfoMaster.FinalTVote != null && electionInfoMaster.FinalTVote > 0)
+                                if (electionInfoMaster.FinalTVote != null && electionInfoMaster.FinalTVote > 0)
                                 {
                                     electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoMaster);
                                 }
-                               else
+                                else
                                 {
                                     return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes Cannot be Null." };
                                 }
-                                    
-                               
+
+
 
                             }
                             else
@@ -456,7 +456,7 @@ namespace EAMS_BLL.Services
                         }
 
                     case 12:
-                        if (electionInfoRecord.IsPartyDeparted == true) 
+                        if (electionInfoRecord.IsPartyDeparted == true)
                         {
                             if (electionInfoRecord.IsPartyReachedCollectionCenter == false || electionInfoRecord.IsPartyReachedCollectionCenter == null)
                             {
@@ -488,20 +488,20 @@ namespace EAMS_BLL.Services
                         }
 
                     case 13:
-                        if (electionInfoRecord.IsPartyReached == true) // Machine Switch Off and EVM Cleared
+                        if (electionInfoRecord.IsPartyReachedCollectionCenter == true) // Machine Switch Off and EVM Cleared
                         {
-                            
-                                if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
-                                {
-                                    electionInfoRecord.IsEVMDeposited = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
 
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, EVM Already Deposited." };
-                                }
+                            if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
+                            {
+                                electionInfoRecord.IsEVMDeposited = true;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                            }
+                            else
+                            {
+
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, EVM Already Deposited." };
+                            }
 
 
                         }
@@ -513,7 +513,14 @@ namespace EAMS_BLL.Services
 
                 }
             }
+            else if(electionInfoRecord == null)
+            {
+               return await _eamsRepository.EventActivity(electionInfoMaster);
+
+            }
+
             return new Response { Status = RequestStatusEnum.BadRequest, Message = "something went wrong" };
+
         }
         #endregion
     }

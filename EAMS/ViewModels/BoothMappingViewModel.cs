@@ -17,7 +17,7 @@ namespace EAMS.ViewModels
        // [Required(ErrorMessage = "Assigned By is required")]
         public string AssignedBy { get; set; }
 
-        [Required(ErrorMessage = "Assigned To is required")]
+        //[Required(ErrorMessage = "Assigned To is required")]
         public string AssignedTo { get; set; }
         [Required(ErrorMessage = "Is Assigned Status is required")]
 

@@ -315,8 +315,16 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetSectorOfficerProfile")]
-        public async Task<IActionResult> GetSectorOfficerProfile(string soId)
+        public async Task<IActionResult> GetSectorOfficerProfile()
         {
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
+            if (soIdClaim == null)
+            {
+                // Handle the case where the SoId claim is not present
+                return BadRequest("SoId claim not found.");
+            }
+
+            var soId = soIdClaim.Value;
             var soList = await _EAMSService.GetSectorOfficerProfile(soId);  // Corrected to await the asynchronous method
             if (soList != null)
             {

@@ -16,6 +16,7 @@ using System.Text;
 using EAMS_ACore.IAuthRepository;
 using EAMS_DAL.AuthRepository;
 using Microsoft.OpenApi.Models;
+using EAMS.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
 
-builder.Services.AddTransient<IAuthService, AuthService>(); 
+builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IEamsService, EamsService>();
 builder.Services.AddTransient<IEamsRepository, EamsRepository>();
@@ -76,9 +77,12 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidateAudience = true,
+            ValidateLifetime = true, // Set to true for lifetime validation
             ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
             ValidAudience = builder.Configuration["JWT:ValidAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+             ClockSkew = TimeSpan.Zero // Set to zero or adjust according to your requirements
+
         };
     });
 
@@ -130,6 +134,7 @@ app.UseHttpsRedirection();
 app.UseCors(); // Make sure this is before UseAuthentication and UseAuthorization
 
 app.UseAuthentication();
+app.UseMiddleware<TokenExpirationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

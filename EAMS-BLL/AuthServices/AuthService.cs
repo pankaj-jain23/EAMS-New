@@ -5,15 +5,12 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Net.WebRequestMethods;
 
 namespace EAMS_BLL.AuthServices
 {
@@ -88,7 +85,7 @@ namespace EAMS_BLL.AuthServices
                 if (user != null)
                 {
 
-                    var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0); ;
+                    var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
 
                     var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration["JWTKey:RefreshTokenValidityInDays"]);
                     user.RefreshToken = _Token.RefreshToken;
@@ -296,10 +293,13 @@ namespace EAMS_BLL.AuthServices
         {
             DateTime dateTime = DateTime.Now;
             DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
-            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+            TimeSpan istOffset = TimeSpan.FromHours(5) + TimeSpan.FromMinutes(30);
+            TimeZoneInfo istTimeZone = TimeZoneInfo.CreateCustomTimeZone("IST", istOffset, "IST", "IST");
+            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, istTimeZone);
 
-            return hiINDateTime;
+            return DateTime.SpecifyKind(hiINDateTime, DateTimeKind.Utc);
         }
+
 
         /// <summary>
         /// if developer want UTC Kind Time only for month just pass month and rest fill 00000
@@ -313,31 +313,38 @@ namespace EAMS_BLL.AuthServices
         {
             DateTime dateTime = DateTime.Now;
             DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
-            DateTime hiINDateTime = DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time")), DateTimeKind.Utc);
-            if (month is not 0 && day is 0 && hour is 0 && minutes is 0 && seconds is 0)
+            TimeSpan istOffset = TimeSpan.FromHours(5) + TimeSpan.FromMinutes(30);
+            TimeZoneInfo istTimeZone = TimeZoneInfo.CreateCustomTimeZone("IST", istOffset, "IST", "IST");
+            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, istTimeZone);
+
+            if (month != 0)
             {
-                return hiINDateTime.AddMonths(month);
+                hiINDateTime = DateTime.SpecifyKind(hiINDateTime.AddMonths(month), DateTimeKind.Utc);
+
             }
-            else if (month is 0 && day is not 0 && hour is 0 && minutes is 0 && seconds is 0)
+            else if (day != 0)
             {
-                return hiINDateTime.AddDays(day);
+                hiINDateTime = DateTime.SpecifyKind(hiINDateTime.AddDays(day), DateTimeKind.Utc);
+
             }
-            else if (month is 0 && day is 0 && hour is not 0 && minutes is 0 && seconds is 0)
+            else if (hour != 0)
             {
-                return hiINDateTime.AddHours(hour);
+                hiINDateTime = DateTime.SpecifyKind(hiINDateTime.AddHours(hour), DateTimeKind.Utc);
+
             }
-            else if (month is 0 && day is 0 && hour is 0 && minutes is not 0 && seconds is 0)
+            else if (minutes != 0)
             {
-                return hiINDateTime.AddMinutes(minutes);
+                hiINDateTime = DateTime.SpecifyKind(hiINDateTime.AddMinutes(minutes), DateTimeKind.Utc);
             }
-            else if (month is 0 && day is 0 && hour is 0 && minutes is 0 && seconds is not 0)
+            else if (seconds != 0)
             {
-                return hiINDateTime.AddSeconds(seconds);
+
+                hiINDateTime = DateTime.SpecifyKind(hiINDateTime.AddSeconds(seconds), DateTimeKind.Utc);
+
             }
-            else
-            {
-                return hiINDateTime;
-            }
+
+            return hiINDateTime;
+
 
         }
 
@@ -349,56 +356,84 @@ namespace EAMS_BLL.AuthServices
             Token _TokenViewModel = new();
             var principal = await GetPrincipalFromExpiredToken(model.AccessToken);
             string username = principal.Identity.Name;
-            var roleClaim = principal.Claims.FirstOrDefault(d => d.Type == "Roles");
-            string role = roleClaim?.Value;
+            var role = principal.Claims.FirstOrDefault(d => d.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+
 
             if (role is "SO")
             {
                 var soId = principal.Claims.FirstOrDefault(d => d.Type == "SoId").Value;
-               var soUser = await _authRepository.GetSOById(Convert.ToInt32(soId));
+                var soUser = await _authRepository.GetSOById(Convert.ToInt32(soId));
                 if (soUser == null || soUser.RefreshToken != model.RefreshToken || soUser.RefreshTokenExpiryTime <= DateTime.Now)
                 {
                     _TokenViewModel.IsSucceed = false;
                     _TokenViewModel.Message = "Invalid access token or refresh token";
                     return _TokenViewModel;
                 }
-
+                var authClaims = new List<Claim>
+                                {
+                                    new Claim(ClaimTypes.Name,soUser.SoName),
+                                    new Claim("SoId",soUser.SOMasterId.ToString()),
+                                    new Claim("JWTID", Guid.NewGuid().ToString()),
+                                    new Claim(ClaimTypes.Role,"SO")
+                                };
+                var newAccessToken = GenerateToken(authClaims);
+                var newRefreshToken = GenerateRefreshToken();
+                var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
+                soUser.RefreshToken = newRefreshToken;
+                soUser.RefreshTokenExpiryTime = expireRefreshToken;
+                var isSucceed = await _authRepository.SectorOfficerMasterRecord(soUser);
+                if (isSucceed.IsSucceed == true)
+                {
+                    _TokenViewModel.IsSucceed = true;
+                    _TokenViewModel.Message = "Success";
+                    _TokenViewModel.AccessToken = newAccessToken;
+                    _TokenViewModel.RefreshToken = newRefreshToken;
+                }
+                else
+                {
+                    _TokenViewModel.IsSucceed = false;
+                    _TokenViewModel.Message = "Invalid access token or refresh token";
+                }
             }
-
-            var user = await _userManager.FindByNameAsync(username);
-
-            if (user == null || user.RefreshToken != model.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            else
             {
-                _TokenViewModel.IsSucceed = false;
-                _TokenViewModel.Message = "Invalid access token or refresh token";
-                return _TokenViewModel;
+                var user = await _userManager.FindByNameAsync(username);
+
+                if (user == null || user.RefreshToken != model.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                {
+                    _TokenViewModel.IsSucceed = false;
+                    _TokenViewModel.Message = "Invalid access token or refresh token";
+                    return _TokenViewModel;
+                }
+
+
+                var authClaims = new List<Claim>
+                {
+                   new Claim(ClaimTypes.Name, user.UserName),
+                   new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                   new Claim("UserId",user.Id),
+                   new Claim(ClaimTypes.Role,role)
+
+                };
+                var newAccessToken = GenerateToken(authClaims);
+                var newRefreshToken = GenerateRefreshToken();
+                var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
+                user.RefreshToken = newRefreshToken;
+                user.RefreshTokenExpiryTime = (DateTime)expireRefreshToken;
+                await _userManager.UpdateAsync(user);
+
+                _TokenViewModel.IsSucceed = true;
+                _TokenViewModel.Message = "Success";
+                _TokenViewModel.AccessToken = newAccessToken;
+                _TokenViewModel.RefreshToken = newRefreshToken;
             }
-
-
-            var authClaims = new List<Claim>
-            {
-               new Claim(ClaimTypes.Name, user.UserName),
-               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-            var newAccessToken = GenerateToken(authClaims);
-            var newRefreshToken = GenerateRefreshToken();
-            var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = (DateTime)expireRefreshToken;
-            await _userManager.UpdateAsync(user);
-
-            _TokenViewModel.IsSucceed = true;
-            _TokenViewModel.Message = "Success";
-            _TokenViewModel.AccessToken = newAccessToken;
-            _TokenViewModel.RefreshToken = newRefreshToken;
             return _TokenViewModel;
         }
         private string GenerateToken(IEnumerable<Claim> claims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-            var _TokenExpiryTimeInHour = Convert.ToInt64(_configuration["JWTKey:TokenExpiryTimeInHour"]);
+            var expireAccessToken = BharatTimeDynamic(0, 0, 4, 0, 0);
 
-            var expireAccessToken = BharatTimeDynamic(0, 0, 1, 0, 0);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

@@ -816,6 +816,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName= eventid.EventName;
                     model.Completed = totalPartyDispatched;
                     model.Pending = pendingPartyDispatched;
                     model.TotalBooths = soTotalBooths.Count;
@@ -825,6 +826,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalPartyReached;
                     model.Pending = pendingPartyReached;
                     model.TotalBooths = soTotalBooths.Count;
@@ -834,6 +836,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalIsetUpPolling;
                     model.Pending = pendingIsetUpPolling;
                     model.TotalBooths = soTotalBooths.Count;
@@ -843,6 +846,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalmockpoll;
                     model.Pending = pendingMockPoll;
                     model.TotalBooths = soTotalBooths.Count;
@@ -852,6 +856,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalpollstarted;
                     model.Pending = pendingPollStarted;
                     model.TotalBooths = soTotalBooths.Count;
@@ -861,6 +866,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalpollended;
                     model.Pending = pendingPollEnded;
                     model.TotalBooths = soTotalBooths.Count;
@@ -871,6 +877,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalmcevm;
                     model.Pending = pendingMCEVM;
                     model.TotalBooths = soTotalBooths.Count;
@@ -890,6 +897,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalpartycollectoncentre;
                     model.Pending = pendingPartyCollectOnCentre;
                     model.TotalBooths = soTotalBooths.Count;
@@ -900,6 +908,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalevmdeposited;
                     model.Pending = pendingEVMDeposited;
                     model.TotalBooths = soTotalBooths.Count;

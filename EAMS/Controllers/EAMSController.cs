@@ -340,6 +340,7 @@ namespace EAMS.Controllers
             }
 
         }
+
         [HttpPost]
         [Route("AddSOUser")]
         public async Task<IActionResult> AddSoUser(AddSectorOfficerViewModel addSectorOfficerViewModel)
@@ -367,6 +368,7 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+      
         [HttpPut]
         [Route("UpdateSOUser")]
         public async Task<IActionResult> UpdateSOUser(SectorOfficerViewModel sectorOfficerViewModel)
@@ -396,6 +398,7 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+      
         [HttpGet]
         [Route("GetBoothListBySoId")]
         public async Task<IActionResult> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
@@ -671,6 +674,35 @@ namespace EAMS.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetBoothListByEventId")]
+        public async Task<IActionResult> GetBoothListByEventId(string eventId)
+        {
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
+            if (soIdClaim == null)
+            {
+                // Handle the case where the SoId claim is not present
+                return BadRequest("SoId claim not found.");
+            }
+
+            var soId = soIdClaim.Value;
+            var eventWiseBoothList =await _EAMSService.GetBoothListByEventId(eventId, soId);
+
+            if (eventWiseBoothList != null)
+            {
+                var data = new
+                {
+                    count = eventWiseBoothList.Count,
+                    data = eventWiseBoothList
+                };
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+
+        }
 
 
         #endregion
@@ -720,8 +752,7 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
-
-                    break;
+                     
                 case 2:
                     var result_part_reach=await PartyReached(electionInfoViewModel);
                     switch (result_part_reach.Status)
@@ -768,7 +799,7 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
-                    break;
+                   
                 case 5:
                     var res_pollstarted = await PollStarted(electionInfoViewModel);
                     switch (res_pollstarted.Status)
@@ -1113,5 +1144,7 @@ namespace EAMS.Controllers
         }
 
         #endregion
+
+        
     }
 }

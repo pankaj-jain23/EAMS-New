@@ -6,6 +6,7 @@ using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -284,7 +285,7 @@ namespace EAMS_DAL.Repository
 
 
                          };
-            var soProfile=solist.FirstOrDefault();
+            var soProfile = solist.FirstOrDefault();
 
 
             return soProfile;
@@ -642,6 +643,247 @@ namespace EAMS_DAL.Repository
 
         }
 
+        public async Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId)
+        {
+            var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
+            List<EventWiseBooth> list = new List<EventWiseBooth>();
+
+            foreach (var boothRecord in soTotalBooths)
+            {
+                var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
+                           d.BoothMasterId == boothRecord.BoothMasterId);
+                if (electioInfoRecord is not null)
+                {
+                    if (eventId == "1")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPartyDispatched ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "2")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPartyReached ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "3")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsSetupOfPolling ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "4")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsMockPollDone ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "5")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPollStarted ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "9")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPollEnded ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "10")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsMCESwitchOff ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "11")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPartyDeparted ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "12")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsPartyReachedCollectionCenter ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                    else if (eventId == "13")
+                    {
+                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                        {
+                            StateMasterId = boothRecord.BoothMasterId,
+                            DistrictMasterId = boothRecord.DistrictMasterId,
+                            AssemblyMasterId = boothRecord.AssemblyMasterId,
+                            BoothMasterId = boothRecord.BoothMasterId,
+                            BoothName = boothRecord.BoothName,
+                            BoothCode = boothRecord.BoothCode_No,
+                            EventMasterId = electioInfoRecord.EventMasterId,
+                            EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                            UpdateStatus = electioInfoRecord.IsEVMDeposited ?? false
+
+                        };
+                        list.Add(eventWiseBooth);
+                    }
+                }
+                else
+                {
+
+                    EventWiseBooth eventWiseBooth = new EventWiseBooth()
+                    {
+                        StateMasterId = boothRecord.BoothMasterId,
+                        DistrictMasterId = boothRecord.DistrictMasterId,
+                        AssemblyMasterId = boothRecord.AssemblyMasterId,
+                        BoothMasterId = boothRecord.BoothMasterId,
+                        BoothName = boothRecord.BoothName,
+                        BoothCode = boothRecord.BoothCode_No,
+                        EventMasterId = Convert.ToInt32(eventId),
+                        EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+                            .Select(e => e.EventName)
+                            .FirstOrDefault(),
+                        UpdateStatus = false
+
+                    };
+                    list.Add(eventWiseBooth);
+
+                }
+
+            }
+
+
+
+            return list;
+        }
         #endregion
 
         #region PCMaster
@@ -719,9 +961,6 @@ namespace EAMS_DAL.Repository
             return electionInfoRecord;
         }
 
-
-        #endregion
-
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
         {
             var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
@@ -748,10 +987,10 @@ namespace EAMS_DAL.Repository
 
             //except voterturn out, queue and finl votes
 
-            foreach (var boothId in soTotalBooths)
+            foreach (var boothRecord in soTotalBooths)
             {
                 var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
-                            d.BoothMasterId == boothId.BoothMasterId);
+                            d.BoothMasterId == boothRecord.BoothMasterId);
                 if (electioInfoRecord != null)
                 {
                     if (electioInfoRecord.IsPartyDispatched == true)
@@ -816,7 +1055,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
-                    model.EventName= eventid.EventName;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalPartyDispatched;
                     model.Pending = pendingPartyDispatched;
                     model.TotalBooths = soTotalBooths.Count;
@@ -872,7 +1111,6 @@ namespace EAMS_DAL.Repository
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
                 }
-
                 else if (eventid.EventMasterId == 10)
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
@@ -883,11 +1121,11 @@ namespace EAMS_DAL.Repository
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
                 }
-
                 else if (eventid.EventMasterId == 11)
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
                     model.Completed = totalpartdeparted;
                     model.Pending = pendingPartDeparted;
                     model.TotalBooths = soTotalBooths.Count;
@@ -903,7 +1141,6 @@ namespace EAMS_DAL.Repository
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
                 }
-
                 else if (eventid.EventMasterId == 13)
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
@@ -920,6 +1157,8 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
+
+        #endregion
 
 
 

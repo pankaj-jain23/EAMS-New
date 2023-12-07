@@ -141,6 +141,10 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.UpdateEventById(eventMaster);
         }
+        public async Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId)
+        {
+            return await _eamsRepository.GetBoothListByEventId(eventId, soId);
+        }
         #endregion
 
         #region PCMaster
@@ -531,6 +535,8 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.EventWiseBoothStatus(soId);
         }
+
+       
         #endregion
     }
 }

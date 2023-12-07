@@ -53,6 +53,7 @@ namespace EAMS_ACore.Interfaces
         #region EventMaster
         Task<List<EventMaster>> GetEventList();
         Task<Response> UpdateEventById(EventMaster eventMaster);
+        Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
 
 
         #endregion
@@ -64,8 +65,7 @@ namespace EAMS_ACore.Interfaces
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
-        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
-        // Task<List<eevent>> EventActivity(ElectionInfoMaster electionInfoMaster);
+        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId); 
         #endregion
 
     }

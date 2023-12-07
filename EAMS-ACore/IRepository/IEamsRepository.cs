@@ -50,6 +50,8 @@ namespace EAMS_ACore.IRepository
         #region Event Master
         Task<List<EventMaster>> GetEventList();
         Task<Response> UpdateEventById(EventMaster eventMaster);
+        Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
+
         #endregion
 
         #region PCMaster
@@ -62,12 +64,7 @@ namespace EAMS_ACore.IRepository
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
-        // eventid = 2
-        // prev= 1, nxt=3
-
-        // getprev== true
-        //{// nxt== false} 
-
+       
 
 
 

@@ -58,16 +58,19 @@ namespace EAMS_ACore.IRepository
         Task<List<ParliamentConstituencyMaster>> GetPCList();
         #endregion
 
-
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
-       
 
 
 
+
+        #endregion
+
+        #region SendDashBoardCount
+        Task<DashBoardRealTimeCount> SendDashBoardCount();
         #endregion
     }
 }

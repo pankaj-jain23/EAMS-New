@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -658,7 +659,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -678,7 +679,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -698,7 +699,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -718,7 +719,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -738,7 +739,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -758,7 +759,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -778,7 +779,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -798,7 +799,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -818,7 +819,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -838,7 +839,7 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth eventWiseBooth = new EventWiseBooth()
                         {
-                            StateMasterId = boothRecord.BoothMasterId,
+                            StateMasterId = boothRecord.StateMasterId,
                             DistrictMasterId = boothRecord.DistrictMasterId,
                             AssemblyMasterId = boothRecord.AssemblyMasterId,
                             BoothMasterId = boothRecord.BoothMasterId,
@@ -860,7 +861,7 @@ namespace EAMS_DAL.Repository
 
                     EventWiseBooth eventWiseBooth = new EventWiseBooth()
                     {
-                        StateMasterId = boothRecord.BoothMasterId,
+                        StateMasterId = boothRecord.StateMasterId,
                         DistrictMasterId = boothRecord.DistrictMasterId,
                         AssemblyMasterId = boothRecord.AssemblyMasterId,
                         BoothMasterId = boothRecord.BoothMasterId,
@@ -918,7 +919,8 @@ namespace EAMS_DAL.Repository
 
                 if (electionRecord != null)
                 {
-                    _context.ElectionInfoMaster.Update(electionRecord);
+                    
+                    _context.ElectionInfoMaster.Update(electionInfoMaster);
                     _context.SaveChanges();
                     return new Response { Status = RequestStatusEnum.OK, Message = "Status Updated Successfully" };
                 }
@@ -926,8 +928,10 @@ namespace EAMS_DAL.Repository
                 {
                     if (boothExists == true)
                     {
+                        
                         if (electionInfoMaster.EventMasterId == 1)
                         {
+
                             _context.ElectionInfoMaster.Add(electionInfoMaster);
                             _context.SaveChanges();
                             return new Response { Status = RequestStatusEnum.OK, Message = "Status Added Successfully" };
@@ -1160,7 +1164,35 @@ namespace EAMS_DAL.Repository
 
         #endregion
 
+        #region SendDashBoardCount 
+        public async Task<DashBoardRealTimeCount> SendDashBoardCount()
+        {
+            var electionInfoList = await _context.ElectionInfoMaster.ToListAsync();
 
+            var dashboardCount = new DashBoardRealTimeCount();
+            dashboardCount.Total = electionInfoList.Count;
+            dashboardCount.Events = new List<EventCount>();
+            AddEventCount(dashboardCount, "PartyDispatch", e => e.IsPartyDispatched == true);
+            AddEventCount(dashboardCount, "PartyArrived", e => e.IsPartyReached == true);
+            AddEventCount(dashboardCount, "SetupPollingStation", e => e.IsSetupOfPolling == true);
+            AddEventCount(dashboardCount, "MockPollDone", e => e.IsMockPollDone == true);
+            AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);
+            AddEventCount(dashboardCount, "PollEnded", e => e.IsPollEnded == true);
+            AddEventCount(dashboardCount, "MCEVMOff", e => e.IsMCESwitchOff == true);
+            AddEventCount(dashboardCount, "PartyDeparted", e => e.IsPartyDeparted == true);
+            AddEventCount(dashboardCount, "PartyReachedAtCollection", e => e.IsPartyReachedCollectionCenter == true);
+            AddEventCount(dashboardCount, "EVMDeposited", e => e.IsEVMDeposited == true);
+
+            return dashboardCount;
+        }
+
+        private void AddEventCount(DashBoardRealTimeCount dashboardCount, string eventName, Func<ElectionInfoMaster, bool> condition)
+        {
+            var count = _context.ElectionInfoMaster.Count(condition);
+            dashboardCount.Events.Add(new EventCount { EventName = eventName, Count = count });
+        }
+
+        #endregion
 
         #region Common method
         private DateTime? ConvertStringToUtcDateTime(string dateString)

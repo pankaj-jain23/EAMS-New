@@ -65,8 +65,11 @@ namespace EAMS_ACore.Interfaces
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
-        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId); 
+        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
         #endregion
 
+        #region SendDashBoardCount
+        Task<DashBoardRealTimeCount> SendDashBoardCount();
+        #endregion
     }
 }

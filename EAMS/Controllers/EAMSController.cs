@@ -1,19 +1,14 @@
 ﻿using AutoMapper;
-using CsvHelper.Configuration;
 using EAMS.Helper;
+using EAMS.Hubs;
 using EAMS.ViewModels;
 using EAMS_ACore;
-using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.IdentityModel.Tokens;
-using Mono.TextTemplating;
-using System.Globalization;
-using System.Text;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EAMS.Controllers
 {
@@ -23,11 +18,13 @@ namespace EAMS.Controllers
     {
         private readonly IEamsService _EAMSService;
         private readonly IMapper _mapper;
+        private readonly IHubContext<DashboardHub> _dashboardHub;
 
-        public EAMSController(IEamsService eamsService, IMapper mapper)
+        public EAMSController(IEamsService eamsService, IMapper mapper, IHubContext<DashboardHub> dashboardHub)
         {
             _EAMSService = eamsService;
             _mapper = mapper;
+            _dashboardHub = dashboardHub;
 
         }
 
@@ -731,7 +728,6 @@ namespace EAMS.Controllers
         #endregion
 
         #region Event Activity
-
         [HttpPost]
         [Route("EventActivity")]
         public async Task<IActionResult> EventActivity(ElectionInfoViewModel electionInfoViewModel)
@@ -766,8 +762,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
                 case 3:
                     var result_setup_polling=await SetupPollingStation(electionInfoViewModel);
                     switch (result_setup_polling.Status)
@@ -781,8 +776,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
 
                 case 4:
@@ -813,8 +807,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
                 case 7:
                     var res_voter_in_queue = await VoterInQueue(electionInfoViewModel);
                     switch (res_voter_in_queue.Status)
@@ -828,8 +821,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
                 case 8:
                     var res_final_votes = await FinalVotes(electionInfoViewModel);
@@ -844,8 +836,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
                 case 9:
                     var res_poll_ended = await PollEnded(electionInfoViewModel);
@@ -860,8 +851,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
                 case 10:
                     var res_evm_swicthoff = await MCEVM(electionInfoViewModel);
                     switch (res_evm_swicthoff.Status)
@@ -875,8 +865,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
                 case 11:
                     var res_party_departed = await PartyDeparted(electionInfoViewModel);
                     switch (res_party_departed.Status)
@@ -890,8 +879,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
                 case 12:
                     var res_party_reachd_collection_centre = await PartyReachedCollectionCentre(electionInfoViewModel);
@@ -906,8 +894,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
                 case 13:
                     var res_evm_deposited = await EVMDeposited(electionInfoViewModel);
@@ -922,16 +909,14 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    }
-                    break;
+                    } 
 
 
                 default:
                     // Handle the case when EventMasterId doesn't match any known case
                     return BadRequest("Invalid EventMasterId");
             }
-
-            return Ok();
+             
         }
 
         private async Task<Response> PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
@@ -1145,6 +1130,18 @@ namespace EAMS.Controllers
 
         #endregion
 
-        
+        #region DashBoardCount
+        [HttpGet("DashBoardCount")]
+        public async Task<IActionResult> DashBoardCount()
+        {
+            var dashboardCount = await _EAMSService.SendDashBoardCount();
+
+            // Use IHubContext to broadcast the data to connected clients
+            await _dashboardHub.Clients.All.SendAsync("ReceivedDashBoardCount", dashboardCount);
+
+            return Ok(dashboardCount);
+        }
+        #endregion
+
     }
 }

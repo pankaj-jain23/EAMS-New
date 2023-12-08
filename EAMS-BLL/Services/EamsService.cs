@@ -4,13 +4,6 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
-using EAMS_DAL.Migrations;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EAMS_BLL.Services
 {
@@ -167,9 +160,11 @@ namespace EAMS_BLL.Services
 
                         if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
                         {
-                            if (electionInfoRecord.IsPartyDispatched == false)
+                            if (electionInfoRecord.IsPartyDispatched is not null)
                             {
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                electionInfoRecord.IsPartyDispatched = electionInfoMaster.IsPartyDispatched;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -181,32 +176,26 @@ namespace EAMS_BLL.Services
                         else
                         {
                             // party alteady arrived, cnt change status!
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Has Already Reached." };
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Has Already Arrived." };
                         }
                     case 2:
                         if (electionInfoRecord.IsPartyDispatched == true)
                         {
-                            if (electionInfoRecord.IsPartyReached == false || electionInfoRecord.IsPartyReached == null)
+
+                            if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
                             {
-                                if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
-                                {
-                                    electionInfoRecord.IsPartyReached = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoRecord);
-                                }
-                                else
-                                {
-
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, SetUpPolling Already yes." };
-
-                                }
-
+                                electionInfoRecord.IsPartyReached = electionInfoMaster.IsPartyReached;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
 
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Reached Status Already Yes." };
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, SetUpPolling Already yes." };
+
                             }
+
+
                         }
                         else
                         {
@@ -217,27 +206,19 @@ namespace EAMS_BLL.Services
                         if (electionInfoRecord.IsPartyReached == true)
                         {
 
-                            if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
+                            if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
                             {
-                                if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
-                                {
-                                    electionInfoRecord.IsSetupOfPolling = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
-
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, MockPoll Already yes." };
-                                }
-
+                                electionInfoRecord.IsSetupOfPolling = electionInfoMaster.IsSetupOfPolling;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                                // already status Yes
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SetUp Polling Status Already yes." };
 
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, MockPoll Already yes." };
                             }
+
+
 
                         }
                         else
@@ -249,27 +230,19 @@ namespace EAMS_BLL.Services
                         if (electionInfoRecord.IsSetupOfPolling == true) // mockpoll event 4th event
                         {
 
-                            if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
+                            if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
                             {
-                                if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
-                                {
-                                    electionInfoRecord.IsMockPollDone = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
-
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Poll Started Already yes." };
-                                }
-
+                                electionInfoRecord.IsMockPollDone = electionInfoMaster.IsMockPollDone;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                                // already status Yes
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Mock poll Status Already yes." };
 
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Poll Started Already yes." };
                             }
+
+
 
                         }
                         else
@@ -281,29 +254,20 @@ namespace EAMS_BLL.Services
                     case 5:
                         if (electionInfoRecord.IsMockPollDone == true) // poll started 5th event
                         {
-
-                            if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
+                            //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                            if (electionInfoRecord.FinalTVote == 0 || electionInfoRecord.FinalTVote == null)
                             {
-                                //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                                if (electionInfoRecord.FinalTVote == 0 || electionInfoRecord.FinalTVote == null)
-                                {
-                                    electionInfoRecord.IsPollStarted = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
-
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Voter Turn Out Status is Already Yes." };
-                                }
-
+                                electionInfoRecord.IsPollStarted = electionInfoMaster.IsPollStarted;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                                // already status Yes
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll Started Already yes." };
 
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Voter Turn Out Status is Already Yes." };
                             }
+
+
 
                         }
                         else
@@ -370,27 +334,19 @@ namespace EAMS_BLL.Services
                     case 9:
                         if (electionInfoRecord.FinalTVote > 0) // Poll ended--
                         {
-                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
+                            if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
                             {
-                                if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
-                                {
-                                    electionInfoRecord.IsPollEnded = true;
-                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
-                                }
-                                else
-                                {
-
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Machine Closed & EVM Switched Off Already Yes." };
-                                }
-
+                                electionInfoRecord.IsPollEnded = true;
+                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                return await _eamsRepository.EventActivity(electionInfoMaster);
                             }
                             else
                             {
-                                // already status Yes
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll Is Already Ended." };
 
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Machine Closed & EVM Switched Off Already Yes." };
                             }
+
+
 
                         }
                         else
@@ -521,9 +477,9 @@ namespace EAMS_BLL.Services
 
                 }
             }
-            else if(electionInfoRecord == null)
+            else if (electionInfoRecord == null)
             {
-               return await _eamsRepository.EventActivity(electionInfoMaster);
+                return await _eamsRepository.EventActivity(electionInfoMaster);
 
             }
 
@@ -536,7 +492,14 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.EventWiseBoothStatus(soId);
         }
 
-       
+
+        #endregion
+
+        #region SendDashBoardCount 
+        public async Task<DashBoardRealTimeCount> SendDashBoardCount()
+        {
+            return await _eamsRepository.SendDashBoardCount();
+        }
         #endregion
     }
 }

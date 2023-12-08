@@ -17,12 +17,14 @@ using EAMS_ACore.IAuthRepository;
 using EAMS_DAL.AuthRepository;
 using Microsoft.OpenApi.Models;
 using EAMS.Middleware;
+using EAMS.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -59,8 +61,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.SignIn.RequireConfirmedEmail = false;
 });
-
-
 // Add Authentication and JwtBearer
 builder.Services
     .AddAuthentication(options =>
@@ -135,8 +135,9 @@ app.UseCors(); // Make sure this is before UseAuthentication and UseAuthorizatio
 
 app.UseAuthentication();
 app.UseMiddleware<TokenExpirationMiddleware>();
-app.UseAuthorization();
-
+app.UseAuthorization(); 
+ app.UseHttpsRedirection();
 app.MapControllers();
+app.MapHub<DashboardHub>("DashboardCount");
 app.Run();
 

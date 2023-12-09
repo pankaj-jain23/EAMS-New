@@ -1165,7 +1165,7 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region SendDashBoardCount 
-        public async Task<DashBoardRealTimeCount> SendDashBoardCount()
+        public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             var electionInfoList = await _context.ElectionInfoMaster.ToListAsync();
 

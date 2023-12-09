@@ -17,14 +17,12 @@ namespace EAMS.Controllers
     public class EAMSController : ControllerBase
     {
         private readonly IEamsService _EAMSService;
-        private readonly IMapper _mapper;
-        private readonly IHubContext<DashboardHub> _dashboardHub;
+        private readonly IMapper _mapper; 
 
-        public EAMSController(IEamsService eamsService, IMapper mapper, IHubContext<DashboardHub> dashboardHub)
+        public EAMSController(IEamsService eamsService, IMapper mapper )
         {
             _EAMSService = eamsService;
-            _mapper = mapper;
-            _dashboardHub = dashboardHub;
+            _mapper = mapper; 
 
         }
 
@@ -1130,18 +1128,7 @@ namespace EAMS.Controllers
 
         #endregion
 
-        #region DashBoardCount
-        [HttpGet("DashBoardCount")]
-        public async Task<IActionResult> DashBoardCount()
-        {
-            var dashboardCount = await _EAMSService.SendDashBoardCount();
-
-            // Use IHubContext to broadcast the data to connected clients
-            await _dashboardHub.Clients.All.SendAsync("ReceivedDashBoardCount", dashboardCount);
-
-            return Ok(dashboardCount);
-        }
-        #endregion
+        
 
     }
 }

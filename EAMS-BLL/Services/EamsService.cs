@@ -496,9 +496,9 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region SendDashBoardCount 
-        public async Task<DashBoardRealTimeCount> SendDashBoardCount()
+        public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
-            return await _eamsRepository.SendDashBoardCount();
+            return await _eamsRepository.GetDashBoardCount();
         }
         #endregion
     }

@@ -3,31 +3,27 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace EAMS.Hubs
 {
-    public sealed class DashboardHub : Hub
+    public class DashBoardHub : Hub
     {
         private readonly IEamsService _eamsService;
-
-        public DashboardHub(IEamsService eamsService)
+        public DashBoardHub(IEamsService eamsService)
         {
             _eamsService = eamsService;
         }
-
+        public async Task GetAndBroadcastDashboardCount()
+        {
+            var latestRecord = await _eamsService.GetDashBoardCount();
+            await Clients.All.SendAsync("GetDashboardCount", latestRecord);
+        }
         public override async Task OnConnectedAsync()
         {
-            // Call the method to get the dashboard count
-            var dashboardCount = await _eamsService.SendDashBoardCount();
-
-            // Send the dashboard count to all connected clients
-            await Clients.All.SendAsync("ReceivedDashBoardCount", dashboardCount);
+            await base.OnConnectedAsync();
         }
 
-        public async Task SendDashBoardCount()
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-            // Call the method to get the dashboard count
-            var dashboardCount = await _eamsService.SendDashBoardCount();
-
-            // Send the dashboard count to all connected clients
-            await Clients.All.SendAsync("ReceivedDashBoardCount", dashboardCount);
+            await base.OnDisconnectedAsync(exception);
         }
+
     }
 }

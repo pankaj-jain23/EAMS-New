@@ -131,13 +131,12 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors(); // Make sure this is before UseAuthentication and UseAuthorization
-
+app.UseCors();  
 app.UseAuthentication();
 app.UseMiddleware<TokenExpirationMiddleware>();
 app.UseAuthorization(); 
  app.UseHttpsRedirection();
 app.MapControllers();
-app.MapHub<DashboardHub>("DashboardCount");
+app.MapHub<DashBoardHub>("/DashBoardHub");
 app.Run();
 

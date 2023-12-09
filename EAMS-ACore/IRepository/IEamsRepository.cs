@@ -70,7 +70,7 @@ namespace EAMS_ACore.IRepository
         #endregion
 
         #region SendDashBoardCount
-        Task<DashBoardRealTimeCount> SendDashBoardCount();
+        Task<DashBoardRealTimeCount> GetDashBoardCount();
         #endregion
     }
 }

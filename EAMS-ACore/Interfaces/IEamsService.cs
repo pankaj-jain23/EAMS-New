@@ -69,7 +69,7 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region SendDashBoardCount
-        Task<DashBoardRealTimeCount> SendDashBoardCount();
+        Task<DashBoardRealTimeCount> GetDashBoardCount();
         #endregion
     }
 }

@@ -1128,9 +1128,9 @@ namespace EAMS.Controllers
 
         #endregion
 
-        #region EventManagement
-        [HttpPost ("EventManagement")]
-        public async Task<IActionResult> EventManagement(SlotManagementViewModel slotManagementViewModel)
+        #region EventSlotManagement
+        [HttpPost ("EventSlotManagement")]
+        public async Task<IActionResult> EventSlotManagement(SlotManagementViewModel slotManagementViewModel)
         {
             return Ok();
         }

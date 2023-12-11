@@ -676,6 +676,291 @@ namespace EAMS_DAL.Repository
 
         }
 
+        //public async Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId)
+        //{
+        //    var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
+        //    List<EventWiseBooth> list = new List<EventWiseBooth>();
+
+        //    foreach (var boothRecord in soTotalBooths)
+        //    {
+        //        var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
+        //                   d.BoothMasterId == boothRecord.BoothMasterId);
+        //        if (electioInfoRecord is not null)
+        //        {
+        //            if (eventId == "1")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPartyDispatched ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "2")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPartyReached ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "3")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsSetupOfPolling ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "4")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsMockPollDone ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "5")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPollStarted ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+
+        //            else if (eventId == "7")
+        //            {
+        //                bool isQueue = electioInfoRecord.VoterInQueue != null;
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = isQueue
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "8")
+        //            {
+        //                bool isFinalVotes = electioInfoRecord.FinalTVote != null;
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = isFinalVotes
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "9")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPollEnded ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "10")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsMCESwitchOff ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "11")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPartyDeparted ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "12")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsPartyReachedCollectionCenter ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //            else if (eventId == "13")
+        //            {
+        //                EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //                {
+        //                    StateMasterId = boothRecord.StateMasterId,
+        //                    DistrictMasterId = boothRecord.DistrictMasterId,
+        //                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                    BoothMasterId = boothRecord.BoothMasterId,
+        //                    BoothName = boothRecord.BoothName,
+        //                    BoothCode = boothRecord.BoothCode_No,
+        //                    EventMasterId = electioInfoRecord.EventMasterId,
+        //                    EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                    UpdateStatus = electioInfoRecord.IsEVMDeposited ?? false
+
+        //                };
+        //                list.Add(eventWiseBooth);
+        //            }
+        //        }
+        //        else
+        //        {
+
+        //            EventWiseBooth eventWiseBooth = new EventWiseBooth()
+        //            {
+        //                StateMasterId = boothRecord.StateMasterId,
+        //                DistrictMasterId = boothRecord.DistrictMasterId,
+        //                AssemblyMasterId = boothRecord.AssemblyMasterId,
+        //                BoothMasterId = boothRecord.BoothMasterId,
+        //                BoothName = boothRecord.BoothName,
+        //                BoothCode = boothRecord.BoothCode_No,
+        //                EventMasterId = Convert.ToInt32(eventId),
+        //                EventName = _context.EventMaster
+        //                    .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
+        //                    .Select(e => e.EventName)
+        //                    .FirstOrDefault(),
+        //                UpdateStatus = false
+
+        //            };
+        //            list.Add(eventWiseBooth);
+
+        //        }
+
+        //    }
+
+
+
+        //    return list;
+        //}
+
         public async Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId)
         {
             var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
@@ -684,213 +969,30 @@ namespace EAMS_DAL.Repository
             foreach (var boothRecord in soTotalBooths)
             {
                 var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
-                           d.BoothMasterId == boothRecord.BoothMasterId);
+                    d.BoothMasterId == boothRecord.BoothMasterId);
+
                 if (electioInfoRecord is not null)
                 {
-                    if (eventId == "1")
+                    EventWiseBooth eventWiseBooth = new EventWiseBooth()
                     {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
+                        StateMasterId = boothRecord.StateMasterId,
+                        DistrictMasterId = boothRecord.DistrictMasterId,
+                        AssemblyMasterId = boothRecord.AssemblyMasterId,
+                        BoothMasterId = boothRecord.BoothMasterId,
+                        BoothName = boothRecord.BoothName,
+                        BoothCode = boothRecord.BoothCode_No,
+                        EventMasterId = electioInfoRecord.EventMasterId,
+                        EventName = _context.EventMaster
+                            .Where(d => d.EventMasterId == Convert.ToInt32(eventId))
                             .Select(e => e.EventName)
                             .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPartyDispatched ?? false
+                        UpdateStatus = GetUpdateStatus(eventId, electioInfoRecord)
+                    };
 
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "2")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPartyReached ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "3")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsSetupOfPolling ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "4")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsMockPollDone ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "5")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPollStarted ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "9")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPollEnded ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "10")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsMCESwitchOff ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "11")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPartyDeparted ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "12")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsPartyReachedCollectionCenter ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
-                    else if (eventId == "13")
-                    {
-                        EventWiseBooth eventWiseBooth = new EventWiseBooth()
-                        {
-                            StateMasterId = boothRecord.StateMasterId,
-                            DistrictMasterId = boothRecord.DistrictMasterId,
-                            AssemblyMasterId = boothRecord.AssemblyMasterId,
-                            BoothMasterId = boothRecord.BoothMasterId,
-                            BoothName = boothRecord.BoothName,
-                            BoothCode = boothRecord.BoothCode_No,
-                            EventMasterId = electioInfoRecord.EventMasterId,
-                            EventName = _context.EventMaster
-                            .Where(d => d.EventMasterId == electioInfoRecord.EventMasterId)
-                            .Select(e => e.EventName)
-                            .FirstOrDefault(),
-                            UpdateStatus = electioInfoRecord.IsEVMDeposited ?? false
-
-                        };
-                        list.Add(eventWiseBooth);
-                    }
+                    list.Add(eventWiseBooth);
                 }
                 else
                 {
-
                     EventWiseBooth eventWiseBooth = new EventWiseBooth()
                     {
                         StateMasterId = boothRecord.StateMasterId,
@@ -905,21 +1007,50 @@ namespace EAMS_DAL.Repository
                             .Select(e => e.EventName)
                             .FirstOrDefault(),
                         UpdateStatus = false
-
                     };
+
                     list.Add(eventWiseBooth);
-
                 }
-
             }
-
-
 
             return list;
         }
 
+        private bool GetUpdateStatus(string eventId, ElectionInfoMaster electioInfoRecord)
+        {
+            switch (eventId)
+            {
+                case "1":
+                    return electioInfoRecord.IsPartyDispatched ?? false;
+                case "2":
+                    return electioInfoRecord.IsPartyReached ?? false;
+                case "3":
+                    return electioInfoRecord.IsSetupOfPolling ?? false;
+                case "4":
+                    return electioInfoRecord.IsMockPollDone ?? false;
+                case "5":
+                    return electioInfoRecord.IsPollStarted ?? false;
+                case "7":
+                    return electioInfoRecord.VoterInQueue != null;
+                case "8":
+                    return electioInfoRecord.FinalTVote != null;
+                case "9":
+                    return electioInfoRecord.IsPollEnded ?? false;
+                case "10":
+                    return electioInfoRecord.IsMCESwitchOff ?? false;
+                case "11":
+                    return electioInfoRecord.IsPartyDeparted ?? false;
+                case "12":
+                    return electioInfoRecord.IsPartyReachedCollectionCenter ?? false;
+                case "13":
+                    return electioInfoRecord.IsEVMDeposited ?? false;
+                default:
+                    return false;
+            }
+        }
 
-    
+
+
         #endregion
 
         #region PCMaster

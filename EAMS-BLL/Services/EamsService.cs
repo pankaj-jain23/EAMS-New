@@ -505,9 +505,14 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region SlotManagement
-        public Task<SlotManagement> SlotManagement(SlotManagement slotManagement)
+        public Task<Response> AddEventSlot(List<SlotManagementMaster> addEventSlot)
         {
-            throw new NotImplementedException();
+            return _eamsRepository.AddEventSlot(addEventSlot);
+        }
+
+        public Task<List<SlotManagementMaster>> GetEventSlotList()
+        {
+            return _eamsRepository.GetEventSlotList();
         }
         #endregion
     }

@@ -18,19 +18,19 @@ namespace EAMS.Controllers
     public class EAMSController : ControllerBase
     {
         private readonly IEamsService _EAMSService;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
 
-        public EAMSController(IEamsService eamsService, IMapper mapper )
+        public EAMSController(IEamsService eamsService, IMapper mapper)
         {
             _EAMSService = eamsService;
-            _mapper = mapper; 
+            _mapper = mapper;
 
         }
 
         #region State master
         [HttpGet]
         [Route("StateList")]
-        [Authorize(Roles ="ECI")]
+        [Authorize(Roles = "ECI")]
         public async Task<IActionResult> StateList()
         {
             var stateList = await _EAMSService.GetState();
@@ -364,7 +364,7 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
-      
+
         [HttpPut]
         [Route("UpdateSOUser")]
         public async Task<IActionResult> UpdateSOUser(SectorOfficerViewModel sectorOfficerViewModel)
@@ -394,7 +394,7 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
-      
+
         [HttpGet]
         [Route("GetBoothListBySoId")]
         public async Task<IActionResult> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
@@ -526,7 +526,7 @@ namespace EAMS.Controllers
             {
                 if (boothMappingViewModel.BoothMasterId != null && boothMappingViewModel.BoothMasterId.Any() && boothMappingViewModel.IsAssigned == true && !string.IsNullOrWhiteSpace(boothMappingViewModel.AssignedTo))
                 {
-                   
+
                     List<BoothMaster> boothMasters = new List<BoothMaster>();
 
                     foreach (var boothMasterId in boothMappingViewModel.BoothMasterId)
@@ -682,7 +682,7 @@ namespace EAMS.Controllers
             }
 
             var soId = soIdClaim.Value;
-            var eventWiseBoothList =await _EAMSService.GetBoothListByEventId(eventId, soId);
+            var eventWiseBoothList = await _EAMSService.GetBoothListByEventId(eventId, soId);
 
             if (eventWiseBoothList != null)
             {
@@ -704,7 +704,7 @@ namespace EAMS.Controllers
         [Route("GetBoothStatusByEventIdforARO")]
         public async Task<IActionResult> GetBoothStatusByEventIdforARO(string eventId, string soId)
         {
-           
+
             var eventWiseBoothList = await _EAMSService.GetBoothListByEventId(eventId, soId);
 
             if (eventWiseBoothList != null)
@@ -783,7 +783,7 @@ namespace EAMS.Controllers
             switch (electionInfoViewModel.EventMasterId)
             {
                 case 1:
-                  var result =  await PartyDispatch(electionInfoViewModel);
+                    var result = await PartyDispatch(electionInfoViewModel);
                     switch (result.Status)
                     {
                         case RequestStatusEnum.OK:
@@ -796,9 +796,9 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
-                     
+
                 case 2:
-                    var result_part_reach=await PartyReached(electionInfoViewModel);
+                    var result_part_reach = await PartyReached(electionInfoViewModel);
                     switch (result_part_reach.Status)
                     {
                         case RequestStatusEnum.OK:
@@ -810,9 +810,9 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
                 case 3:
-                    var result_setup_polling=await SetupPollingStation(electionInfoViewModel);
+                    var result_setup_polling = await SetupPollingStation(electionInfoViewModel);
                     switch (result_setup_polling.Status)
                     {
                         case RequestStatusEnum.OK:
@@ -824,7 +824,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
 
                 case 4:
@@ -841,7 +841,7 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
-                   
+
                 case 5:
                     var res_pollstarted = await PollStarted(electionInfoViewModel);
                     switch (res_pollstarted.Status)
@@ -855,7 +855,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
                 case 7:
                     var res_voter_in_queue = await VoterInQueue(electionInfoViewModel);
                     switch (res_voter_in_queue.Status)
@@ -869,7 +869,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
                 case 8:
                     var res_final_votes = await FinalVotes(electionInfoViewModel);
@@ -884,7 +884,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
                 case 9:
                     var res_poll_ended = await PollEnded(electionInfoViewModel);
@@ -899,7 +899,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
                 case 10:
                     var res_evm_swicthoff = await MCEVM(electionInfoViewModel);
                     switch (res_evm_swicthoff.Status)
@@ -913,7 +913,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
                 case 11:
                     var res_party_departed = await PartyDeparted(electionInfoViewModel);
                     switch (res_party_departed.Status)
@@ -927,7 +927,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
                 case 12:
                     var res_party_reachd_collection_centre = await PartyReachedCollectionCentre(electionInfoViewModel);
@@ -942,7 +942,7 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
                 case 13:
                     var res_evm_deposited = await EVMDeposited(electionInfoViewModel);
@@ -957,14 +957,14 @@ namespace EAMS.Controllers
 
                         default:
                             return StatusCode(500, "Internal Server Error");
-                    } 
+                    }
 
 
                 default:
                     // Handle the case when EventMasterId doesn't match any known case
                     return BadRequest("Invalid EventMasterId");
             }
-             
+
         }
 
         private async Task<Response> PartyDispatch(ElectionInfoViewModel electionInfoViewModel)
@@ -1160,9 +1160,9 @@ namespace EAMS.Controllers
         #region Event Wise Booth Status
         [HttpGet]
         [Route("EventWiseBoothStatus")]
-        [Authorize(Roles ="SO")]
+        [Authorize(Roles = "SO")]
         public async Task<IActionResult> EventWiseBoothStatus()
-        {    
+        {
             var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
             if (soIdClaim == null)
             {
@@ -1178,14 +1178,14 @@ namespace EAMS.Controllers
 
         #endregion
 
-        #region EventSlotManagement
+        #region Event Slot Management
         [HttpPost]
         [Route("AddEventSlot")]
         public async Task<IActionResult> AddEventSlot(SlotManagementViewModel slotManagementViewModel)
         {
             var slotManagements = _mapper.Map<List<SlotManagementMaster>>(slotManagementViewModel);
- 
-                var result = await _EAMSService.AddEventSlot(slotManagements);
+
+            var result = await _EAMSService.AddEventSlot(slotManagements);
 
             switch (result.Status)
             {
@@ -1198,15 +1198,15 @@ namespace EAMS.Controllers
 
                 default:
                     return StatusCode(500, "Internal Server Error");
-            } 
+            }
         }
 
         [HttpGet]
         [Route("GetEventSlotListById")]
-        public async Task<IActionResult> GetEventSlotList(int stateMasterId,int EventId)
+        public async Task<IActionResult> GetEventSlotList(int stateMasterId, int EventId)
         {
             var result = await _EAMSService.GetEventSlotList();
-            if(result is not null)
+            if (result is not null)
             {
 
                 return Ok(result);

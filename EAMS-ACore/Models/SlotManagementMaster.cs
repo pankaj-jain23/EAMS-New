@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EAMS_ACore.Models
@@ -19,6 +20,7 @@ namespace EAMS_ACore.Models
         public DateTime? LockTime { get; set; }
         public bool IsLastSlot { get; set; }
         public DateTime SlotCreatedTime { get; set; } = DateTime.UtcNow;
+        [JsonIgnore]
         public ICollection<PollDetail> PollDetails { get; set; }
 
            

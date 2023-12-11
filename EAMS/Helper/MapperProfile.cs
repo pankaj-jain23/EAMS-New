@@ -232,6 +232,27 @@ namespace EAMS.Helper
          .ReverseMap();
             #endregion
 
+            #region SlotManagement
+            CreateMap<SlotTimeViewModel, SlotManagementMaster>();
+
+            CreateMap<SlotManagementViewModel, List<SlotManagementMaster>>()
+                .ConvertUsing((src, dest, context) =>
+                {
+                    var slotManagements = src.slotTimes
+                        .Select(slotTime => context.Mapper.Map<SlotManagementMaster>(slotTime))
+                        .ToList();
+
+                    foreach (var slotManagement in slotManagements)
+                    {
+                        slotManagement.StateMasterId = src.StateMasterId;
+                        slotManagement.EventMasterId = src.EventMasterId;
+                    }
+
+                    return slotManagements;
+                });
+
+            #endregion
+
         }
     }
 }

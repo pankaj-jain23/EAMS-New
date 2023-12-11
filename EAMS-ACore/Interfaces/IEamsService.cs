@@ -73,7 +73,8 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region SlotManagement
-        Task<SlotManagement> SlotManagement(SlotManagement slotManagement);
+        Task<Response> AddEventSlot(List<SlotManagementMaster> addEventSlot);
+        Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
     }
 }

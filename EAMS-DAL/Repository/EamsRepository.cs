@@ -6,16 +6,7 @@ using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EAMS_DAL.Repository
 {
@@ -1361,12 +1352,24 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region SlotManagement
-        public Task<SlotManagement> SlotManagement(SlotManagement slotManagement)
+        public async Task<Response> AddEventSlot(List<SlotManagementMaster> slotManagement)
         {
-            throw new NotImplementedException();
+            
+            _context.SlotManagement.AddRange(slotManagement);
+            _context.SaveChanges();
+
+            return new Response()
+            {Status=RequestStatusEnum.OK
+               
+            };
+        }
+
+        public async Task<List<SlotManagementMaster>> GetEventSlotList()
+        {
+             return await _context.SlotManagement.ToListAsync();
         }
         #endregion
 
-       
+
     }
 }

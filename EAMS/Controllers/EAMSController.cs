@@ -9,6 +9,7 @@ using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EAMS.Controllers
 {
@@ -1152,10 +1153,45 @@ namespace EAMS.Controllers
         #endregion
 
         #region EventSlotManagement
-        [HttpPost ("EventSlotManagement")]
-        public async Task<IActionResult> EventSlotManagement(SlotManagementViewModel slotManagementViewModel)
+        [HttpPost]
+        [Route("AddEventSlot")]
+        public async Task<IActionResult> AddEventSlot(SlotManagementViewModel slotManagementViewModel)
         {
-            return Ok();
+            var slotManagements = _mapper.Map<List<SlotManagementMaster>>(slotManagementViewModel);
+ 
+                var result = await _EAMSService.AddEventSlot(slotManagements);
+
+            switch (result.Status)
+            {
+                case RequestStatusEnum.OK:
+                    return Ok(result.Message);
+                case RequestStatusEnum.BadRequest:
+                    return BadRequest(result.Message);
+                case RequestStatusEnum.NotFound:
+                    return NotFound(result.Message);
+
+                default:
+                    return StatusCode(500, "Internal Server Error");
+            } 
+        }
+
+        [HttpGet]
+        [Route("GetEventSlotListById")]
+        public async Task<IActionResult> GetEventSlotList(int stateMasterId,int EventId)
+        {
+            var result = await _EAMSService.GetEventSlotList();
+            if(result is not null)
+            {
+
+                return Ok(result);
+            }
+            else
+            {
+
+                return BadRequest();
+            }
+
+
         }
         #endregion
 

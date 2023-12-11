@@ -210,7 +210,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsSetupOfPolling = electionInfoMaster.IsSetupOfPolling;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -223,7 +223,7 @@ namespace EAMS_BLL.Services
                         }
                         else
                         {
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Reached Yet." };
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Not Arrived Yet." };
 
                         }
                     case 4:
@@ -234,7 +234,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsMockPollDone = electionInfoMaster.IsMockPollDone;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -259,7 +259,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsPollStarted = electionInfoMaster.IsPollStarted;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -284,7 +284,7 @@ namespace EAMS_BLL.Services
                         {
                             electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
                             electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                            return await _eamsRepository.EventActivity(electionInfoMaster);
+                            return await _eamsRepository.EventActivity(electionInfoRecord);
                         }
                         else
                         {
@@ -307,7 +307,7 @@ namespace EAMS_BLL.Services
                                 {
                                     electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
                                 {
@@ -336,9 +336,9 @@ namespace EAMS_BLL.Services
                         {
                             if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
                             {
-                                electionInfoRecord.IsPollEnded = true;
+                                electionInfoRecord.IsPollEnded = electionInfoMaster.IsPollEnded;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -362,9 +362,9 @@ namespace EAMS_BLL.Services
                             {
                                 if (electionInfoRecord.IsPartyDeparted == false || electionInfoRecord.IsMCESwitchOff == null)
                                 {
-                                    electionInfoRecord.IsMCESwitchOff = true;
+                                    electionInfoRecord.IsMCESwitchOff = electionInfoMaster.IsMCESwitchOff;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
                                 {
@@ -394,9 +394,9 @@ namespace EAMS_BLL.Services
                             {
                                 if (electionInfoRecord.IsPartyReachedCollectionCenter == false || electionInfoRecord.IsPartyReachedCollectionCenter == null)
                                 {
-                                    electionInfoRecord.IsPartyDeparted = true;
+                                    electionInfoRecord.IsPartyDeparted = electionInfoMaster.IsPartyDeparted;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
                                 {
@@ -426,9 +426,9 @@ namespace EAMS_BLL.Services
                             {
                                 if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
                                 {
-                                    electionInfoRecord.IsPartyReachedCollectionCenter = true;
+                                    electionInfoRecord.IsPartyReachedCollectionCenter = electionInfoMaster.IsPartyReachedCollectionCenter;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                    return await _eamsRepository.EventActivity(electionInfoMaster);
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
                                 {
@@ -440,7 +440,7 @@ namespace EAMS_BLL.Services
                             else
                             {
                                 // already status Yes
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Reached Already Yes." };
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Party Arrived Already Yes." };
 
                             }
 
@@ -457,9 +457,9 @@ namespace EAMS_BLL.Services
 
                             if (electionInfoRecord.IsEVMDeposited == false || electionInfoRecord.IsEVMDeposited == null)
                             {
-                                electionInfoRecord.IsEVMDeposited = true;
+                                electionInfoRecord.IsEVMDeposited = electionInfoMaster.IsEVMDeposited;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoMaster);
+                                return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
                             {
@@ -499,6 +499,15 @@ namespace EAMS_BLL.Services
         public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             return await _eamsRepository.GetDashBoardCount();
+        }
+
+
+        #endregion
+
+        #region SlotManagement
+        public Task<SlotManagement> SlotManagement(SlotManagement slotManagement)
+        {
+            throw new NotImplementedException();
         }
         #endregion
     }

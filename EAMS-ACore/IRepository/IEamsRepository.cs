@@ -72,5 +72,9 @@ namespace EAMS_ACore.IRepository
         #region SendDashBoardCount
         Task<DashBoardRealTimeCount> GetDashBoardCount();
         #endregion
+
+        #region SlotManagement
+        Task<SlotManagement> SlotManagement(SlotManagement slotManagement);
+        #endregion
     }
 }

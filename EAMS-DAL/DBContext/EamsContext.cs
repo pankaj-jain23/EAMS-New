@@ -29,6 +29,8 @@ public partial class EamsContext :IdentityDbContext<UserRegistration>
     public virtual DbSet<StateMaster> StateMaster { get; set; }
     public virtual DbSet<SectorOfficerMaster> SectorOfficerMaster { get; set; }
     public virtual DbSet<ElectionInfoMaster> ElectionInfoMaster { get; set; }
+    public virtual DbSet<SlotManagement> SlotManagement { get; set; }
+    
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

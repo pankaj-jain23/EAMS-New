@@ -27,6 +27,38 @@ namespace EAMS_DAL.Repository
             _context = context;
         }
 
+        #region Common method
+        private DateTime? ConvertStringToUtcDateTime(string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                return null;
+            }
+
+            DateTime dateTime = DateTime.ParseExact(dateString, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            var dateTime1 = ConvertToUtc(dateTime);
+
+            return dateTime1;
+        }
+
+        private DateTime? ConvertToUtc(DateTime? dateTime)
+        {
+
+            if (dateTime.HasValue)
+            {
+                // Specify the time zone for India (Indian Standard Time, IST)
+                TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+                // Convert the local time to UTC
+                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(dateTime.Value, indianTimeZone);
+
+                // Ensure the kind of the resulting DateTime is DateTimeKind.Utc
+                return DateTime.SpecifyKind(utcTime, DateTimeKind.Utc);
+            }
+
+            return null;
+        }
+        #endregion
 
         #region State Master
 
@@ -1194,37 +1226,13 @@ namespace EAMS_DAL.Repository
 
         #endregion
 
-        #region Common method
-        private DateTime? ConvertStringToUtcDateTime(string dateString)
+        #region SlotManagement
+        public Task<SlotManagement> SlotManagement(SlotManagement slotManagement)
         {
-            if (string.IsNullOrEmpty(dateString))
-            {
-                return null;
-            }
-
-            DateTime dateTime = DateTime.ParseExact(dateString, "dd-MM-yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
-            var dateTime1 = ConvertToUtc(dateTime);
-
-            return dateTime1;
-        }
-
-        private DateTime? ConvertToUtc(DateTime? dateTime)
-        {
-
-            if (dateTime.HasValue)
-            {
-                // Specify the time zone for India (Indian Standard Time, IST)
-                TimeZoneInfo indianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-
-                // Convert the local time to UTC
-                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(dateTime.Value, indianTimeZone);
-
-                // Ensure the kind of the resulting DateTime is DateTimeKind.Utc
-                return DateTime.SpecifyKind(utcTime, DateTimeKind.Utc);
-            }
-
-            return null;
+            throw new NotImplementedException();
         }
         #endregion
+
+       
     }
 }

@@ -4,6 +4,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
+using Microsoft.Extensions.Logging;
 
 namespace EAMS_BLL.Services
 {
@@ -138,6 +139,7 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetBoothListByEventId(eventId, soId);
         }
+       
         #endregion
 
         #region PCMaster

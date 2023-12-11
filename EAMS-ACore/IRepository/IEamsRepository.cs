@@ -51,7 +51,7 @@ namespace EAMS_ACore.IRepository
         Task<List<EventMaster>> GetEventList();
         Task<Response> UpdateEventById(EventMaster eventMaster);
         Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
-
+        
         #endregion
 
         #region PCMaster

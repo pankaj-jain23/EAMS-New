@@ -699,6 +699,29 @@ namespace EAMS.Controllers
 
         }
 
+        [HttpGet]
+        [Route("GetBoothStatusByEventIdforARO")]
+        public async Task<IActionResult> GetBoothStatusByEventIdforARO(string eventId, string soId)
+        {
+           
+            var eventWiseBoothList = await _EAMSService.GetBoothListByEventId(eventId, soId);
+
+            if (eventWiseBoothList != null)
+            {
+                var data = new
+                {
+                    count = eventWiseBoothList.Count,
+                    data = eventWiseBoothList
+                };
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+
+        }
+
 
         #endregion
 

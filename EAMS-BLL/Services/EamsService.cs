@@ -139,7 +139,11 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetBoothListByEventId(eventId, soId);
         }
-       
+        public async Task<List<EventWiseBooth>> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId)
+        {
+            return await _eamsRepository.GetBoothStatusforARO(assemblyMasterId, boothMasterId);
+        }
+
         #endregion
 
         #region PCMaster

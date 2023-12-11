@@ -724,6 +724,32 @@ namespace EAMS.Controllers
         }
 
 
+
+
+        [HttpGet]
+        [Route("GetBoothStatusforARO")]
+        public async Task<IActionResult> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId)
+        {
+
+            var eventWiseBoothList = await _EAMSService.GetBoothStatusforARO(assemblyMasterId, boothMasterId);
+
+            if (eventWiseBoothList != null)
+            {
+                var data = new
+                {
+                    count = eventWiseBoothList.Count,
+                    data = eventWiseBoothList
+                };
+                return Ok(data);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+
+        }
+
+
         #endregion
 
         #region PC 

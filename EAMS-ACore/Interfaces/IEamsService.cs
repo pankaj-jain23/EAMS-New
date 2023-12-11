@@ -54,8 +54,8 @@ namespace EAMS_ACore.Interfaces
         Task<List<EventMaster>> GetEventList();
         Task<Response> UpdateEventById(EventMaster eventMaster);
         Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
+        Task<List<EventWiseBooth>> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId);
 
-       
         #endregion
 
         #region PCMaster

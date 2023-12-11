@@ -6,6 +6,9 @@ using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace EAMS_DAL.Repository
@@ -1006,7 +1009,200 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
+        public async Task<List<EventWiseBooth>> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId)
+        {
+            var soTotalBooths = _context.BoothMaster.FirstOrDefault(d =>
+                   d.BoothMasterId == Convert.ToInt32(boothMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId));
 
+
+            List<EventWiseBooth> eventwiseboothlist = new List<EventWiseBooth>();
+            var electioInfoRecord = _context.ElectionInfoMaster.FirstOrDefault(d =>
+                   d.BoothMasterId == Convert.ToInt32(boothMasterId) && d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId));
+
+            var event_lits = _context.EventMaster.Where(p => p.Status == true).OrderBy(p => p.EventSequence).ToList();
+
+            if(electioInfoRecord is not null)
+            {
+                foreach (var eventList in event_lits)
+                {
+                    if (eventList.EventMasterId == 1)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode= soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPartyDispatched ?? false
+                        };
+
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 2)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPartyReached ?? false
+                        };
+
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 3)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsSetupOfPolling ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 4)
+                    {
+
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsMockPollDone ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 5)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPollStarted ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    //else if (eventList.EventMasterId == 7)
+                    //{
+                    //    EventWiseBooth model = new EventWiseBooth()
+                    //    {
+                    //        EventMasterId = eventList.EventMasterId,
+                    //        EventName = eventList.EventName,
+                    //        AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                    //        BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                    //        BoothName = soTotalBooths.BoothName,
+                    //        UpdateStatus = electioInfoRecord.VoterInQueue ?? false
+                    //    };
+                    //    eventwiseboothlist.Add(model);
+                    //}
+                    //else if (eventList.EventMasterId == 8)
+                    //{
+                    //    EventWiseBooth model = new EventWiseBooth()
+                    //    {
+                    //        EventMasterId = eventList.EventMasterId,
+                    //        EventName = eventList.EventName,
+                    //        AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                    //        BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                    //        BoothName = soTotalBooths.BoothName,
+                    //        UpdateStatus = electioInfoRecord.VoterInQueue ?? false
+                    //    };
+                    //    eventwiseboothlist.Add(model);
+                    //}
+                    else if (eventList.EventMasterId == 9)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPollEnded ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 10)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsMCESwitchOff ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 11)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPartyDeparted ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 12)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsPartyReachedCollectionCenter ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 13)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = electioInfoRecord.IsEVMDeposited ?? false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+
+                }
+
+            }
+            
+
+
+            return eventwiseboothlist;
+        }
         private bool GetUpdateStatus(string eventId, ElectionInfoMaster electioInfoRecord)
         {
             switch (eventId)
@@ -1076,7 +1272,7 @@ namespace EAMS_DAL.Repository
 
                 if (electionRecord != null)
                 {
-                    
+
                     _context.ElectionInfoMaster.Update(electionInfoMaster);
                     _context.SaveChanges();
                     return new Response { Status = RequestStatusEnum.OK, Message = "Status Updated Successfully" };
@@ -1085,7 +1281,7 @@ namespace EAMS_DAL.Repository
                 {
                     if (boothExists == true)
                     {
-                        
+
                         if (electionInfoMaster.EventMasterId == 1)
                         {
 
@@ -1354,19 +1550,20 @@ namespace EAMS_DAL.Repository
         #region SlotManagement
         public async Task<Response> AddEventSlot(List<SlotManagementMaster> slotManagement)
         {
-            
+
             _context.SlotManagement.AddRange(slotManagement);
             _context.SaveChanges();
 
             return new Response()
-            {Status=RequestStatusEnum.OK
-               
+            {
+                Status = RequestStatusEnum.OK
+
             };
         }
 
         public async Task<List<SlotManagementMaster>> GetEventSlotList()
         {
-             return await _context.SlotManagement.ToListAsync();
+            return await _context.SlotManagement.ToListAsync();
         }
         #endregion
 

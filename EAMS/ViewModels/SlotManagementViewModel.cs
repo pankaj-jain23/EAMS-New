@@ -10,9 +10,10 @@
     public class SlotTimeViewModel
     {
         public int SlotSequenceNumber { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public DateTime? LockTime { get; set; }
+        public string? StartDate { get; set; }
+        public string? StartTime { get; set; }
+        public string? EndTime { get; set; }
+        public string? LockTime { get; set; }
         public bool IsLastSlot { get; set; }
     }
 }

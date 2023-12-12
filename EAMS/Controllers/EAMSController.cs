@@ -1053,7 +1053,7 @@ namespace EAMS.Controllers
         {
                     int voterturnotEventId = 6;
                     var result = await _EAMSService.GetLastUpdatedPollDetail(stateId,districtId,assemblyId,boothMasterId,voterturnotEventId);
-           
+          
             return Ok(result);
         }
         private async Task<Response> VoterInQueue(ElectionInfoViewModel electionInfoViewModel)
@@ -1169,7 +1169,7 @@ namespace EAMS.Controllers
         #region Event Wise Booth Status
         [HttpGet]
         [Route("EventWiseBoothStatus")]
-        [Authorize(Roles = "SO")]
+       // [Authorize(Roles = "SO")]
         public async Task<IActionResult> EventWiseBoothStatus()
         {
             var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
@@ -1207,7 +1207,7 @@ namespace EAMS.Controllers
 
                 default:
                     return StatusCode(500, "Internal Server Error");
-            }
+            } 
         }
 
         [HttpGet]

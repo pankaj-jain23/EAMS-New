@@ -1348,9 +1348,9 @@ namespace EAMS_DAL.Repository
                         if (SlotRecordMasterId > 0)
                         {
                             var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
-                            if(polldetail is not null)
+                            if (polldetail is not null)
                             {
-                                 model = new VoterTurnOutPolledDetailViewModel()
+                                model = new VoterTurnOutPolledDetailViewModel()
                                 {
                                     StateMasterId = boothExists.StateMasterId,
                                     DistrictMasterId = boothExists.DistrictMasterId,
@@ -1362,14 +1362,14 @@ namespace EAMS_DAL.Repository
                                     EndTime = SlotRecord.EndTime,
                                     LockTime = SlotRecord.LockTime,
                                     IsLastSlot = SlotRecord.IsLastSlot,
-                                    Message="Slot is Available"
+                                    Message = "Slot is Available"
 
 
                                 };
                             }
                             else
                             {
-                                 model = new VoterTurnOutPolledDetailViewModel()
+                                model = new VoterTurnOutPolledDetailViewModel()
                                 {
                                     StateMasterId = boothExists.StateMasterId,
                                     DistrictMasterId = boothExists.DistrictMasterId,
@@ -1387,23 +1387,18 @@ namespace EAMS_DAL.Repository
 
                                 };
                             }
-                          
+
                         }
                         else
                         {
                             //Slot not available
-                             model = new VoterTurnOutPolledDetailViewModel()
+                            model = new VoterTurnOutPolledDetailViewModel()
                             {
                                 StateMasterId = boothExists.StateMasterId,
                                 DistrictMasterId = boothExists.DistrictMasterId,
                                 AssemblyMasterId = boothExists.AssemblyMasterId,
                                 TotalVoters = boothExists.TotalVoters,
                                 VotesPolled = 0,
-                                VotesPolledRecivedTime = null,
-                                StartTime = null,
-                                EndTime = null,
-                                LockTime = null,
-                                IsLastSlot = null,
                                 Message = "Slot Not Available"
 
 
@@ -1415,7 +1410,7 @@ namespace EAMS_DAL.Repository
                     else
                     {
                         //no slots in teh database
-                         model = new VoterTurnOutPolledDetailViewModel()
+                        model = new VoterTurnOutPolledDetailViewModel()
                         {
                             StateMasterId = boothExists.StateMasterId,
                             DistrictMasterId = boothExists.DistrictMasterId,
@@ -1423,10 +1418,6 @@ namespace EAMS_DAL.Repository
                             TotalVoters = 0,
                             VotesPolled = 0,
                             VotesPolledRecivedTime = null,
-                            StartTime = null,
-                            EndTime = null,
-                            LockTime = null,
-                            IsLastSlot = null,
                             Message = "Booth Record Doesn't Exists."
 
 
@@ -1439,7 +1430,7 @@ namespace EAMS_DAL.Repository
                 else
                 {
                     //no record found
-                     model = new VoterTurnOutPolledDetailViewModel()
+                    model = new VoterTurnOutPolledDetailViewModel()
                     {
                         StateMasterId = boothExists.StateMasterId,
                         DistrictMasterId = boothExists.DistrictMasterId,
@@ -1447,10 +1438,6 @@ namespace EAMS_DAL.Repository
                         TotalVoters = 0,
                         VotesPolled = 0,
                         VotesPolledRecivedTime = null,
-                        StartTime = null,
-                        EndTime = null,
-                        LockTime = null,
-                        IsLastSlot = null,
                         Message = "No Slot Created in the Database."
 
 
@@ -1460,18 +1447,9 @@ namespace EAMS_DAL.Repository
             }
             catch (Exception ex)
             {
-                 model = new VoterTurnOutPolledDetailViewModel()
+                model = new VoterTurnOutPolledDetailViewModel()
                 {
-                    StateMasterId = 0,
-                    DistrictMasterId = 0,
-                    AssemblyMasterId = 0,
-                    TotalVoters = 0,
-                    VotesPolled = 0,
-                    VotesPolledRecivedTime = null,
-                    StartTime = null,
-                    EndTime = null,
-                    LockTime = null,
-                    IsLastSlot = null,
+
                     Message = ex.Message
 
 
@@ -1484,35 +1462,27 @@ namespace EAMS_DAL.Repository
         public int GetSlot(List<SlotManagementMaster> slotLists)
         {
             int slotId = 0;
-            string currentTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm");
-            DateTime currentTimeParsed = DateTime.ParseExact(currentTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
+            DateTime currentTime = DateTime.Now;
+
             foreach (var slot in slotLists)
             {
+                // Assuming slot.EndTime is a DateTime or a string in "HH:mm" format
+                DateTime endTime = DateTime.ParseExact(slot.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                DateTime lockTime = DateTime.ParseExact(slot.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
-                DateTime dt1 = Convert.ToDateTime(slot.StartTime);
-                string startTime = dt1.ToString("MM/dd/yyyy hh:mm");
-                DateTime startTimeParsed = DateTime.ParseExact(startTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
-
-                DateTime dt_end = Convert.ToDateTime(slot.EndTime);
-                string endTime = dt_end.ToString("MM/dd/yyyy hh:mm");
-                DateTime endTimeParsed = DateTime.ParseExact(endTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
-
-
-                DateTime dt_lock = Convert.ToDateTime(slot.LockTime);
-                string lockTime = dt_lock.ToString("MM/dd/yyyy hh:mm");
-                DateTime lockTimeParsed = DateTime.ParseExact(lockTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
-
-                if (currentTimeParsed >= endTimeParsed && currentTimeParsed <= lockTimeParsed)
+                // Compare the DateTime objects
+                if (currentTime >= endTime && currentTime <= lockTime)
                 {
+                    // If the current time is greater than or equal to the slot's end time,
+                    // and other conditions are met, set the slotId and exit the loop
                     slotId = slot.SlotManagementId;
-                    break; // If you found the slot, you can exit the loop
+                    break;
                 }
             }
 
-
-
             return slotId;
         }
+
 
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
         {

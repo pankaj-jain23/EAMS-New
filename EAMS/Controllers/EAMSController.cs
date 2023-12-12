@@ -1049,10 +1049,10 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetLastUpdatedPollDetail")]
-        public async Task<IActionResult> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId)
+        public async Task<IActionResult> GetLastUpdatedPollDetail(string boothMasterId)
         {
             int voterturnotEventId = 6;
-            var result = await _EAMSService.GetLastUpdatedPollDetail(stateId, districtId, assemblyId, boothMasterId, voterturnotEventId);
+            var result = await _EAMSService.GetLastUpdatedPollDetail(boothMasterId, voterturnotEventId);
             if (result is not null)
             {
                 return Ok(result);

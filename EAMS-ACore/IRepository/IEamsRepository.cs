@@ -61,7 +61,7 @@ namespace EAMS_ACore.IRepository
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
-        Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId,int eventid);
+        Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId,int eventid);
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);

@@ -1331,15 +1331,13 @@ namespace EAMS_DAL.Repository
             return electionInfoRecord;
         }
 
-        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId, int eventmasterid)
+        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventmasterid)
         {
             VoterTurnOutPolledDetailViewModel model;
             try
-            {
-                var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == Convert.ToInt32(stateId) && p.DistrictMasterId == Convert.ToInt32(districtId)).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
-                var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == Convert.ToInt32(stateId) && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
-
-                var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == Convert.ToInt32(stateId) && p.DistrictMasterId == Convert.ToInt32(districtId)).FirstOrDefaultAsync();
+            {    var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
+                var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
                 if (boothExists is not null)
                 {
                     if (slotsList is not null) // any1 slot is there in poll table 
@@ -1352,15 +1350,14 @@ namespace EAMS_DAL.Repository
                             {
                                 model = new VoterTurnOutPolledDetailViewModel()
                                 {
-                                    StateMasterId = boothExists.StateMasterId,
-                                    DistrictMasterId = boothExists.DistrictMasterId,
-                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                   BoothMasterId= boothExists.BoothMasterId,
                                     TotalVoters = boothExists.TotalVoters,
                                     VotesPolled = polldetail.VotesPolled,
                                     VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
                                     StartTime = SlotRecord.StartTime,
                                     EndTime = SlotRecord.EndTime,
                                     LockTime = SlotRecord.LockTime,
+                                    VoteEnabled=true, // but freeze it if already entered for thi sslot
                                     IsLastSlot = SlotRecord.IsLastSlot,
                                     Message = "Slot is Available"
 
@@ -1371,9 +1368,7 @@ namespace EAMS_DAL.Repository
                             {
                                 model = new VoterTurnOutPolledDetailViewModel()
                                 {
-                                    StateMasterId = boothExists.StateMasterId,
-                                    DistrictMasterId = boothExists.DistrictMasterId,
-                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                    BoothMasterId = boothExists.BoothMasterId,
                                     TotalVoters = boothExists.TotalVoters,
                                     VotesPolled = 0,
                                     VotesPolledRecivedTime = null,
@@ -1381,6 +1376,7 @@ namespace EAMS_DAL.Repository
                                     EndTime = SlotRecord.EndTime,
                                     LockTime = SlotRecord.LockTime,
                                     IsLastSlot = SlotRecord.IsLastSlot,
+                                    VoteEnabled = true,
                                     Message = "Slot is Available"
 
 
@@ -1394,11 +1390,10 @@ namespace EAMS_DAL.Repository
                             //Slot not available
                             model = new VoterTurnOutPolledDetailViewModel()
                             {
-                                StateMasterId = boothExists.StateMasterId,
-                                DistrictMasterId = boothExists.DistrictMasterId,
-                                AssemblyMasterId = boothExists.AssemblyMasterId,
+                                BoothMasterId = boothExists.BoothMasterId,
                                 TotalVoters = boothExists.TotalVoters,
                                 VotesPolled = 0,
+                                VoteEnabled = false,
                                 Message = "Slot Not Available"
 
 
@@ -1412,12 +1407,11 @@ namespace EAMS_DAL.Repository
                         //no slots in teh database
                         model = new VoterTurnOutPolledDetailViewModel()
                         {
-                            StateMasterId = boothExists.StateMasterId,
-                            DistrictMasterId = boothExists.DistrictMasterId,
-                            AssemblyMasterId = boothExists.AssemblyMasterId,
+                            BoothMasterId = boothExists.BoothMasterId,
                             TotalVoters = 0,
                             VotesPolled = 0,
                             VotesPolledRecivedTime = null,
+                            VoteEnabled = false,
                             Message = "Booth Record Doesn't Exists."
 
 
@@ -1432,12 +1426,11 @@ namespace EAMS_DAL.Repository
                     //no record found
                     model = new VoterTurnOutPolledDetailViewModel()
                     {
-                        StateMasterId = boothExists.StateMasterId,
-                        DistrictMasterId = boothExists.DistrictMasterId,
-                        AssemblyMasterId = boothExists.AssemblyMasterId,
+                        BoothMasterId = boothExists.BoothMasterId,
                         TotalVoters = 0,
                         VotesPolled = 0,
                         VotesPolledRecivedTime = null,
+                        VoteEnabled = false,
                         Message = "No Slot Created in the Database."
 
 

@@ -25,7 +25,7 @@ namespace EAMS_ACore.Models
         public bool? IsLastSlot { get; set; }
         [JsonIgnore]
         public bool? IsSucceed { get; set; }
-
+        public bool? VoteEnabled { get; set; }
         public string? Message { get; set; }
 
 

@@ -500,9 +500,9 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.EventWiseBoothStatus(soId);
         }
 
-        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId, int eventid)
+        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid)
         {
-            return await _eamsRepository.GetLastUpdatedPollDetail(stateId, districtId, assemblyId, boothMasterId, eventid);
+            return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
             
         }
 

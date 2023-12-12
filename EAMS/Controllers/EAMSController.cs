@@ -1047,6 +1047,15 @@ namespace EAMS.Controllers
             return result;
         }
 
+        [HttpGet]
+        [Route("GetLastUpdatedPollDetail")]
+        public async Task<IActionResult> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId)
+        {
+                    int voterturnotEventId = 6;
+                    var result = await _EAMSService.GetLastUpdatedPollDetail(stateId,districtId,assemblyId,boothMasterId,voterturnotEventId);
+           
+            return Ok(result);
+        }
         private async Task<Response> VoterInQueue(ElectionInfoViewModel electionInfoViewModel)
         {
             ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()

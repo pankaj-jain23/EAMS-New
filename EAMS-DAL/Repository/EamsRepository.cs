@@ -7,6 +7,7 @@ using EAMS_DAL.DBContext;
 using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -51,6 +52,18 @@ namespace EAMS_DAL.Repository
             }
 
             return null;
+        }
+
+
+        private DateTime? BharatDateTime()
+        {
+            DateTime dateTime = DateTime.Now;
+            DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
+            TimeSpan istOffset = TimeSpan.FromHours(5) + TimeSpan.FromMinutes(30);
+            TimeZoneInfo istTimeZone = TimeZoneInfo.CreateCustomTimeZone("IST", istOffset, "IST", "IST");
+            DateTime hiINDateTime = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, istTimeZone);
+
+            return DateTime.SpecifyKind(hiINDateTime, DateTimeKind.Utc);
         }
         #endregion
 
@@ -1021,7 +1034,7 @@ namespace EAMS_DAL.Repository
 
             var event_lits = _context.EventMaster.Where(p => p.Status == true).OrderBy(p => p.EventSequence).ToList();
 
-            if(electioInfoRecord is not null)
+            if (electioInfoRecord is not null)
             {
                 foreach (var eventList in event_lits)
                 {
@@ -1034,7 +1047,7 @@ namespace EAMS_DAL.Repository
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
-                            BoothCode= soTotalBooths.BoothCode_No,
+                            BoothCode = soTotalBooths.BoothCode_No,
                             UpdateStatus = electioInfoRecord.IsPartyDispatched ?? false
                         };
 
@@ -1198,7 +1211,7 @@ namespace EAMS_DAL.Repository
                 }
 
             }
-            
+
 
 
             return eventwiseboothlist;
@@ -1316,6 +1329,189 @@ namespace EAMS_DAL.Repository
             && d.BoothMasterId == electionInfoMaster.BoothMasterId
             ).FirstOrDefault();
             return electionInfoRecord;
+        }
+
+        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId, int eventmasterid)
+        {
+            VoterTurnOutPolledDetailViewModel model;
+            try
+            {
+                var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == Convert.ToInt32(stateId) && p.DistrictMasterId == Convert.ToInt32(districtId)).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
+                var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == Convert.ToInt32(stateId) && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
+
+                var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == Convert.ToInt32(stateId) && p.DistrictMasterId == Convert.ToInt32(districtId)).FirstOrDefaultAsync();
+                if (boothExists is not null)
+                {
+                    if (slotsList is not null) // any1 slot is there in poll table 
+                    {
+                        int SlotRecordMasterId = GetSlot(slotsList);
+                        if (SlotRecordMasterId > 0)
+                        {
+                            var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
+                            if(polldetail is not null)
+                            {
+                                 model = new VoterTurnOutPolledDetailViewModel()
+                                {
+                                    StateMasterId = boothExists.StateMasterId,
+                                    DistrictMasterId = boothExists.DistrictMasterId,
+                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                    TotalVoters = boothExists.TotalVoters,
+                                    VotesPolled = polldetail.VotesPolled,
+                                    VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                    StartTime = SlotRecord.StartTime,
+                                    EndTime = SlotRecord.EndTime,
+                                    LockTime = SlotRecord.LockTime,
+                                    IsLastSlot = SlotRecord.IsLastSlot,
+                                    Message="Slot is Available"
+
+
+                                };
+                            }
+                            else
+                            {
+                                 model = new VoterTurnOutPolledDetailViewModel()
+                                {
+                                    StateMasterId = boothExists.StateMasterId,
+                                    DistrictMasterId = boothExists.DistrictMasterId,
+                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                    TotalVoters = boothExists.TotalVoters,
+                                    VotesPolled = 0,
+                                    VotesPolledRecivedTime = null,
+                                    StartTime = SlotRecord.StartTime,
+                                    EndTime = SlotRecord.EndTime,
+                                    LockTime = SlotRecord.LockTime,
+                                    IsLastSlot = SlotRecord.IsLastSlot,
+                                    Message = "Slot is Available"
+
+
+
+                                };
+                            }
+                          
+                        }
+                        else
+                        {
+                            //Slot not available
+                             model = new VoterTurnOutPolledDetailViewModel()
+                            {
+                                StateMasterId = boothExists.StateMasterId,
+                                DistrictMasterId = boothExists.DistrictMasterId,
+                                AssemblyMasterId = boothExists.AssemblyMasterId,
+                                TotalVoters = boothExists.TotalVoters,
+                                VotesPolled = 0,
+                                VotesPolledRecivedTime = null,
+                                StartTime = null,
+                                EndTime = null,
+                                LockTime = null,
+                                IsLastSlot = null,
+                                Message = "Slot Not Available"
+
+
+
+                            };
+                        }
+                    }
+
+                    else
+                    {
+                        //no slots in teh database
+                         model = new VoterTurnOutPolledDetailViewModel()
+                        {
+                            StateMasterId = boothExists.StateMasterId,
+                            DistrictMasterId = boothExists.DistrictMasterId,
+                            AssemblyMasterId = boothExists.AssemblyMasterId,
+                            TotalVoters = 0,
+                            VotesPolled = 0,
+                            VotesPolledRecivedTime = null,
+                            StartTime = null,
+                            EndTime = null,
+                            LockTime = null,
+                            IsLastSlot = null,
+                            Message = "Booth Record Doesn't Exists."
+
+
+
+                        };
+                    }
+
+
+                }
+                else
+                {
+                    //no record found
+                     model = new VoterTurnOutPolledDetailViewModel()
+                    {
+                        StateMasterId = boothExists.StateMasterId,
+                        DistrictMasterId = boothExists.DistrictMasterId,
+                        AssemblyMasterId = boothExists.AssemblyMasterId,
+                        TotalVoters = 0,
+                        VotesPolled = 0,
+                        VotesPolledRecivedTime = null,
+                        StartTime = null,
+                        EndTime = null,
+                        LockTime = null,
+                        IsLastSlot = null,
+                        Message = "No Slot Created in the Database."
+
+
+
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                 model = new VoterTurnOutPolledDetailViewModel()
+                {
+                    StateMasterId = 0,
+                    DistrictMasterId = 0,
+                    AssemblyMasterId = 0,
+                    TotalVoters = 0,
+                    VotesPolled = 0,
+                    VotesPolledRecivedTime = null,
+                    StartTime = null,
+                    EndTime = null,
+                    LockTime = null,
+                    IsLastSlot = null,
+                    Message = ex.Message
+
+
+
+                };
+            }
+            return model;
+        }
+
+        public int GetSlot(List<SlotManagementMaster> slotLists)
+        {
+            int slotId = 0;
+            string currentTime = DateTime.Now.ToString("MM/dd/yyyy hh:mm");
+            DateTime currentTimeParsed = DateTime.ParseExact(currentTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
+            foreach (var slot in slotLists)
+            {
+
+                DateTime dt1 = Convert.ToDateTime(slot.StartTime);
+                string startTime = dt1.ToString("MM/dd/yyyy hh:mm");
+                DateTime startTimeParsed = DateTime.ParseExact(startTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
+
+                DateTime dt_end = Convert.ToDateTime(slot.EndTime);
+                string endTime = dt_end.ToString("MM/dd/yyyy hh:mm");
+                DateTime endTimeParsed = DateTime.ParseExact(endTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
+
+
+                DateTime dt_lock = Convert.ToDateTime(slot.LockTime);
+                string lockTime = dt_lock.ToString("MM/dd/yyyy hh:mm");
+                DateTime lockTimeParsed = DateTime.ParseExact(lockTime, "MM/dd/yyyy hh:mm", CultureInfo.InvariantCulture);
+
+                if (currentTimeParsed >= endTimeParsed && currentTimeParsed <= lockTimeParsed)
+                {
+                    slotId = slot.SlotManagementId;
+                    break; // If you found the slot, you can exit the loop
+                }
+            }
+
+
+
+            return slotId;
         }
 
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
@@ -1551,7 +1747,7 @@ namespace EAMS_DAL.Repository
         public async Task<Response> AddEventSlot(List<SlotManagementMaster> slotManagement)
         {
 
-            _context.SlotManagement.AddRange(slotManagement);
+            _context.SlotManagementMaster.AddRange(slotManagement);
             _context.SaveChanges();
 
             return new Response()
@@ -1563,7 +1759,7 @@ namespace EAMS_DAL.Repository
 
         public async Task<List<SlotManagementMaster>> GetEventSlotList()
         {
-            return await _context.SlotManagement.ToListAsync();
+            return await _context.SlotManagementMaster.ToListAsync();
         }
         #endregion
 

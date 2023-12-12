@@ -4,7 +4,9 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
+using EAMS_DAL.Migrations;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace EAMS_BLL.Services
 {
@@ -498,11 +500,15 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.EventWiseBoothStatus(soId);
         }
 
+        public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string stateId, string districtId, string assemblyId, string boothMasterId, int eventid)
+        {
+            return await _eamsRepository.GetLastUpdatedPollDetail(stateId, districtId, assemblyId, boothMasterId, eventid);
+            
+        }
 
         #endregion
-
         #region SendDashBoardCount 
-        public async Task<DashBoardRealTimeCount> GetDashBoardCount()
+                public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             return await _eamsRepository.GetDashBoardCount();
         }

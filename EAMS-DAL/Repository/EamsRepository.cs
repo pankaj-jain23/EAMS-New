@@ -1768,7 +1768,8 @@ namespace EAMS_DAL.Repository
             List<EventWiseBoothStatus> list = new List<EventWiseBoothStatus>();
 
             int totalPartyDispatched = 0; int totalPartyReached = 0; int totalIsetUpPolling = 0;
-            int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterinqueue = 0; int totalfinalvotes = 0;
+            int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterinqueue = 0;
+            int totalQueue = 0; int totalfinalvotes = 0;
             int totalpollended = 0; int totalmcevm = 0; int totalpartdeparted = 0; int totalpartycollectoncentre = 0;
             int totalevmdeposited = 0;
 
@@ -1814,6 +1815,10 @@ namespace EAMS_DAL.Repository
                     {
                         totalpollstarted += 1;
                     }
+                    if (electioInfoRecord.FinalTVote != null)
+                    {
+                        totalfinalvotes += 1;
+                    }
                     if (electioInfoRecord.IsPollEnded == true)
                     {
                         totalpollended += 1;
@@ -1843,6 +1848,7 @@ namespace EAMS_DAL.Repository
             pendingIsetUpPolling = soTotalBooths.Count - totalIsetUpPolling;
             pendingMockPoll = soTotalBooths.Count - totalmockpoll;
             pendingPollStarted = soTotalBooths.Count - totalpollstarted;
+            pendingFinalVotes = soTotalBooths.Count - totalfinalvotes;
             pendingPollEnded = soTotalBooths.Count - totalpollended;
             pendingMCEVM = soTotalBooths.Count - totalmcevm;
             pendingPartDeparted = soTotalBooths.Count - totalpartdeparted;
@@ -1901,6 +1907,36 @@ namespace EAMS_DAL.Repository
                     model.TotalBooths = soTotalBooths.Count;
                     list.Add(model);
                 }
+                else if (eventid.EventMasterId == 6)
+                {
+                    EventWiseBoothStatus model_turn = new EventWiseBoothStatus();
+                    model_turn.EventMasterId = 6;
+                    model_turn.EventName = event_lits.Where(p => p.EventMasterId == 6).Select(p => p.EventName).FirstOrDefault();
+                    model_turn.Completed = totalvoterinqueue;
+                    model_turn.Pending = soTotalBooths.Count;
+                    model_turn.TotalBooths = soTotalBooths.Count;
+                    list.Add(model_turn);
+                }
+                else if (eventid.EventMasterId == 7)
+                {
+                    EventWiseBoothStatus model_queue = new EventWiseBoothStatus();
+                    model_queue.EventMasterId = 7;
+                    model_queue.EventName = event_lits.Where(p => p.EventMasterId == 7).Select(p => p.EventName).FirstOrDefault();
+                    model_queue.Completed = totalQueue; 
+                    model_queue.Pending = pendingVoterInQueue;
+                    model_queue.TotalBooths = soTotalBooths.Count;
+                    list.Add(model_queue);
+                }
+                else if (eventid.EventMasterId == 8)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = event_lits.Where(p => p.EventMasterId == 8).Select(p => p.EventName).FirstOrDefault();
+                    model.Completed = totalfinalvotes;
+                    model.Pending = pendingFinalVotes;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
                 else if (eventid.EventMasterId == 9)
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
@@ -1952,9 +1988,12 @@ namespace EAMS_DAL.Repository
                     list.Add(model);
                 }
 
+               
+
             }
-
-
+           
+            
+           
             return list;
         }
 

@@ -517,7 +517,6 @@ namespace EAMS.Controllers
         }
 
 
-
         [HttpPost]
         [Route("BoothMapping")]
         public async Task<IActionResult> BoothMapping(BoothMappingViewModel boothMappingViewModel)
@@ -606,8 +605,6 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
-
-
 
         #endregion
 
@@ -856,6 +853,7 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
+              
                 case 7:
                     var res_voter_in_queue = await VoterInQueue(electionInfoViewModel);
                     switch (res_voter_in_queue.Status)
@@ -1063,6 +1061,29 @@ namespace EAMS.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Route("AddVoterTurnOut")]
+        public async Task<IActionResult> AddVoterTurnOut(string boothMasterId, string voterValue)
+        {
+                int eventTurnoutd = 6;
+                var result = await _EAMSService.AddVoterTurnOut(boothMasterId,eventTurnoutd, voterValue);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            
+           
+        }
+
         private async Task<Response> VoterInQueue(ElectionInfoViewModel electionInfoViewModel)
         {
             ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()

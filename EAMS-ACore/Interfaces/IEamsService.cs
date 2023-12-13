@@ -66,7 +66,8 @@ namespace EAMS_ACore.Interfaces
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid);
-            Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
+        Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
+        Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
         #endregion
 
         #region SendDashBoardCount

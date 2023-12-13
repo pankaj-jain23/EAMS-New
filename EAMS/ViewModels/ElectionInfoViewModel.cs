@@ -21,6 +21,9 @@ namespace EAMS.ViewModels
 
         public string? VoterInQueue { get; set; }
         public string? FinalVotes { get; set; }
+
+       /*** for Voter Turn Out**/
+       public int VoterValue { get; set; }
         //public string? SOUserId { get; set; }
         //public string? AROUserId { get; set; }
     }

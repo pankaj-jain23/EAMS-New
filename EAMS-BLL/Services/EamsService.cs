@@ -5,6 +5,7 @@ using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.Migrations;
+using EAMS_DAL.Repository;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 
@@ -501,14 +502,20 @@ namespace EAMS_BLL.Services
         }
 
         public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid)
+          
         {
             return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
             
         }
+    public async Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue)
+    {
+        return await _eamsRepository.AddVoterTurnOut(boothMasterId,eventid, voterValue);
 
-        #endregion
-        #region SendDashBoardCount 
-                public async Task<DashBoardRealTimeCount> GetDashBoardCount()
+    }
+
+    #endregion
+    #region SendDashBoardCount 
+    public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             return await _eamsRepository.GetDashBoardCount();
         }

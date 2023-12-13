@@ -234,8 +234,9 @@ namespace EAMS.Helper
              
             #region SlotManagement
             CreateMap<SlotTimeViewModel, SlotManagementMaster>()
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateOnly.Parse(src.StartDate)))
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.StartTime)))
+                //.ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.EndTime)))
+                //.ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.LockTime)))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.EndTime) ? null : (TimeOnly?)TimeOnly.Parse(src.EndTime)))
                 .ForMember(dest => dest.LockTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.LockTime) ? null : (TimeOnly?)TimeOnly.Parse(src.LockTime)))
                 .ForMember(dest => dest.SlotCreatedTime, opt => opt.MapFrom(src => DateTimeOffset.Now.ToUniversalTime()));

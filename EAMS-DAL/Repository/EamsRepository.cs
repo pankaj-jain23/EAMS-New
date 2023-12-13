@@ -10,7 +10,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Globalization;
+using System.Numerics;
 
 namespace EAMS_DAL.Repository
 {
@@ -1341,39 +1343,85 @@ namespace EAMS_DAL.Repository
                 var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
                 if (boothExists is not null)
                 {
-                    if (slotsList is not null) // any1 slot is there in poll table 
+                    var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                    if (electionInfoRecord is not null)
                     {
-                        int SlotRecordMasterId = GetSlot(slotsList);
-                        if (SlotRecordMasterId > 0)
+                        if (electionInfoRecord.IsPollStarted == true)
                         {
-                            var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
-                            if (polldetail is not null)
+                            if (slotsList is not null) // any1 slot is there in poll table 
                             {
-                                // check whether current time slot already entered or not
-                                var slotlast = slotsList.OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
-                                bool lastslotexceededtime = TimeExceedLastSlot(slotlast);
-
-                                if (lastslotexceededtime == false)
+                                int SlotRecordMasterId = GetSlot(slotsList);
+                                if (SlotRecordMasterId > 0)
                                 {
-                                    bool VoterTurnOutAlreadyExistsinSlot = IsSlotAlreadyEntered(SlotRecord, polldetail.VotesPolledRecivedTime);
-
-                                    if (VoterTurnOutAlreadyExistsinSlot == false)
+                                    var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
+                                    if (polldetail is not null)
                                     {
-                                        model = new VoterTurnOutPolledDetailViewModel()
+                                        // check whether current time slot already entered or not
+                                        var slotlast = slotsList.OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
+                                        bool lastslotexceededtime = TimeExceedLastSlot(slotlast);
+
+                                        if (lastslotexceededtime == false)
                                         {
-                                            BoothMasterId = boothExists.BoothMasterId,
-                                            TotalVoters = boothExists.TotalVoters,
-                                            VotesPolled = polldetail.VotesPolled,
-                                            VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
-                                            StartTime = SlotRecord.StartTime,
-                                            EndTime = SlotRecord.EndTime,
-                                            LockTime = SlotRecord.LockTime,
-                                            VoteEnabled = true,
-                                            IsLastSlot = SlotRecord.IsLastSlot,
-                                            Message = "Slot is Available"
+                                            bool VoterTurnOutAlreadyExistsinSlot = IsSlotAlreadyEntered(SlotRecord, polldetail.VotesPolledRecivedTime);
+
+                                            if (VoterTurnOutAlreadyExistsinSlot == false)
+                                            {
+                                                model = new VoterTurnOutPolledDetailViewModel()
+                                                {
+                                                    BoothMasterId = boothExists.BoothMasterId,
+                                                    TotalVoters = boothExists.TotalVoters,
+                                                    VotesPolled = polldetail.VotesPolled,
+                                                    VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                                    StartTime = SlotRecord.StartTime,
+                                                    EndTime = SlotRecord.EndTime,
+                                                    LockTime = SlotRecord.LockTime,
+                                                    VoteEnabled = true,
+                                                    IsLastSlot = SlotRecord.IsLastSlot,
+                                                    Message = "Slot is Available"
 
 
-                                        };
+                                                };
+                                            }
+                                            else
+                                            {
+                                                model = new VoterTurnOutPolledDetailViewModel()
+                                                {
+                                                    BoothMasterId = boothExists.BoothMasterId,
+                                                    TotalVoters = boothExists.TotalVoters,
+                                                    VotesPolled = polldetail.VotesPolled,
+                                                    VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                                    StartTime = SlotRecord.StartTime,
+                                                    EndTime = SlotRecord.EndTime,
+                                                    LockTime = SlotRecord.LockTime,
+                                                    VoteEnabled = false, // but freeze it if already entered for thi sslot
+                                                    IsLastSlot = SlotRecord.IsLastSlot,
+                                                    Message = "Voter Turn Out Already Entered For Slot."
+
+
+
+                                                };
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            model = new VoterTurnOutPolledDetailViewModel()
+                                            {
+                                                BoothMasterId = boothExists.BoothMasterId,
+                                                TotalVoters = boothExists.TotalVoters,
+                                                VotesPolled = polldetail.VotesPolled,
+                                                VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                                StartTime = SlotRecord.StartTime,
+                                                EndTime = SlotRecord.EndTime,
+                                                LockTime = SlotRecord.LockTime,
+                                                IsLastSlot = SlotRecord.IsLastSlot,
+                                                VoteEnabled = false,
+                                                Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue"
+
+
+
+                                            };
+                                        }
                                     }
                                     else
                                     {
@@ -1381,55 +1429,49 @@ namespace EAMS_DAL.Repository
                                         {
                                             BoothMasterId = boothExists.BoothMasterId,
                                             TotalVoters = boothExists.TotalVoters,
-                                            VotesPolled = polldetail.VotesPolled,
-                                            VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                            VotesPolled = 0,
+                                            VotesPolledRecivedTime = null,
                                             StartTime = SlotRecord.StartTime,
                                             EndTime = SlotRecord.EndTime,
                                             LockTime = SlotRecord.LockTime,
-                                            VoteEnabled = false, // but freeze it if already entered for thi sslot
                                             IsLastSlot = SlotRecord.IsLastSlot,
-                                            Message = "Voter Turn Out Already Entered For Slot."
+                                            VoteEnabled = true,
+                                            Message = "Slot is Available"
 
 
 
                                         };
-
                                     }
+
                                 }
                                 else
                                 {
+                                    //Slot not available
                                     model = new VoterTurnOutPolledDetailViewModel()
                                     {
                                         BoothMasterId = boothExists.BoothMasterId,
                                         TotalVoters = boothExists.TotalVoters,
-                                        VotesPolled = polldetail.VotesPolled,
-                                        VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
-                                        StartTime = SlotRecord.StartTime,
-                                        EndTime = SlotRecord.EndTime,
-                                        LockTime = SlotRecord.LockTime,
-                                        IsLastSlot = SlotRecord.IsLastSlot,
+                                        VotesPolled = 0,
                                         VoteEnabled = false,
-                                        Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue"
+                                        Message = "Slot Not Available"
 
 
 
                                     };
                                 }
                             }
+
                             else
                             {
+                                //no slots in teh database
                                 model = new VoterTurnOutPolledDetailViewModel()
                                 {
                                     BoothMasterId = boothExists.BoothMasterId,
-                                    TotalVoters = boothExists.TotalVoters,
+                                    TotalVoters = 0,
                                     VotesPolled = 0,
                                     VotesPolledRecivedTime = null,
-                                    StartTime = SlotRecord.StartTime,
-                                    EndTime = SlotRecord.EndTime,
-                                    LockTime = SlotRecord.LockTime,
-                                    IsLastSlot = SlotRecord.IsLastSlot,
-                                    VoteEnabled = true,
-                                    Message = "Slot is Available"
+                                    VoteEnabled = false,
+                                    Message = "Booth Record Not Found."
 
 
 
@@ -1439,24 +1481,23 @@ namespace EAMS_DAL.Repository
                         }
                         else
                         {
-                            //Slot not available
+                            
                             model = new VoterTurnOutPolledDetailViewModel()
                             {
                                 BoothMasterId = boothExists.BoothMasterId,
                                 TotalVoters = boothExists.TotalVoters,
                                 VotesPolled = 0,
+                                VotesPolledRecivedTime = null,
                                 VoteEnabled = false,
-                                Message = "Slot Not Available"
+                                Message = "Poll not started, Please try after Poll start."
 
 
 
                             };
                         }
                     }
-
                     else
                     {
-                        //no slots in teh database
                         model = new VoterTurnOutPolledDetailViewModel()
                         {
                             BoothMasterId = boothExists.BoothMasterId,
@@ -1464,13 +1505,14 @@ namespace EAMS_DAL.Repository
                             VotesPolled = 0,
                             VotesPolledRecivedTime = null,
                             VoteEnabled = false,
-                            Message = "Booth Record Not Found."
+                            Message = "Election Info record Not Found."
 
 
 
                         };
+                        //no record found
+                       
                     }
-
 
                 }
                 else
@@ -1510,102 +1552,131 @@ namespace EAMS_DAL.Repository
             PollDetail model;
             try
             {
+
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
                 var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
                 var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
+                
                 if (boothExists is not null)
                 {
-                    if (slotsList is not null) // any1 slot is there in poll table 
+                    var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                    if (electionInfoRecord is not null)
                     {
-                        // get end time  and  compare with curent time if current time greater than say proceed for queue
-                        var slotlast =slotsList.OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
-                        bool lastslotexceededtime=TimeExceedLastSlot(slotlast);
-                        if (lastslotexceededtime == false)
+                        if (electionInfoRecord.IsPollStarted == true)
                         {
-                            int SlotRecordMasterId = GetSlot(slotsList);
-                            if (SlotRecordMasterId > 0)
+
+                            if (Convert.ToInt32(voterValue) <= boothExists.TotalVoters)
                             {
-                                var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
-                                if (polldetail is not null)
+
+                                if (slotsList is not null) // any1 slot is there in poll table 
                                 {
-                                    // check whether current time slot already entered or not
-
-                                    bool VoterTurnOutAlreadyExistsinSlot = IsSlotAlreadyEntered(SlotRecord, polldetail.VotesPolledRecivedTime);
-
-                                    if (VoterTurnOutAlreadyExistsinSlot == false)
+                                    // get end time  and  compare with curent time if current time greater than say proceed for queue
+                                    var slotlast = slotsList.OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
+                                    bool lastslotexceededtime = TimeExceedLastSlot(slotlast);
+                                    if (lastslotexceededtime == false)
                                     {
-                                        model = new PollDetail()
+                                        int SlotRecordMasterId = GetSlot(slotsList);
+                                        if (SlotRecordMasterId > 0)
                                         {
-                                            //SlotManagementId= SlotRecordMasterId,
-                                            StateMasterId = boothExists.StateMasterId,
-                                            DistrictMasterId = boothExists.DistrictMasterId,
-                                            AssemblyMasterId = boothExists.AssemblyMasterId,
-                                            BoothMasterId = Convert.ToInt32(boothMasterId),
-                                            EventMasterId = eventmasterid,
-                                            VotesPolled = Convert.ToInt32(voterValue),
-                                            VotesPolledRecivedTime = BharatDateTime(),
-                                            UserType = "SO"
-                                            //AddedBy=Soid  // find SO or ARO
-                                        };
-                                        _context.PollDetails.Add(model);
-                                        await _context.SaveChangesAsync();
-                                        return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothCode_No + " entered successfully!" };
+                                            var SlotRecord = await _context.SlotManagementMaster.Where(p => p.SlotManagementId == SlotRecordMasterId).FirstOrDefaultAsync();
+                                            if (polldetail is not null)
+                                            {
+                                                // check whether current time slot already entered or not
 
+                                                bool VoterTurnOutAlreadyExistsinSlot = IsSlotAlreadyEntered(SlotRecord, polldetail.VotesPolledRecivedTime);
+
+                                                if (VoterTurnOutAlreadyExistsinSlot == false)
+                                                {
+                                                    model = new PollDetail()
+                                                    {
+                                                        SlotManagementId = SlotRecordMasterId,
+                                                        StateMasterId = boothExists.StateMasterId,
+                                                        DistrictMasterId = boothExists.DistrictMasterId,
+                                                        AssemblyMasterId = boothExists.AssemblyMasterId,
+                                                        BoothMasterId = Convert.ToInt32(boothMasterId),
+                                                        EventMasterId = eventmasterid,
+                                                        VotesPolled = Convert.ToInt32(voterValue),
+                                                        VotesPolledRecivedTime = BharatDateTime(),
+                                                        UserType = "SO"
+                                                        //AddedBy=Soid  // find SO or ARO
+                                                    };
+                                                    _context.PollDetails.Add(model);
+                                                    await _context.SaveChangesAsync();
+                                                    return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
+
+                                                }
+                                                else
+                                                {
+                                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out for " + boothExists.BoothName + " Already entered !" };
+
+                                                }
+
+                                            }
+                                            else
+                                            { // as it is insert  in poll detail
+
+                                                model = new PollDetail()
+                                                {
+                                                    SlotManagementId = SlotRecordMasterId,
+                                                    StateMasterId = boothExists.StateMasterId,
+                                                    DistrictMasterId = boothExists.DistrictMasterId,
+                                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                                    BoothMasterId = Convert.ToInt32(boothMasterId),
+                                                    EventMasterId = eventmasterid,
+                                                    VotesPolled = Convert.ToInt32(voterValue),
+                                                    VotesPolledRecivedTime = BharatDateTime(),
+                                                    UserType = "SO"
+                                                    //AddedBy=Soid  // find SO or ARO
+                                                };
+                                                _context.PollDetails.Add(model);
+                                                await _context.SaveChangesAsync();
+                                                return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
+
+
+
+                                            }
+
+                                        }
+                                        else
+                                        {
+
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Slot Not Available" };
+
+
+                                        }
                                     }
                                     else
                                     {
-                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out for " + boothExists.BoothName + " Already entered !" };
-
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue" };
                                     }
-
                                 }
+
                                 else
-                                { // as it is insert  in poll detail
-
-                                    model = new PollDetail()
-                                    {
-                                        SlotManagementId = SlotRecordMasterId,
-                                        StateMasterId = boothExists.StateMasterId,
-                                        DistrictMasterId = boothExists.DistrictMasterId,
-                                        AssemblyMasterId = boothExists.AssemblyMasterId,
-                                        BoothMasterId = Convert.ToInt32(boothMasterId),
-                                        EventMasterId = eventmasterid,
-                                        VotesPolled = Convert.ToInt32(voterValue),
-                                        VotesPolledRecivedTime = BharatDateTime(),
-                                        UserType = "SO"
-                                        //AddedBy=Soid  // find SO or ARO
-                                    };
-                                    _context.PollDetails.Add(model);
-                                    await _context.SaveChangesAsync();
-                                    return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothCode_No + " entered successfully!" };
-
-
+                                {
+                                    //no slots in teh database
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Slots Not Exist in the database" };
 
                                 }
 
                             }
                             else
                             {
-
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Slot Not Available" };
-
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Polling should not be more than Total Voters!" };
 
                             }
+
                         }
                         else
                         {
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue" };
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Poll not started, Please try after Poll start." };
+
                         }
                     }
-
                     else
                     {
-                        //no slots in teh database
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Slots Not Exist in the database" };
-
+                        //no record found
+                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Election Info record Not Found" };
                     }
-
-
                 }
                 else
                 {

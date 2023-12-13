@@ -1911,7 +1911,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model_turn = new EventWiseBoothStatus();
                     model_turn.EventMasterId = 6;
-                    model_turn.EventName = event_lits.Where(p => p.EventMasterId == 6).Select(p => p.EventName).FirstOrDefault();
+                    model_turn.EventName = eventid.EventName;
                     model_turn.Completed = totalvoterinqueue;
                     model_turn.Pending = soTotalBooths.Count;
                     model_turn.TotalBooths = soTotalBooths.Count;
@@ -1921,7 +1921,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model_queue = new EventWiseBoothStatus();
                     model_queue.EventMasterId = 7;
-                    model_queue.EventName = event_lits.Where(p => p.EventMasterId == 7).Select(p => p.EventName).FirstOrDefault();
+                    model_queue.EventName = eventid.EventName;
                     model_queue.Completed = totalQueue; 
                     model_queue.Pending = pendingVoterInQueue;
                     model_queue.TotalBooths = soTotalBooths.Count;
@@ -1931,7 +1931,7 @@ namespace EAMS_DAL.Repository
                 {
                     EventWiseBoothStatus model = new EventWiseBoothStatus();
                     model.EventMasterId = eventid.EventMasterId;
-                    model.EventName = event_lits.Where(p => p.EventMasterId == 8).Select(p => p.EventName).FirstOrDefault();
+                    model.EventName = eventid.EventName;
                     model.Completed = totalfinalvotes;
                     model.Pending = pendingFinalVotes;
                     model.TotalBooths = soTotalBooths.Count;

@@ -12,9 +12,7 @@ namespace EAMS_ACore.Models
     {
         [Key]
         public int PollDetailMasterId { get; set; }
-        public int SlotManagementId { get; set; }
-        [ForeignKey("SlotManagementId")]
-        public SlotManagementMaster SlotManagement { get; set; }
+        public int? SlotManagementId { get; set; } 
         public int StateMasterId { get; set; }
         public int DistrictMasterId { get; set; }
         public int AssemblyMasterId { get; set; }

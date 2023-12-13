@@ -1756,9 +1756,7 @@ namespace EAMS_DAL.Repository
 
 
             }
-
-
-            return lastSlotExceededTime;
+             
         }
 
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
@@ -2032,14 +2030,23 @@ namespace EAMS_DAL.Repository
         #region SlotManagement
         public async Task<Response> AddEventSlot(List<SlotManagementMaster> slotManagement)
         {
+            var stateMasterIds = slotManagement.Select(d => new { d.StateMasterId, d.EventMasterId }).FirstOrDefault();
+            var deleteRecord = _context.SlotManagementMaster
+                .Where(d => d.StateMasterId == d.StateMasterId && d.EventMasterId == d.EventMasterId)
+                .ToList();
+            if (deleteRecord != null)
+            {
+                _context.SlotManagementMaster.RemoveRange(deleteRecord);
+            }
 
             _context.SlotManagementMaster.AddRange(slotManagement);
             _context.SaveChanges();
 
             return new Response()
             {
-                Status = RequestStatusEnum.OK
-
+                Status = RequestStatusEnum.OK,
+                Message=$"Slot Added Successfully"
+                
             };
         }
 

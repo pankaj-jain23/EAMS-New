@@ -22,10 +22,8 @@ namespace EAMS_ACore.Models
         public TimeOnly? LockTime { get; set; }
         public bool IsLastSlot { get; set; }
         public DateTimeOffset SlotCreatedTime { get; set; } = DateTimeOffset.Now;
-        [JsonIgnore]
-        public ICollection<PollDetail> PollDetails { get; set; }
-
-           
+         
+            
     }
     
 }

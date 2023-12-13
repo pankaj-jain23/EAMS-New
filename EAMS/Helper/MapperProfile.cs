@@ -231,33 +231,32 @@ namespace EAMS.Helper
 
          .ReverseMap();
             #endregion
-             
+
             #region SlotManagement
             CreateMap<SlotTimeViewModel, SlotManagementMaster>()
-                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.StartTime)))
-                //.ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.EndTime)))
-                //.ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.LockTime)))
-                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.EndTime) ? null : (TimeOnly?)TimeOnly.Parse(src.EndTime)))
-                .ForMember(dest => dest.LockTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.LockTime) ? null : (TimeOnly?)TimeOnly.Parse(src.LockTime)))
-                .ForMember(dest => dest.SlotCreatedTime, opt => opt.MapFrom(src => DateTimeOffset.Now.ToUniversalTime()));
+            .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.StartTime)))
+            .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.EndTime) ? null : (TimeOnly?)TimeOnly.Parse(src.EndTime)))
+            .ForMember(dest => dest.LockTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.LockTime) ? null : (TimeOnly?)TimeOnly.Parse(src.LockTime)))
+            .ForMember(dest => dest.SlotCreatedTime, opt => opt.MapFrom(src => DateTimeOffset.Now.ToUniversalTime()))
+            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateOnly.Parse(src.StartDate))); // Add this line for StartDate mapping
 
             CreateMap<SlotManagementViewModel, List<SlotManagementMaster>>()
-                .ConvertUsing((src, dest, context) =>
-                {
-                    var slotManagements = src.slotTimes
-                        .Select(slotTime => context.Mapper.Map<SlotManagementMaster>(slotTime))
-                        .ToList();
+        .ConvertUsing((src, dest, context) =>
+        {
+            var slotManagements = src.slotTimes
+                .Select(slotTime => context.Mapper.Map<SlotManagementMaster>(slotTime))
+                .ToList();
 
-                    foreach (var slotManagement in slotManagements)
-                    {
-                        slotManagement.StateMasterId = src.StateMasterId;
-                        slotManagement.EventMasterId = src.EventMasterId;
-                    }
+            foreach (var slotManagement in slotManagements)
+            {
+                slotManagement.StateMasterId = src.StateMasterId;
+                slotManagement.EventMasterId = src.EventMasterId;
+            }
 
-                    return slotManagements;
-                });
+            return slotManagements;
+        });
             #endregion
-             
+
 
 
         }

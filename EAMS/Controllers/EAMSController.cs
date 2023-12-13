@@ -1220,6 +1220,14 @@ namespace EAMS.Controllers
         [Route("AddEventSlot")]
         public async Task<IActionResult> AddEventSlot(SlotManagementViewModel slotManagementViewModel)
         {
+            // Ensure the slot list is not null or empty
+            if (slotManagementViewModel?.slotTimes != null && slotManagementViewModel.slotTimes.Any())
+            {
+                // Set the isLastSlot property for the last slot to true
+                var lastSlot = slotManagementViewModel.slotTimes.Last();
+                lastSlot.IsLastSlot = true;
+            }
+
             var slotManagements = _mapper.Map<List<SlotManagementMaster>>(slotManagementViewModel);
 
             var result = await _EAMSService.AddEventSlot(slotManagements);

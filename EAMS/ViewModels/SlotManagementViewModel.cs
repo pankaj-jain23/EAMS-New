@@ -1,4 +1,6 @@
-﻿namespace EAMS.ViewModels
+﻿using System.Text.Json.Serialization;
+
+namespace EAMS.ViewModels
 {
     public class SlotManagementViewModel
     {
@@ -14,6 +16,7 @@
         public string? StartTime { get; set; }
         public string? EndTime { get; set; }
         public string? LockTime { get; set; }
+        [JsonIgnore]
         public bool IsLastSlot { get; set; }
     }
 }

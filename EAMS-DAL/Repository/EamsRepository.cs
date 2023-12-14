@@ -4,15 +4,10 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
-using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Globalization;
-using System.Numerics;
 
 namespace EAMS_DAL.Repository
 {
@@ -1044,6 +1039,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId=soTotalBooths.StateMasterId,
+                            DistrictMasterId=soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1059,6 +1056,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1074,6 +1073,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1089,6 +1090,8 @@ namespace EAMS_DAL.Repository
 
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1103,6 +1106,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1113,36 +1118,62 @@ namespace EAMS_DAL.Repository
                         };
                         eventwiseboothlist.Add(model);
                     }
-                    //else if (eventList.EventMasterId == 7)
-                    //{
-                    //    EventWiseBooth model = new EventWiseBooth()
-                    //    {
-                    //        EventMasterId = eventList.EventMasterId,
-                    //        EventName = eventList.EventName,
-                    //        AssemblyMasterId = soTotalBooths.AssemblyMasterId,
-                    //        BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
-                    //        BoothName = soTotalBooths.BoothName,
-                    //        UpdateStatus = electioInfoRecord.VoterInQueue ?? false
-                    //    };
-                    //    eventwiseboothlist.Add(model);
-                    //}
-                    //else if (eventList.EventMasterId == 8)
-                    //{
-                    //    EventWiseBooth model = new EventWiseBooth()
-                    //    {
-                    //        EventMasterId = eventList.EventMasterId,
-                    //        EventName = eventList.EventName,
-                    //        AssemblyMasterId = soTotalBooths.AssemblyMasterId,
-                    //        BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
-                    //        BoothName = soTotalBooths.BoothName,
-                    //        UpdateStatus = electioInfoRecord.VoterInQueue ?? false
-                    //    };
-                    //    eventwiseboothlist.Add(model);
-                    //}
+                    else if (eventList.EventMasterId == 6)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus =  false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 7)
+                    {
+                        bool isQueue = electioInfoRecord.VoterInQueue != null;
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = isQueue
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 8)
+                    {
+                        bool isFinalVotes = electioInfoRecord.FinalTVote != null;
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = isFinalVotes
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
                     else if (eventList.EventMasterId == 9)
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1157,6 +1188,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1171,6 +1204,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1185,6 +1220,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1199,6 +1236,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -2009,7 +2048,7 @@ namespace EAMS_DAL.Repository
             AddEventCount(dashboardCount, "PartyArrived", e => e.IsPartyReached == true);
             AddEventCount(dashboardCount, "SetupPollingStation", e => e.IsSetupOfPolling == true);
             AddEventCount(dashboardCount, "MockPollDone", e => e.IsMockPollDone == true);
-            AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);
+            AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);           
             AddEventCount(dashboardCount, "PollEnded", e => e.IsPollEnded == true);
             AddEventCount(dashboardCount, "MCEVMOff", e => e.IsMCESwitchOff == true);
             AddEventCount(dashboardCount, "PartyDeparted", e => e.IsPartyDeparted == true);

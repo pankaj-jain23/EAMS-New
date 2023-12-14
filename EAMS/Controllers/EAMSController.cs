@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using EAMS.Helper;
-using EAMS.Hubs;
 using EAMS.ViewModels;
 using EAMS_ACore;
 using EAMS_ACore.HelperModels;
@@ -8,8 +7,6 @@ using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace EAMS.Controllers
 {

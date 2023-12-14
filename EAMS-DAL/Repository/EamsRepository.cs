@@ -1252,6 +1252,228 @@ namespace EAMS_DAL.Repository
                 }
 
             }
+            else
+
+            {
+                foreach (var eventList in event_lits)
+                {
+                    if (eventList.EventMasterId == 1)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 2)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 3)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus =  false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 4)
+                    {
+
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 5)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus =  false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 6)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 7)
+                    {
+                        
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 8)
+                    {
+                        
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 9)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus =  false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 10)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 11)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 12)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+                    else if (eventList.EventMasterId == 13)
+                    {
+                        EventWiseBooth model = new EventWiseBooth()
+                        {
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
+                            EventMasterId = eventList.EventMasterId,
+                            EventName = eventList.EventName,
+                            AssemblyMasterId = soTotalBooths.AssemblyMasterId,
+                            BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
+                            BoothName = soTotalBooths.BoothName,
+                            BoothCode = soTotalBooths.BoothCode_No,
+                            UpdateStatus = false
+                        };
+                        eventwiseboothlist.Add(model);
+                    }
+
+                }
+
+            }
 
 
 

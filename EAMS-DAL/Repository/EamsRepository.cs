@@ -1834,8 +1834,8 @@ namespace EAMS_DAL.Repository
                                 {
                                     BoothMasterId = boothExists.BoothMasterId,
                                     TotalVoters = boothExists.TotalVoters,
-                                    VotesPolled = null,
-                                    VotesPolledTime = null,
+                                    VotesPolled = polldetail.VotesPolled,
+                                    VotesPolledTime = polldetail.VotesPolledRecivedTime,
                                     RemainingVotes= boothExists.TotalVoters - polldetail.VotesPolled,
                                     VoteEnabled = true,
                                     Message = "Queue is Available"
@@ -1854,6 +1854,7 @@ namespace EAMS_DAL.Repository
                                     VotesPolled = electionInfoRecord.VoterInQueue,
                                     VotesPolledTime = electionInfoRecord.VoterInQueueLastUpdate,
                                     VoteEnabled = false,
+                                    RemainingVotes = null,
                                     Message = "Voter Turn Out Not Completed yet."
 
                                 };

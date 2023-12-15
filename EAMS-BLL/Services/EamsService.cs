@@ -256,11 +256,13 @@ namespace EAMS_BLL.Services
 
                         }
 
-                    case 5:
-                        if (electionInfoRecord.IsMockPollDone == true) // poll started 5th event
+                    case 5:// poll started 5th event
+                        if (electionInfoRecord.IsMockPollDone == true)  // prev event
                         {
-                            //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                            if (electionInfoRecord.FinalTVote == 0 || electionInfoRecord.FinalTVote == null)
+                            //check polled detail for voter turn out, if enetered then cant change poll started status
+
+                            var pollCanStart = _eamsRepository.CanPollStart(electionInfoRecord.BoothMasterId, 6);
+                            if (pollCanStart == true)
                             {
                                 electionInfoRecord.IsPollStarted = electionInfoMaster.IsPollStarted;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
@@ -268,12 +270,9 @@ namespace EAMS_BLL.Services
                             }
                             else
                             {
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Voter Turn Out Status is Entered." };
 
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Voter Turn Out Status is Already Yes." };
                             }
-
-
-
                         }
                         else
                         {
@@ -283,31 +282,78 @@ namespace EAMS_BLL.Services
 
                     case 7:
                         //queue
-
-                        //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
-                        if (electionInfoMaster.VoterInQueue != null && electionInfoMaster.VoterInQueue > 0)
+                        //check only voter turn out entered or not, but not check last entered value
+                        var QueueCanStart = _eamsRepository.CanQueueStart(electionInfoRecord.BoothMasterId);
+                        if (QueueCanStart == true)
                         {
-                            electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
-                            electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                            return await _eamsRepository.EventActivity(electionInfoRecord);
+                            if (electionInfoRecord.FinalTVote == null)  // next event
+                            {
+
+                                if (electionInfoMaster.VoterInQueue != null)
+                                {
+
+                                    if (electionInfoRecord.VoterInQueue == null)
+                                    {
+                                        QueueViewModel fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
+                                        if (electionInfoMaster.VoterInQueue < fetchResult.TotalVoters)
+                                        {
+
+                                            if (electionInfoMaster.VoterInQueue < fetchResult.RemainingVotes)
+                                            {
+                                                electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                                return await _eamsRepository.EventActivity(electionInfoRecord);
+                                            }
+                                            else
+                                            {
+                                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voters in queue cannot exceed voter remaining!" };
+
+                                            }
+                                        }
+
+                                        else
+                                        {
+
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Polling should not be more than Total Voters!" };
+                                        }
+                                        // VotesPolled.
+                                        //RemainingVoters 
+                                        //queue_voters
+                                        electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                                        electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                        return await _eamsRepository.EventActivity(electionInfoRecord);
+                                    }
+                                    else
+                                    {
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value Already Entered. Pls proceed for the Final Voting value" };
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be null" };
+                                }
+                            }
+                            else
+                            {
+
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue has been Freezed as Final Vote has been entered." };
+                            }
                         }
                         else
                         {
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be Null." };
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Not Entered any Values." };
+
                         }
-
-
-
-
 
                     case 8:
                         // Final Votes
-                        if (electionInfoRecord.VoterInQueue > 0) //check queue
+                        if (electionInfoRecord.VoterInQueue != null) //check queue
                         {
-
                             if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
                             {
-                                //change final voting to slot check  if it has values then it is freezed otherwise poll started can be done
+                                //change final voting 
                                 if (electionInfoMaster.FinalTVote != null && electionInfoMaster.FinalTVote > 0)
                                 {
                                     electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
@@ -316,7 +362,7 @@ namespace EAMS_BLL.Services
                                 }
                                 else
                                 {
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes Cannot be Null." };
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes Cannot be Null or 0." };
                                 }
 
 
@@ -498,21 +544,29 @@ namespace EAMS_BLL.Services
         }
 
         public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid)
-          
+
         {
             return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
-            
+
         }
-    public async Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue)
-    {
-        return await _eamsRepository.AddVoterTurnOut(boothMasterId,eventid, voterValue);
+        public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
 
-    }
+        {
+            return await _eamsRepository.GetVoterInQueue(boothMasterId);
 
-    #endregion
+        }
+        public async Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue)
+        {
+            return await _eamsRepository.AddVoterTurnOut(boothMasterId, eventid, voterValue);
+
+        }
+
+     
+
+        #endregion
 
         #region SendDashBoardCount 
-    public async Task<DashBoardRealTimeCount> GetDashBoardCount()
+        public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             return await _eamsRepository.GetDashBoardCount();
         }

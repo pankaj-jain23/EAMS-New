@@ -6,8 +6,11 @@ using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Globalization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace EAMS_DAL.Repository
 {
@@ -1039,8 +1042,8 @@ namespace EAMS_DAL.Repository
                     {
                         EventWiseBooth model = new EventWiseBooth()
                         {
-                            StateMasterId=soTotalBooths.StateMasterId,
-                            DistrictMasterId=soTotalBooths.DistrictMasterId,
+                            StateMasterId = soTotalBooths.StateMasterId,
+                            DistrictMasterId = soTotalBooths.DistrictMasterId,
                             EventMasterId = eventList.EventMasterId,
                             EventName = eventList.EventName,
                             AssemblyMasterId = soTotalBooths.AssemblyMasterId,
@@ -1130,7 +1133,7 @@ namespace EAMS_DAL.Repository
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
                             BoothCode = soTotalBooths.BoothCode_No,
-                            UpdateStatus =  false
+                            UpdateStatus = false
                         };
                         eventwiseboothlist.Add(model);
                     }
@@ -1303,7 +1306,7 @@ namespace EAMS_DAL.Repository
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
                             BoothCode = soTotalBooths.BoothCode_No,
-                            UpdateStatus =  false
+                            UpdateStatus = false
                         };
                         eventwiseboothlist.Add(model);
                     }
@@ -1336,7 +1339,7 @@ namespace EAMS_DAL.Repository
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
                             BoothCode = soTotalBooths.BoothCode_No,
-                            UpdateStatus =  false
+                            UpdateStatus = false
                         };
                         eventwiseboothlist.Add(model);
                     }
@@ -1358,7 +1361,7 @@ namespace EAMS_DAL.Repository
                     }
                     else if (eventList.EventMasterId == 7)
                     {
-                        
+
                         EventWiseBooth model = new EventWiseBooth()
                         {
                             StateMasterId = soTotalBooths.StateMasterId,
@@ -1375,7 +1378,7 @@ namespace EAMS_DAL.Repository
                     }
                     else if (eventList.EventMasterId == 8)
                     {
-                        
+
                         EventWiseBooth model = new EventWiseBooth()
                         {
                             StateMasterId = soTotalBooths.StateMasterId,
@@ -1402,7 +1405,7 @@ namespace EAMS_DAL.Repository
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
                             BoothCode = soTotalBooths.BoothCode_No,
-                            UpdateStatus =  false
+                            UpdateStatus = false
                         };
                         eventwiseboothlist.Add(model);
                     }
@@ -1742,7 +1745,7 @@ namespace EAMS_DAL.Repository
                         }
                         else
                         {
-                            
+
                             model = new VoterTurnOutPolledDetailViewModel()
                             {
                                 BoothMasterId = boothExists.BoothMasterId,
@@ -1772,7 +1775,7 @@ namespace EAMS_DAL.Repository
 
                         };
                         //no record found
-                       
+
                     }
 
                 }
@@ -1807,7 +1810,161 @@ namespace EAMS_DAL.Repository
             return model;
         }
 
+        public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
+        {
+            QueueViewModel model;
+            try
+            {
+                var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                //var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).FirstOrDefaultAsync();
+                var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
+                
+                if (boothExists is not null)
+                {
+                    var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                    if (electionInfoRecord is not null )
+                    {
+                        if (electionInfoRecord.VoterInQueue == null)
+                        {
+                            bool QueueCanStart = CanQueueStart(electionInfoRecord.BoothMasterId);
+                            if (QueueCanStart == true)
+                            {
 
+                                model = new QueueViewModel()
+                                {
+                                    BoothMasterId = boothExists.BoothMasterId,
+                                    TotalVoters = boothExists.TotalVoters,
+                                    VotesPolled = null,
+                                    VotesPolledTime = null,
+                                    VoteEnabled = true,
+                                    Message = "Queue is Available"
+
+
+                                };
+
+                            }
+                            else
+                            {
+                                model = new QueueViewModel()
+                                {
+
+                                    BoothMasterId = boothExists.BoothMasterId,
+                                    TotalVoters = boothExists.TotalVoters,
+                                    VotesPolled = electionInfoRecord.VoterInQueue,
+                                    VotesPolledTime = electionInfoRecord.VoterInQueueLastUpdate,
+                                    VoteEnabled = false,
+                                    Message = "Voter Turn Out Not Completed yet."
+
+                                };
+                            }
+                        }
+                        else
+                        {
+                            model = new QueueViewModel()
+                            {
+
+                                BoothMasterId = boothExists.BoothMasterId,
+                                TotalVoters = boothExists.TotalVoters,
+                                VotesPolled = electionInfoRecord.VoterInQueue,
+                                VotesPolledTime = electionInfoRecord.VoterInQueueLastUpdate,
+                                VoteEnabled = false,
+                                Message = "Queue Already Done."
+
+                            };
+                        }
+
+
+                        }
+                        else
+                            {
+                        //Polling should not be more than Total Voters!
+                        model = new QueueViewModel()
+                        {
+                            BoothMasterId = 0,
+                            TotalVoters = null,
+                            VotesPolled = null,
+                            VotesPolledTime = null,
+                            VoteEnabled = false,
+                            Message = "Election Info Record Not Found"
+
+
+                        };
+                    }
+
+
+
+                    }
+                else
+                {
+                    //Polling should not be more than Total Voters!
+                    model = new QueueViewModel()
+                    {
+                        BoothMasterId = 0,
+                        TotalVoters = null,
+                        VotesPolled = null,
+                        VotesPolledTime = null,
+                        VoteEnabled = false,
+                        Message = "Booth record Not Found"
+
+
+                    };
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                model = new QueueViewModel()
+                {
+
+                    Message = ex.Message
+
+
+
+                };
+            }
+            return model;
+        }
+
+        public async Task<QueueViewModel> GetTotalRemainingVoters (string boothMasterId)
+        {
+            QueueViewModel model=null;
+            try
+            {
+                var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
+
+                if (boothExists is not null)
+                {
+
+                    model = new QueueViewModel()
+                    {
+                        TotalVoters = boothExists.TotalVoters,
+                        VotesPolled=polldetail.VotesPolled,
+                        RemainingVotes= boothExists.TotalVoters - polldetail.VotesPolled,
+
+                    };
+
+
+                }
+               
+
+            }
+            catch (Exception ex)
+            {
+                model = new QueueViewModel()
+                {
+
+                    Message = ex.Message
+
+
+
+                };
+            }
+            return model;
+        }
         public async Task<Response> AddVoterTurnOut(string boothMasterId, int eventmasterid, string voterValue)
         {
             PollDetail model;
@@ -1817,7 +1974,7 @@ namespace EAMS_DAL.Repository
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
                 var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
                 var slotsList = await _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderBy(p => p.SlotManagementId).ToListAsync();
-                
+
                 if (boothExists is not null)
                 {
                     var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
@@ -1829,7 +1986,7 @@ namespace EAMS_DAL.Repository
                             if (Convert.ToInt32(voterValue) <= boothExists.TotalVoters)
                             {
 
-                                if (slotsList is not null) // any1 slot is there in poll table 
+                                if (slotsList.Count() > 0) // any1 slot is there in poll table 
                                 {
                                     // get end time  and  compare with curent time if current time greater than say proceed for queue
                                     var slotlast = slotsList.OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
@@ -1848,6 +2005,7 @@ namespace EAMS_DAL.Repository
 
                                                 if (VoterTurnOutAlreadyExistsinSlot == false)
                                                 {
+
                                                     model = new PollDetail()
                                                     {
                                                         SlotManagementId = SlotRecordMasterId,
@@ -1874,25 +2032,31 @@ namespace EAMS_DAL.Repository
 
                                             }
                                             else
-                                            { // as it is insert  in poll detail
-
-                                                model = new PollDetail()
+                                            { // as it is insert  in poll detail but check votervalue should be greater than old value
+                                                if(Convert.ToInt32(voterValue) >= boothExists.TotalVoters)
                                                 {
-                                                    SlotManagementId = SlotRecordMasterId,
-                                                    StateMasterId = boothExists.StateMasterId,
-                                                    DistrictMasterId = boothExists.DistrictMasterId,
-                                                    AssemblyMasterId = boothExists.AssemblyMasterId,
-                                                    BoothMasterId = Convert.ToInt32(boothMasterId),
-                                                    EventMasterId = eventmasterid,
-                                                    VotesPolled = Convert.ToInt32(voterValue),
-                                                    VotesPolledRecivedTime = BharatDateTime(),
-                                                    UserType = "SO"
-                                                    //AddedBy=Soid  // find SO or ARO
-                                                };
-                                                _context.PollDetails.Add(model);
-                                                await _context.SaveChangesAsync();
-                                                return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
+                                                    model = new PollDetail()
+                                                    {
+                                                        SlotManagementId = SlotRecordMasterId,
+                                                        StateMasterId = boothExists.StateMasterId,
+                                                        DistrictMasterId = boothExists.DistrictMasterId,
+                                                        AssemblyMasterId = boothExists.AssemblyMasterId,
+                                                        BoothMasterId = Convert.ToInt32(boothMasterId),
+                                                        EventMasterId = eventmasterid,
+                                                        VotesPolled = Convert.ToInt32(voterValue),
+                                                        VotesPolledRecivedTime = BharatDateTime(),
+                                                        UserType = "SO"
+                                                        //AddedBy=Soid  // find SO or ARO
+                                                    };
+                                                    _context.PollDetails.Add(model);
+                                                    await _context.SaveChangesAsync();
+                                                    return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
 
+                                                }
+                                                else
+                                                {
+                                                    return new Response { Status = RequestStatusEnum.BadRequest ,Message = "Voter Turn Out Value cannot be less than Last Added value" };
+                                                }
 
 
                                             }
@@ -1942,7 +2106,7 @@ namespace EAMS_DAL.Repository
                 else
                 {
                     //no record found
-                  return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Record Not Found"};
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Booth Record Not Found" };
 
                 }
             }
@@ -1950,9 +2114,66 @@ namespace EAMS_DAL.Repository
             {
                 return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
-           
+
         }
 
+        // for event activity Check Condition
+        public bool CanPollStart(int boothMasterId, int eventmasterid)
+        {
+            bool pollCanStart = false;
+            var boothExists = _context.BoothMaster.Where(p => p.BoothMasterId == boothMasterId).FirstOrDefault();
+            var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefault();
+            var getLastSlot = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid && p.IsLastSlot == true).OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
+            if (polldetail != null)
+            {
+                // then poll
+                pollCanStart = false;
+            }
+            else
+            {
+                // poll can be started
+                pollCanStart = true;
+
+
+            }
+
+
+            return pollCanStart;
+        }
+
+        public bool CanQueueStart(int boothMasterId)
+        {
+            bool queueCanStart = false;
+            var boothExists = _context.BoothMaster.Where(p => p.BoothMasterId == boothMasterId).FirstOrDefault();
+            var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefault();
+           // var slotRecord = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderByDescending(p => p.SlotManagementId).ToList();
+           if (polldetail != null)
+            {
+                // if required time can be checked in order to open queue
+                               
+//                    if (current time >= lock time)
+
+//                    {
+//                        queue is open
+//                    }
+//else
+//                    {
+//                       queue cannot open before specified time
+//}
+                    queueCanStart = true;
+            }
+            else
+            {
+                // poll can be started
+                queueCanStart = false;
+
+
+            }
+
+
+            return queueCanStart;
+        }
+        
         public int GetSlot(List<SlotManagementMaster> slotLists)
         {
             int slotId = 0;
@@ -1960,14 +2181,14 @@ namespace EAMS_DAL.Repository
 
             foreach (var slot in slotLists)
             {
-                
+
                 DateTime endTime = DateTime.ParseExact(slot.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
                 DateTime lockTime = DateTime.ParseExact(slot.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
-              
+
                 if (currentTime >= endTime && currentTime <= lockTime)
                 {
-                    
+
                     slotId = slot.SlotManagementId;
                     break;
                 }
@@ -2004,10 +2225,10 @@ namespace EAMS_DAL.Repository
         public bool TimeExceedLastSlot(SlotManagementMaster? slotRecord)
         {
             bool lastSlotExceededTime = false; DateTime currentTime = DateTime.Now;
-           DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+            DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
             if (currentTime > lockTime)
             {
-               
+
                 return lastSlotExceededTime = true;
 
             }
@@ -2017,7 +2238,7 @@ namespace EAMS_DAL.Repository
 
 
             }
-             
+
         }
 
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
@@ -2181,7 +2402,7 @@ namespace EAMS_DAL.Repository
                     EventWiseBoothStatus model_queue = new EventWiseBoothStatus();
                     model_queue.EventMasterId = 7;
                     model_queue.EventName = eventid.EventName;
-                    model_queue.Completed = totalQueue; 
+                    model_queue.Completed = totalQueue;
                     model_queue.Pending = pendingVoterInQueue;
                     model_queue.TotalBooths = soTotalBooths.Count;
                     list.Add(model_queue);
@@ -2247,12 +2468,12 @@ namespace EAMS_DAL.Repository
                     list.Add(model);
                 }
 
-               
+
 
             }
-           
-            
-           
+
+
+
             return list;
         }
 
@@ -2270,7 +2491,7 @@ namespace EAMS_DAL.Repository
             AddEventCount(dashboardCount, "PartyArrived", e => e.IsPartyReached == true);
             AddEventCount(dashboardCount, "SetupPollingStation", e => e.IsSetupOfPolling == true);
             AddEventCount(dashboardCount, "MockPollDone", e => e.IsMockPollDone == true);
-            AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);           
+            AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);
             AddEventCount(dashboardCount, "PollEnded", e => e.IsPollEnded == true);
             AddEventCount(dashboardCount, "MCEVMOff", e => e.IsMCESwitchOff == true);
             AddEventCount(dashboardCount, "PartyDeparted", e => e.IsPartyDeparted == true);
@@ -2306,8 +2527,8 @@ namespace EAMS_DAL.Repository
             return new Response()
             {
                 Status = RequestStatusEnum.OK,
-                Message=$"Slot Added Successfully"
-                
+                Message = $"Slot Added Successfully"
+
             };
         }
 

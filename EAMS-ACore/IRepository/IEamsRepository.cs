@@ -55,9 +55,14 @@ namespace EAMS_ACore.IRepository
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
+        bool CanPollStart(int boothMasterId, int eventid);
+        bool CanQueueStart(int boothMasterId);
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId,int eventid);
+        Task<QueueViewModel> GetVoterInQueue(string boothMasterId);
+        Task<QueueViewModel> GetTotalRemainingVoters(string boothMasterId);
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
-        
+       
+
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);

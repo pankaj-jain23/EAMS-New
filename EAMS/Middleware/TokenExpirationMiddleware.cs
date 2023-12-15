@@ -24,16 +24,22 @@ namespace EAMS.Middleware
 
                 if (expirationClaim != null && long.TryParse(expirationClaim.Value, out long expirationTimestamp))
                 {
-                    // Convert the expiration timestamp to DateTime
-                    var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expirationTimestamp).UtcDateTime;
+                    // Convert the expiration timestamp to DateTime 
+                   // var expirationTime = DateTimeOffset.FromUnixTimeSeconds(expirationTimestamp).UtcDateTime;
+                    
+                    DateTimeOffset expirationTime = DateTimeOffset.FromUnixTimeSeconds(expirationTimestamp);
+                    TimeSpan istOffset = TimeSpan.FromHours(5) + TimeSpan.FromMinutes(30);
+                    DateTime expirationIST = expirationTime.UtcDateTime + istOffset;
+                     
+
+
                     DateTime dateTime = DateTime.Now;
                     DateTime utcDateTime = DateTime.SpecifyKind(dateTime.ToUniversalTime(), DateTimeKind.Utc);
-                    TimeSpan istOffset = TimeSpan.FromHours(5) + TimeSpan.FromMinutes(30);
                     TimeZoneInfo istTimeZone = TimeZoneInfo.CreateCustomTimeZone("IST", istOffset, "IST", "IST");
                     DateTime hiINDateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, istTimeZone);
 
                     // Check if the token is expired
-                    if (expirationTime < hiINDateTimeNow)
+                    if (expirationIST < hiINDateTimeNow)
                     {
                         // Token is expired, you can handle this as needed
                         context.Response.StatusCode = 401; // Unauthorized

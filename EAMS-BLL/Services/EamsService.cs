@@ -548,7 +548,7 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
 
-        }
+        } 
         public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
 
         {
@@ -559,10 +559,9 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.AddVoterTurnOut(boothMasterId, eventid, voterValue);
 
-        }
-
+        }     
+         
      
-
         #endregion
 
         #region SendDashBoardCount 

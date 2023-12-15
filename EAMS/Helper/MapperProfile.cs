@@ -42,7 +42,6 @@ namespace EAMS.Helper
             CreateMap<ValidateMobileViewModel, ValidateMobile>().ReverseMap();
             #endregion
 
-
             #region CreateSOPinViewModel CreateSOPin
             CreateMap<CreateSOPinViewModel, CreateSOPin>().ReverseMap();
             #endregion

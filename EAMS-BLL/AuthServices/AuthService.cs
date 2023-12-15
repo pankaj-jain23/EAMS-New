@@ -432,7 +432,9 @@ namespace EAMS_BLL.AuthServices
         private string GenerateToken(IEnumerable<Claim> claims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-            var expireAccessToken = BharatTimeDynamic(0, 0, 4, 0, 0);
+            //var expireAccessToken = BharatTimeDynamic(0, 0, 4, 0, 0);
+
+            var expireAccessToken = DateTime.UtcNow.AddHours(4);
 
 
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -1836,6 +1836,7 @@ namespace EAMS_DAL.Repository
                                     TotalVoters = boothExists.TotalVoters,
                                     VotesPolled = null,
                                     VotesPolledTime = null,
+                                    RemainingVotes= boothExists.TotalVoters - polldetail.VotesPolled,
                                     VoteEnabled = true,
                                     Message = "Queue is Available"
 

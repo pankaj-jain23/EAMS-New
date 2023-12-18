@@ -67,7 +67,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
-        Task<string> GetEventListDistrictWiseById();
+        Task<List<DistrictEventCount>> GetEventListDistrictWiseById(string stateId);
 
         #endregion
 

@@ -2478,10 +2478,52 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
-        public Task<string> GetEventListDistrictWiseById()
+        public async Task<List<DistrictEventCount>> GetEventListDistrictWiseById(string stateId)
         {
-            throw new NotImplementedException();
+            var getElectionListStateWise = await _context.ElectionInfoMaster
+                .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
+                .ToListAsync();
+            var getStateName = await _context.StateMaster
+                .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
+                .Select(s => s.StateName) // Replace 'StateName' with your actual property
+                .FirstOrDefaultAsync();
+            var stateEventList = new List<DistrictEventCount>();
+
+            foreach (var electionInfo in getElectionListStateWise)
+            {
+                var stateEvents = new DistrictEventCount
+                {
+                    Key = electionInfo.StateMasterId,
+                    Name = getStateName,
+                    Type = "state",
+                    PartyDispatch = electionInfo.IsPartyDispatched.GetValueOrDefault() ? 1 : 0,
+                    PartyArrived = electionInfo.IsPartyReached.GetValueOrDefault() ? 1 : 0,
+                    SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
+                    MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
+                    PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
+                    MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
+                    PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
+                    PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
+                    EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
+                    Children = new List<object>()
+                };
+
+                stateEventList.Add(stateEvents);
+            }
+
+            int partyDispatchCount = stateEventList.Sum(e => e.PartyDispatch);
+            int partyArrivedCount = stateEventList.Sum(e => e.PartyArrived);
+            int setupPollingStationCount = stateEventList.Sum(e => e.SetupPollingStation);
+            // Add similar lines for other properties 
+            // Add similar lines for other properties
+
+            return stateEventList;
         }
+
+
+
+
         #endregion
 
         #region SendDashBoardCount 

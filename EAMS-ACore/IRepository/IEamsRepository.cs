@@ -68,7 +68,7 @@ namespace EAMS_ACore.IRepository
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
 
 
-        Task<string> GetEventListDistrictWiseById();
+        Task<List<DistrictEventCount>> GetEventListDistrictWiseById(string stateId);
 
 
         #endregion

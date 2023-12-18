@@ -1282,9 +1282,9 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetEventListDistrictWiseById")]
-        public async Task<IActionResult>EventListDistrictWiseById()
+        public async Task<IActionResult>EventListDistrictWiseById(string stateId)
         {
-            var eventDistrictWiseList=_EAMSService.GetEventListDistrictWiseById();
+            var eventDistrictWiseList=await _EAMSService.GetEventListDistrictWiseById(stateId);
             return Ok();
         }
     }

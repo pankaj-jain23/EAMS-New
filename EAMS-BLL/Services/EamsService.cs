@@ -559,9 +559,12 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.AddVoterTurnOut(boothMasterId, eventid, voterValue);
 
-        }     
-         
-     
+        }
+
+        public async Task<List<DistrictEventCount>> GetEventListDistrictWiseById(string stateId)
+        {
+           return await _eamsRepository.GetEventListDistrictWiseById( stateId);
+        }
         #endregion
 
         #region SendDashBoardCount 

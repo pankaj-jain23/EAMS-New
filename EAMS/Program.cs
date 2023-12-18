@@ -34,7 +34,7 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IEamsService, EamsService>();
 builder.Services.AddTransient<IEamsRepository, EamsRepository>();
-builder.Services.AddHostedService<DatabaseListenerService>();
+//builder.Services.AddHostedService<DatabaseListenerService>();
 builder.Services.AddDbContext<EamsContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Postgres");

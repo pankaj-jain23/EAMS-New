@@ -27,7 +27,7 @@ namespace EAMS_ACore.Interfaces
         #endregion
 
         #region SO Master
-        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId,string districtMasterId, string assemblyMasterId);
+        Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId);
         Task<SectorOfficerProfile> GetSectorOfficerProfile(string soId);
 
         Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
@@ -48,7 +48,7 @@ namespace EAMS_ACore.Interfaces
         #region EventMaster
         Task<List<EventMaster>> GetEventList();
         Task<Response> UpdateEventById(EventMaster eventMaster);
-        Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
+        Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId);
         Task<List<EventWiseBooth>> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId);
 
         #endregion
@@ -63,10 +63,12 @@ namespace EAMS_ACore.Interfaces
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid);
         Task<QueueViewModel> GetVoterInQueue(string boothMasterId);
 
-        
+
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
-      
+
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
+        Task<string> GetEventListDistrictWiseById();
+
         #endregion
 
         #region SendDashBoardCount
@@ -77,5 +79,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddEventSlot(List<SlotManagementMaster> addEventSlot);
         Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
+         
+
     }
 }

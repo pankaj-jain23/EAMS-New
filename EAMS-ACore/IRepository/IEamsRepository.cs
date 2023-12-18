@@ -68,6 +68,7 @@ namespace EAMS_ACore.IRepository
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
 
 
+        Task<string> EventListDistrictWiseById();
 
 
         #endregion
@@ -80,5 +81,6 @@ namespace EAMS_ACore.IRepository
         Task<Response> AddEventSlot(List<SlotManagementMaster> addEventSlot);
         Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
+
     }
 }

@@ -1280,6 +1280,12 @@ namespace EAMS.Controllers
         }
         #endregion
 
-
+        [HttpGet]
+        [Route("GetEventListDistrictWiseById")]
+        public async Task<IActionResult>EventListDistrictWiseById()
+        {
+            var eventDistrictWiseList=_EAMSService.GetEventListDistrictWiseById();
+            return Ok();
+        }
     }
 }

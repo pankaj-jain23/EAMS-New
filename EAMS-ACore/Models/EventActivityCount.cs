@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EAMS_ACore.Models
 {
-    public class DistrictEventCount
+    public class EventActivityCount
     {
         public int Key { get; set; }
         public string Name { get; set; }

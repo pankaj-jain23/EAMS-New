@@ -1818,11 +1818,11 @@ namespace EAMS_DAL.Repository
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
                 //var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).FirstOrDefaultAsync();
                 var polldetail = await _context.PollDetails.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId) && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefaultAsync();
-                
+
                 if (boothExists is not null)
                 {
                     var electionInfoRecord = await _context.ElectionInfoMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId && p.AssemblyMasterId == boothExists.AssemblyMasterId && p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
-                    if (electionInfoRecord is not null )
+                    if (electionInfoRecord is not null)
                     {
                         if (electionInfoRecord.VoterInQueue == null)
                         {
@@ -1836,7 +1836,7 @@ namespace EAMS_DAL.Repository
                                     TotalVoters = boothExists.TotalVoters,
                                     VotesPolled = polldetail.VotesPolled,
                                     VotesPolledTime = polldetail.VotesPolledRecivedTime,
-                                    RemainingVotes= boothExists.TotalVoters - polldetail.VotesPolled,
+                                    RemainingVotes = boothExists.TotalVoters - polldetail.VotesPolled,
                                     VoteEnabled = true,
                                     Message = "Queue is Available"
 
@@ -1876,9 +1876,9 @@ namespace EAMS_DAL.Repository
                         }
 
 
-                        }
-                        else
-                            {
+                    }
+                    else
+                    {
                         //Polling should not be more than Total Voters!
                         model = new QueueViewModel()
                         {
@@ -1895,7 +1895,7 @@ namespace EAMS_DAL.Repository
 
 
 
-                    }
+                }
                 else
                 {
                     //Polling should not be more than Total Voters!
@@ -1929,9 +1929,9 @@ namespace EAMS_DAL.Repository
             return model;
         }
 
-        public async Task<QueueViewModel> GetTotalRemainingVoters (string boothMasterId)
+        public async Task<QueueViewModel> GetTotalRemainingVoters(string boothMasterId)
         {
-            QueueViewModel model=null;
+            QueueViewModel model = null;
             try
             {
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
@@ -1944,14 +1944,14 @@ namespace EAMS_DAL.Repository
                     model = new QueueViewModel()
                     {
                         TotalVoters = boothExists.TotalVoters,
-                        VotesPolled=polldetail.VotesPolled,
-                        RemainingVotes= boothExists.TotalVoters - polldetail.VotesPolled,
+                        VotesPolled = polldetail.VotesPolled,
+                        RemainingVotes = boothExists.TotalVoters - polldetail.VotesPolled,
 
                     };
 
 
                 }
-               
+
 
             }
             catch (Exception ex)
@@ -2035,7 +2035,7 @@ namespace EAMS_DAL.Repository
                                             }
                                             else
                                             { // as it is insert  in poll detail but check votervalue should be greater than old value
-                                                if(Convert.ToInt32(voterValue) >= boothExists.TotalVoters)
+                                                if (Convert.ToInt32(voterValue) >= boothExists.TotalVoters)
                                                 {
                                                     model = new PollDetail()
                                                     {
@@ -2057,7 +2057,7 @@ namespace EAMS_DAL.Repository
                                                 }
                                                 else
                                                 {
-                                                    return new Response { Status = RequestStatusEnum.BadRequest ,Message = "Voter Turn Out Value cannot be less than Last Added value" };
+                                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Value cannot be less than Last Added value" };
                                                 }
 
 
@@ -2148,21 +2148,21 @@ namespace EAMS_DAL.Repository
             bool queueCanStart = false;
             var boothExists = _context.BoothMaster.Where(p => p.BoothMasterId == boothMasterId).FirstOrDefault();
             var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefault();
-           // var slotRecord = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderByDescending(p => p.SlotManagementId).ToList();
-           if (polldetail != null)
+            // var slotRecord = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == eventmasterid).OrderByDescending(p => p.SlotManagementId).ToList();
+            if (polldetail != null)
             {
                 // if required time can be checked in order to open queue
-                               
-//                    if (current time >= lock time)
 
-//                    {
-//                        queue is open
-//                    }
-//else
-//                    {
-//                       queue cannot open before specified time
-//}
-                    queueCanStart = true;
+                //                    if (current time >= lock time)
+
+                //                    {
+                //                        queue is open
+                //                    }
+                //else
+                //                    {
+                //                       queue cannot open before specified time
+                //}
+                queueCanStart = true;
             }
             else
             {
@@ -2175,7 +2175,7 @@ namespace EAMS_DAL.Repository
 
             return queueCanStart;
         }
-        
+
         public int GetSlot(List<SlotManagementMaster> slotLists)
         {
             int slotId = 0;
@@ -2478,24 +2478,24 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
-        public async Task<List<DistrictEventCount>> GetEventListDistrictWiseById(string stateId)
+        public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId)
         {
             var getElectionListStateWise = await _context.ElectionInfoMaster
-                .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
-                .ToListAsync();
-            var getStateName = await _context.StateMaster
-                .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
-                .Select(s => s.StateName) // Replace 'StateName' with your actual property
-                .FirstOrDefaultAsync();
-            var stateEventList = new List<DistrictEventCount>();
+                    .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
+                    .ToListAsync();
+            var stateEventList = new List<EventActivityCount>();
 
             foreach (var electionInfo in getElectionListStateWise)
             {
-                var stateEvents = new DistrictEventCount
+
+                var stateEvents = new EventActivityCount
                 {
-                    Key = electionInfo.StateMasterId,
-                    Name = getStateName,
-                    Type = "state",
+                    Key = electionInfo.DistrictMasterId,
+                    Name = _context.DistrictMaster
+                        .Where(d => d.DistrictMasterId == electionInfo.DistrictMasterId)
+                        .Select(d => d.DistrictName)
+                        .FirstOrDefault(),
+                    Type = "District",
                     PartyDispatch = electionInfo.IsPartyDispatched.GetValueOrDefault() ? 1 : 0,
                     PartyArrived = electionInfo.IsPartyReached.GetValueOrDefault() ? 1 : 0,
                     SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
@@ -2512,17 +2512,144 @@ namespace EAMS_DAL.Repository
                 stateEventList.Add(stateEvents);
             }
 
-            int partyDispatchCount = stateEventList.Sum(e => e.PartyDispatch);
-            int partyArrivedCount = stateEventList.Sum(e => e.PartyArrived);
-            int setupPollingStationCount = stateEventList.Sum(e => e.SetupPollingStation);
-            // Add similar lines for other properties 
-            // Add similar lines for other properties
+            var groupedStateEventList = stateEventList
+                .GroupBy(e => e.Name)
+                .Select(group => new EventActivityCount
+                {
+                    Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
+                    Name = group.Key,
+                    Type = group.Select(d => d.Type).FirstOrDefault(),
+                    PartyDispatch = group.Sum(e => e.PartyDispatch),
+                    PartyArrived = group.Sum(e => e.PartyArrived),
+                    SetupPollingStation = group.Sum(e => e.SetupPollingStation),
+                    MockPollDone = group.Sum(e => e.MockPollDone),
+                    PollStarted = group.Sum(e => e.PollStarted),
+                    PollEnded = group.Sum(e => e.PollEnded),
+                    MCEVMOff = group.Sum(e => e.MCEVMOff),
+                    PartyDeparted = group.Sum(e => e.PartyDeparted),
+                    PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
+                    EVMDeposited = group.Sum(e => e.EVMDeposited),
+                    Children = new List<object>(),
+                })
+                .ToList();
 
-            return stateEventList;
+            return groupedStateEventList;
         }
 
+        public async Task<List<EventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId)
+        {
+            var getElectionListStateWise = await _context.ElectionInfoMaster
+                    .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId))
+                    .ToListAsync();
+            var stateEventList = new List<EventActivityCount>();
 
+            foreach (var electionInfo in getElectionListStateWise)
+            {
 
+                var stateEvents = new EventActivityCount
+                {
+                    Key = electionInfo.AssemblyMasterId,
+                    Name = _context.AssemblyMaster
+                        .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId))
+                        .Select(d => d.AssemblyName)
+                        .FirstOrDefault(),
+                    Type = "Assembly",
+                    PartyDispatch = electionInfo.IsPartyDispatched.GetValueOrDefault() ? 1 : 0,
+                    PartyArrived = electionInfo.IsPartyReached.GetValueOrDefault() ? 1 : 0,
+                    SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
+                    MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
+                    PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
+                    MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
+                    PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
+                    PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
+                    EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
+                    Children = new List<object>()
+                };
+
+                stateEventList.Add(stateEvents);
+            }
+
+            var groupedStateEventList = stateEventList
+                .GroupBy(e => e.Key)
+                .Select(group => new EventActivityCount
+                {
+                    Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
+                    Name = group.Select(d => d.Name).FirstOrDefault(),
+                    Type = group.Select(d => d.Type).FirstOrDefault(),
+                    PartyDispatch = group.Sum(e => e.PartyDispatch),
+                    PartyArrived = group.Sum(e => e.PartyArrived),
+                    SetupPollingStation = group.Sum(e => e.SetupPollingStation),
+                    MockPollDone = group.Sum(e => e.MockPollDone),
+                    PollStarted = group.Sum(e => e.PollStarted),
+                    PollEnded = group.Sum(e => e.PollEnded),
+                    MCEVMOff = group.Sum(e => e.MCEVMOff),
+                    PartyDeparted = group.Sum(e => e.PartyDeparted),
+                    PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
+                    EVMDeposited = group.Sum(e => e.EVMDeposited),
+                    Children = new List<object>(),
+                })
+                .ToList();
+
+            return groupedStateEventList;
+        }
+        public async Task<List<EventActivityCount>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
+        {
+            var getElectionListStateWise = await _context.ElectionInfoMaster
+                    .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId) && d.AssemblyMasterId== Convert.ToInt32(assemblyId))
+                    .ToListAsync();
+            var stateEventList = new List<EventActivityCount>();
+
+            foreach (var electionInfo in getElectionListStateWise)
+            {
+
+                var stateEvents = new EventActivityCount
+                {
+                    Key = electionInfo.BoothMasterId,
+                    Name = _context.BoothMaster
+                        .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId) && d.AssemblyMasterId == Convert.ToInt32(assemblyId))
+                        .Select(d => d.BoothName)
+                        .FirstOrDefault(),
+                    Type = "Booth",
+                    PartyDispatch = electionInfo.IsPartyDispatched.GetValueOrDefault() ? 1 : 0,
+                    PartyArrived = electionInfo.IsPartyReached.GetValueOrDefault() ? 1 : 0,
+                    SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
+                    MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
+                    PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
+                    MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
+                    PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
+                    PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
+                    EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
+                    Children = new List<object>()
+                };
+
+                stateEventList.Add(stateEvents);
+            }
+
+            var groupedStateEventList = stateEventList
+                .GroupBy(e => e.Key)
+                .Select(group => new EventActivityCount
+                {
+                    Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
+                    Name = group.Select(d => d.Name).FirstOrDefault(),
+                    Type = group.Select(d => d.Type).FirstOrDefault(),
+                    PartyDispatch = group.Sum(e => e.PartyDispatch),
+                    PartyArrived = group.Sum(e => e.PartyArrived),
+                    SetupPollingStation = group.Sum(e => e.SetupPollingStation),
+                    MockPollDone = group.Sum(e => e.MockPollDone),
+                    PollStarted = group.Sum(e => e.PollStarted),
+                    PollEnded = group.Sum(e => e.PollEnded),
+                    MCEVMOff = group.Sum(e => e.MCEVMOff),
+                    PartyDeparted = group.Sum(e => e.PartyDeparted),
+                    PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
+                    EVMDeposited = group.Sum(e => e.EVMDeposited),
+                    Children = new List<object>(),
+                })
+                .ToList();
+
+            return groupedStateEventList;
+        }
 
         #endregion
 

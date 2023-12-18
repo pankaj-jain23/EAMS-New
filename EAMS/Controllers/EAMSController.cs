@@ -850,7 +850,7 @@ namespace EAMS.Controllers
                         default:
                             return StatusCode(500, "Internal Server Error");
                     }
-              
+
                 case 7:
                     var res_voter_in_queue = await VoterInQueue(electionInfoViewModel);
                     switch (res_voter_in_queue.Status)
@@ -1054,7 +1054,7 @@ namespace EAMS.Controllers
             }
             else
             {
-               return BadRequest();
+                return BadRequest();
             }
 
         }
@@ -1063,30 +1063,30 @@ namespace EAMS.Controllers
         [Route("AddVoterTurnOut")]
         public async Task<IActionResult> AddVoterTurnOut(string boothMasterId, string voterValue)
         {
-                int eventTurnoutd = 6;
-                var result = await _EAMSService.AddVoterTurnOut(boothMasterId,eventTurnoutd, voterValue);
-                switch (result.Status)
-                {
-                    case RequestStatusEnum.OK:
-                        return Ok(result.Message);
-                    case RequestStatusEnum.BadRequest:
-                        return BadRequest(result.Message);
-                    case RequestStatusEnum.NotFound:
-                        return NotFound(result.Message);
+            int eventTurnoutd = 6;
+            var result = await _EAMSService.AddVoterTurnOut(boothMasterId, eventTurnoutd, voterValue);
+            switch (result.Status)
+            {
+                case RequestStatusEnum.OK:
+                    return Ok(result.Message);
+                case RequestStatusEnum.BadRequest:
+                    return BadRequest(result.Message);
+                case RequestStatusEnum.NotFound:
+                    return NotFound(result.Message);
 
-                    default:
-                        return StatusCode(500, "Internal Server Error");
-                }
-            
-           
+                default:
+                    return StatusCode(500, "Internal Server Error");
+            }
+
+
         }
-       
+
 
         [HttpGet]
         [Route("GetVoterInQueue")]
         public async Task<IActionResult> GetVoterInQueue(string boothMasterId)
         {
-           
+
             var result = await _EAMSService.GetVoterInQueue(boothMasterId);
             if (result is not null)
             {
@@ -1281,11 +1281,34 @@ namespace EAMS.Controllers
         #endregion
 
         [HttpGet]
-        [Route("GetEventListDistrictWiseById")]
-        public async Task<IActionResult>EventListDistrictWiseById(string stateId)
+        [Route("GetDistrictWiseEventListById")]
+        public async Task<IActionResult> EventListDistrictWiseById(string stateId)
         {
-            var eventDistrictWiseList=await _EAMSService.GetEventListDistrictWiseById(stateId);
-            return Ok();
+            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateId);
+            if (eventDistrictWiseList is not null)
+                return Ok(eventDistrictWiseList);
+            else
+                return NotFound();
+        }
+        [HttpGet]
+        [Route("GetAssemblyWiseEventListById")]
+        public async Task<IActionResult> EventListAssemblyWiseById(string stateId, string districtId)
+        {
+            var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
+            if (eventAssemblyList is not null)
+                return Ok(eventAssemblyList);
+            else
+                return NotFound();
+        }
+        [HttpGet]
+        [Route("GetBoothWiseEventListById")]
+        public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
+        {
+            var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);
+            if (eventBoothList is not null)
+                return Ok(eventBoothList);
+            else
+                return NotFound();
         }
     }
 }

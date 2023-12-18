@@ -2478,7 +2478,10 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
-
+        public Task<string> GetEventListDistrictWiseById()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region SendDashBoardCount 

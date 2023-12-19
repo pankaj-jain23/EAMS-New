@@ -1098,6 +1098,22 @@ namespace EAMS.Controllers
             }
 
         }
+        [HttpGet]
+        [Route("GetFinalVotes")]
+        public async Task<IActionResult> GetFinalVotes(string boothMasterId)
+        {
+
+            var result = await _EAMSService.GetFinalVotes(boothMasterId);
+            if (result is not null)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+        }
         private async Task<Response> VoterInQueue(ElectionInfoViewModel electionInfoViewModel)
         {
             ElectionInfoMaster electionInfoMaster = new ElectionInfoMaster()

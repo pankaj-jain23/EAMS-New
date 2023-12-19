@@ -1,6 +1,7 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EAMS_ACore.IRepository
 {
@@ -57,8 +58,13 @@ namespace EAMS_ACore.IRepository
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         bool CanPollStart(int boothMasterId, int eventid);
         bool CanQueueStart(int boothMasterId);
+        bool QueueTime(int boothMasterId);
+        bool CanFinalValueStart(int boothMasterId);
+        
+
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId,int eventid);
         Task<QueueViewModel> GetVoterInQueue(string boothMasterId);
+        Task<FinalViewModel> GetFinalVotes(string boothMasterId);
         Task<QueueViewModel> GetTotalRemainingVoters(string boothMasterId);
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
        

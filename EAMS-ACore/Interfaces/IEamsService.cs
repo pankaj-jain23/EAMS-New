@@ -62,7 +62,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid);
         Task<QueueViewModel> GetVoterInQueue(string boothMasterId);
-
+        Task<FinalViewModel> GetFinalVotes(string boothMasterId);
 
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
 

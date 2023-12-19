@@ -2851,7 +2851,7 @@ namespace EAMS_DAL.Repository
                 {
                     Key = electionInfo.BoothMasterId,
                     Name = _context.BoothMaster
-                        .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId) && d.AssemblyMasterId == Convert.ToInt32(assemblyId))
+                        .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId) && d.AssemblyMasterId == Convert.ToInt32(assemblyId) && d.BoothMasterId == electionInfo.BoothMasterId)
                         .Select(d => d.BoothName)
                         .FirstOrDefault(),
                     Type = "Booth",

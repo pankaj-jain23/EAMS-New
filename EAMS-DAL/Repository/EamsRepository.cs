@@ -4,6 +4,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
+using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections;
@@ -2259,41 +2260,59 @@ namespace EAMS_DAL.Repository
                     {
                         if (electionInfoRecord.VoterInQueue != null)
                         {
-                            bool FinalCanStart = CanFinalValueStart(Convert.ToInt32(boothMasterId)); ;
-                            if (FinalCanStart == true)
+                            if (electionInfoRecord.IsPollEnded == false)
                             {
-
-                                model = new FinalViewModel()
+                                bool FinalCanStart = CanFinalValueStart(Convert.ToInt32(boothMasterId)); ;
+                                if (FinalCanStart == true)
                                 {
-                                    BoothMasterId = boothExists.BoothMasterId,
-                                    TotalVoters = boothExists.TotalVoters,
-                                    LastFinalVotesPolled = electionInfoRecord.FinalTVote,
-                                   //VotesFinalPolledTime=,
-                                    VoteEnabled = true,
-                                    Message = "Final Value is Available"
+
+                                    model = new FinalViewModel()
+                                    {
+                                        BoothMasterId = boothExists.BoothMasterId,
+                                        TotalVoters = boothExists.TotalVoters,
+                                        LastFinalVotesPolled = electionInfoRecord.FinalTVote,
+                                        //VotesFinalPolledTime=,
+                                        VoteEnabled = true,
+                                        Message = "Final Value is Available"
 
 
-                                };
+                                    };
+
+                                }
+                                else
+                                {
+                                    model = new FinalViewModel()
+                                    {
+                                        BoothMasterId = boothExists.BoothMasterId,
+                                        TotalVoters = boothExists.TotalVoters,
+                                        LastFinalVotesPolled = electionInfoRecord.FinalTVote,
+                                        //VotesFinalPolledTime = electionInfoRecord.FinalTVote,
+
+                                        VoteEnabled = true,
+                                        Message = "Final Value is Available, Last Entered :" + electionInfoRecord.FinalTVote
+
+
+                                    };
+
+                                }
 
                             }
                             else
                             {
+
                                 model = new FinalViewModel()
                                 {
                                     BoothMasterId = boothExists.BoothMasterId,
                                     TotalVoters = boothExists.TotalVoters,
                                     LastFinalVotesPolled = electionInfoRecord.FinalTVote,
-                                    //VotesFinalPolledTime = electionInfoRecord.FinalTVote,
-                                   
-                                    VoteEnabled = true,
-                                    Message = "Final Value is Available, Last Entered :" + electionInfoRecord.FinalTVote
+                                    //VotesFinalPolledTime = null,
+
+                                    VoteEnabled = false,
+                                    Message = "Final Value Not Available, Poll Already Ended"
 
 
                                 };
-
                             }
-
-
                         }
                         else
                         {
@@ -2313,6 +2332,21 @@ namespace EAMS_DAL.Repository
 
 
 
+                    }
+                    else
+                    {
+                        model = new FinalViewModel()
+                        {
+                            BoothMasterId = boothExists.BoothMasterId,
+                            TotalVoters = boothExists.TotalVoters,
+                            LastFinalVotesPolled = null,
+                            VotesFinalPolledTime = null,
+
+                            VoteEnabled = false,
+                            Message = "Election Info Record Not Found, Pls Check Previous Events."
+
+
+                        };
                     }
 
 

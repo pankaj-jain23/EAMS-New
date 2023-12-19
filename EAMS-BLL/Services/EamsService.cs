@@ -416,9 +416,17 @@ namespace EAMS_BLL.Services
                         {
                             if (electionInfoRecord.IsMCESwitchOff == false || electionInfoRecord.IsMCESwitchOff == null)
                             {
-                                electionInfoRecord.IsPollEnded = electionInfoMaster.IsPollEnded;
-                                electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                return await _eamsRepository.EventActivity(electionInfoRecord);
+                                if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
+                                {
+                                    electionInfoRecord.IsPollEnded = electionInfoMaster.IsPollEnded;
+                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    return await _eamsRepository.EventActivity(electionInfoRecord);
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Can't Change Status, Poll Already Ended." };
+
+                                }
                             }
                             else
                             {

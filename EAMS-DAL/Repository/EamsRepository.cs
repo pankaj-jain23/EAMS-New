@@ -1649,6 +1649,16 @@ namespace EAMS_DAL.Repository
                                             }
                                             else
                                             {
+                                                string msg = "";
+                                                if(SlotRecord.IsLastSlot == true)
+                                                {
+                                                    msg = "Voter Turn Out Already Entered For Slot. Please Proceed For Queue.";
+                                                }
+                                                else
+                                                {
+                                                    msg = "Voter Turn Out Already Entered For Slot.";
+                                                }
+
                                                 model = new VoterTurnOutPolledDetailViewModel()
                                                 {
                                                     BoothMasterId = boothExists.BoothMasterId,
@@ -1659,13 +1669,13 @@ namespace EAMS_DAL.Repository
                                                     EndTime = SlotRecord.EndTime,
                                                     LockTime = SlotRecord.LockTime,
                                                     VoteEnabled = false, // but freeze it if already entered for thi sslot
+
                                                     IsLastSlot = SlotRecord.IsLastSlot,
-                                                    Message = "Voter Turn Out Already Entered For Slot."
+                                                    Message = msg
 
 
 
                                                 };
-
                                             }
                                         }
                                         else
@@ -1711,18 +1721,37 @@ namespace EAMS_DAL.Repository
                                 }
                                 else
                                 {
-                                    //Slot not available
-                                    model = new VoterTurnOutPolledDetailViewModel()
+                                    // check whether last slot entry done or not in polled detail
+                                    var getLastSlot = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
+                                    bool lastSlotEntryDone = GetLastSlotEntryDone(Convert.ToInt32(boothMasterId), boothExists.StateMasterId, boothExists.DistrictMasterId, boothExists.AssemblyMasterId, 6, getLastSlot.SlotManagementId);
+                                    
+                                    if(lastSlotEntryDone == true)
                                     {
-                                        BoothMasterId = boothExists.BoothMasterId,
-                                        TotalVoters = boothExists.TotalVoters,
-                                        VotesPolled = 0,
-                                        VoteEnabled = false,
-                                        Message = "Slot Not Available"
+                                        model = new VoterTurnOutPolledDetailViewModel()
+                                        {
+                                            BoothMasterId = boothExists.BoothMasterId,
+                                            TotalVoters = boothExists.TotalVoters,
+                                            VotesPolled = polldetail.VotesPolled,
+                                            VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                            VoteEnabled = false,
+                                            Message = "Voter Turn Out Entry Done for Last Slot, Kindly Proceed for Voter in Queue"
 
 
 
-                                    };
+                                        };
+                                    }
+                                    else
+                                    {
+                                        model = new VoterTurnOutPolledDetailViewModel()
+                                        {
+                                            BoothMasterId = boothExists.BoothMasterId,
+                                            TotalVoters = boothExists.TotalVoters,
+                                            VotesPolled = 0,
+                                            VoteEnabled = false,
+                                            Message = "Slot Not Available"
+
+                                        };
+                                    }
                                 }
                             }
 
@@ -1809,6 +1838,27 @@ namespace EAMS_DAL.Repository
                 };
             }
             return model;
+        }
+        public bool GetLastSlotEntryDone(int boothMasterId, int stateMasterId, int districtMasterId, int assemblyMasterid, int eventmasterid, int slotMgmtId)
+        {
+            bool islastentryDone = false;
+            var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == stateMasterId && p.DistrictMasterId == districtMasterId && p.SlotManagementId== slotMgmtId && p.AssemblyMasterId== assemblyMasterid).FirstOrDefault();
+            
+            if (polldetail != null)
+            {
+                // then last entry done
+                islastentryDone = true;
+            }
+            else
+            {
+                // poll can be started
+                islastentryDone = false;
+
+
+            }
+
+
+            return islastentryDone;
         }
 
         public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)

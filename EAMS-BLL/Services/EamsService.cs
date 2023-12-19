@@ -170,6 +170,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsPartyDispatched = electionInfoMaster.IsPartyDispatched;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                //electionInfoRecord.PartyDispatchedLastUpdate = _eamsRepository.BharatDateTime();
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else

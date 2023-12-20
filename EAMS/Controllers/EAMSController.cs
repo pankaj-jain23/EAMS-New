@@ -770,6 +770,7 @@ namespace EAMS.Controllers
         #endregion
 
         #region Event Activity
+
         [HttpPost]
         [Route("EventActivity")]
         public async Task<IActionResult> EventActivity(ElectionInfoViewModel electionInfoViewModel)
@@ -1098,6 +1099,7 @@ namespace EAMS.Controllers
             }
 
         }
+
         [HttpGet]
         [Route("GetFinalVotes")]
         public async Task<IActionResult> GetFinalVotes(string boothMasterId)
@@ -1221,6 +1223,40 @@ namespace EAMS.Controllers
             var result = await _EAMSService.EventActivity(electionInfoMaster);
             return result;
         }
+     
+        #region Event Count for Dashboard
+
+        [HttpGet]
+        [Route("GetDistrictWiseEventListById")]
+        public async Task<IActionResult> EventListDistrictWiseById(string stateId)
+        {
+            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateId);
+            if (eventDistrictWiseList is not null)
+                return Ok(eventDistrictWiseList);
+            else
+                return NotFound();
+        }
+        [HttpGet]
+        [Route("GetAssemblyWiseEventListById")]
+        public async Task<IActionResult> EventListAssemblyWiseById(string stateId, string districtId)
+        {
+            var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
+            if (eventAssemblyList is not null)
+                return Ok(eventAssemblyList);
+            else
+                return NotFound();
+        }
+        [HttpGet]
+        [Route("GetBoothWiseEventListById")]
+        public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
+        {
+            var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);
+            if (eventBoothList is not null)
+                return Ok(eventBoothList);
+            else
+                return NotFound();
+        }
+        #endregion
 
         #endregion
 
@@ -1296,35 +1332,7 @@ namespace EAMS.Controllers
         }
         #endregion
 
-        [HttpGet]
-        [Route("GetDistrictWiseEventListById")]
-        public async Task<IActionResult> EventListDistrictWiseById(string stateId)
-        {
-            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateId);
-            if (eventDistrictWiseList is not null)
-                return Ok(eventDistrictWiseList);
-            else
-                return NotFound();
-        }
-        [HttpGet]
-        [Route("GetAssemblyWiseEventListById")]
-        public async Task<IActionResult> EventListAssemblyWiseById(string stateId, string districtId)
-        {
-            var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
-            if (eventAssemblyList is not null)
-                return Ok(eventAssemblyList);
-            else
-                return NotFound();
-        }
-        [HttpGet]
-        [Route("GetBoothWiseEventListById")]
-        public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
-        {
-            var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);
-            if (eventBoothList is not null)
-                return Ok(eventBoothList);
-            else
-                return NotFound();
-        }
+
+       
     }
 }

@@ -24,7 +24,7 @@ public class DatabaseListenerService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await conn.WaitAsync(stoppingToken);
-            await _hubContext.Clients.All.SendAsync("GetAndBroadcastDashboardCount");
+            await _hubContext.Clients.All.SendAsync("GetDashboardCount");
         }
     }
 }

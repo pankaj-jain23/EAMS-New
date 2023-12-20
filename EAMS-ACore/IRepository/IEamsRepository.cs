@@ -76,7 +76,7 @@ namespace EAMS_ACore.IRepository
 
         Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId);
         Task<List<EventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId);
-        Task<List<EventActivityCount>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId);
+        Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId);
 
 
         #endregion

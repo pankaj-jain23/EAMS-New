@@ -2837,17 +2837,17 @@ namespace EAMS_DAL.Repository
 
             return groupedStateEventList;
         }
-        public async Task<List<EventActivityCount>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
+        public async Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             var getElectionListStateWise = await _context.ElectionInfoMaster
                     .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId) && d.AssemblyMasterId== Convert.ToInt32(assemblyId))
                     .ToListAsync();
-            var stateEventList = new List<EventActivityCount>();
+            var stateEventList = new List<EventActivityBoothWise>();
 
             foreach (var electionInfo in getElectionListStateWise)
             {
 
-                var stateEvents = new EventActivityCount
+                var stateEvents = new EventActivityBoothWise
                 {
                     Key = electionInfo.BoothMasterId,
                     Name = _context.BoothMaster
@@ -2865,7 +2865,7 @@ namespace EAMS_DAL.Repository
                     PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
                     PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
                     EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
-                    Children = new List<object>()
+                    
                 };
 
                 stateEventList.Add(stateEvents);
@@ -2873,7 +2873,7 @@ namespace EAMS_DAL.Repository
 
             var groupedStateEventList = stateEventList
                 .GroupBy(e => e.Key)
-                .Select(group => new EventActivityCount
+                .Select(group => new EventActivityBoothWise
                 {
                     Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
                     Name = group.Select(d => d.Name).FirstOrDefault(),
@@ -2888,7 +2888,7 @@ namespace EAMS_DAL.Repository
                     PartyDeparted = group.Sum(e => e.PartyDeparted),
                     PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
                     EVMDeposited = group.Sum(e => e.EVMDeposited),
-                    Children = new List<object>(),
+                    
                 })
                 .ToList();
 

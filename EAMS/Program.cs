@@ -29,12 +29,6 @@ builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
-
-builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<IAuthRepository, AuthRepository>();
-builder.Services.AddTransient<IEamsService, EamsService>();
-builder.Services.AddTransient<IEamsRepository, EamsRepository>();
-//builder.Services.AddHostedService<DatabaseListenerService>();
 builder.Services.AddDbContext<EamsContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Postgres");
@@ -87,6 +81,11 @@ builder.Services
         };
     });
 
+builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAuthRepository, AuthRepository>();
+builder.Services.AddTransient<IEamsService, EamsService>();
+builder.Services.AddTransient<IEamsRepository, EamsRepository>();
+builder.Services.AddHostedService<DatabaseListenerService>();
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });

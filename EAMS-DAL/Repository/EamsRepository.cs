@@ -1650,7 +1650,7 @@ namespace EAMS_DAL.Repository
                                             else
                                             {
                                                 string msg = "";
-                                                if(SlotRecord.IsLastSlot == true)
+                                                if (SlotRecord.IsLastSlot == true)
                                                 {
                                                     msg = "Voter Turn Out Already Entered For Slot. Please Proceed For Queue.";
                                                 }
@@ -1724,8 +1724,8 @@ namespace EAMS_DAL.Repository
                                     // check whether last slot entry done or not in polled detail
                                     var getLastSlot = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
                                     bool lastSlotEntryDone = GetLastSlotEntryDone(Convert.ToInt32(boothMasterId), boothExists.StateMasterId, boothExists.DistrictMasterId, boothExists.AssemblyMasterId, 6, getLastSlot.SlotManagementId);
-                                    
-                                    if(lastSlotEntryDone == true)
+
+                                    if (lastSlotEntryDone == true)
                                     {
                                         model = new VoterTurnOutPolledDetailViewModel()
                                         {
@@ -1842,8 +1842,8 @@ namespace EAMS_DAL.Repository
         public bool GetLastSlotEntryDone(int boothMasterId, int stateMasterId, int districtMasterId, int assemblyMasterid, int eventmasterid, int slotMgmtId)
         {
             bool islastentryDone = false;
-            var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == stateMasterId && p.DistrictMasterId == districtMasterId && p.SlotManagementId== slotMgmtId && p.AssemblyMasterId== assemblyMasterid).FirstOrDefault();
-            
+            var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == stateMasterId && p.DistrictMasterId == districtMasterId && p.SlotManagementId == slotMgmtId && p.AssemblyMasterId == assemblyMasterid).FirstOrDefault();
+
             if (polldetail != null)
             {
                 // then last entry done
@@ -1881,7 +1881,7 @@ namespace EAMS_DAL.Repository
                             if (QueueCanStart == true)
                             {
                                 bool queueTimeOpen = QueueTime(Convert.ToInt32(boothMasterId));
-                                if(queueTimeOpen == true)
+                                if (queueTimeOpen == true)
                                 {
                                     model = new QueueViewModel()
                                     {
@@ -1908,7 +1908,7 @@ namespace EAMS_DAL.Repository
                                         VoteEnabled = false,
                                         RemainingVotes = null,
                                         Message = "Queue will be Open at Specified Time."
-                                       
+
 
                                     };
                                 }
@@ -2082,7 +2082,7 @@ namespace EAMS_DAL.Repository
                                                     if (Convert.ToInt32(voterValue) < polldetail.VotesPolled)
                                                     {
                                                         return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Value cannot be less than Last Votes Polled!" };
-                                                       
+
                                                     }
                                                     else
                                                     {
@@ -2113,24 +2113,24 @@ namespace EAMS_DAL.Repository
                                             }
                                             else
                                             { // as it is insert  in poll detail but check votervalue should be greater than old value
-                                                //if (Convert.ToInt32(voterValue) > boothExists.TotalVoters)
-                                                //{
-                                                    model = new PollDetail()
-                                                    {
-                                                        SlotManagementId = SlotRecordMasterId,
-                                                        StateMasterId = boothExists.StateMasterId,
-                                                        DistrictMasterId = boothExists.DistrictMasterId,
-                                                        AssemblyMasterId = boothExists.AssemblyMasterId,
-                                                        BoothMasterId = Convert.ToInt32(boothMasterId),
-                                                        EventMasterId = eventmasterid,
-                                                        VotesPolled = Convert.ToInt32(voterValue),
-                                                        VotesPolledRecivedTime = BharatDateTime(),
-                                                        UserType = "SO"
-                                                        //AddedBy=Soid  // find SO or ARO
-                                                    };
-                                                    _context.PollDetails.Add(model);
-                                                    await _context.SaveChangesAsync();
-                                                    return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
+                                              //if (Convert.ToInt32(voterValue) > boothExists.TotalVoters)
+                                              //{
+                                                model = new PollDetail()
+                                                {
+                                                    SlotManagementId = SlotRecordMasterId,
+                                                    StateMasterId = boothExists.StateMasterId,
+                                                    DistrictMasterId = boothExists.DistrictMasterId,
+                                                    AssemblyMasterId = boothExists.AssemblyMasterId,
+                                                    BoothMasterId = Convert.ToInt32(boothMasterId),
+                                                    EventMasterId = eventmasterid,
+                                                    VotesPolled = Convert.ToInt32(voterValue),
+                                                    VotesPolledRecivedTime = BharatDateTime(),
+                                                    UserType = "SO"
+                                                    //AddedBy=Soid  // find SO or ARO
+                                                };
+                                                _context.PollDetails.Add(model);
+                                                await _context.SaveChangesAsync();
+                                                return new Response { Status = RequestStatusEnum.OK, Message = "Voter Turn Out for " + boothExists.BoothName + " entered successfully!" };
 
                                                 //}
                                                 //else
@@ -2226,6 +2226,7 @@ namespace EAMS_DAL.Repository
             bool queueCanStart = false;
             var boothExists = _context.BoothMaster.Where(p => p.BoothMasterId == boothMasterId).FirstOrDefault();
             var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefault();
+
             var slotRecord = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == 6).OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
             if (polldetail != null)
             {
@@ -2249,24 +2250,24 @@ namespace EAMS_DAL.Repository
             var boothExists = _context.BoothMaster.Where(p => p.BoothMasterId == boothMasterId).FirstOrDefault();
             var polldetail = _context.PollDetails.Where(p => p.BoothMasterId == boothMasterId && p.StateMasterId == boothExists.StateMasterId && p.DistrictMasterId == boothExists.DistrictMasterId).OrderByDescending(p => p.VotesPolledRecivedTime).FirstOrDefault();
             var slotRecord = _context.SlotManagementMaster.Where(p => p.StateMasterId == boothExists.StateMasterId && p.EventMasterId == 6).OrderByDescending(p => p.SlotManagementId).FirstOrDefault();
-           
-                //if required time can be checked in order to open queue
-                DateTime currentTime = DateTime.Now;
-                DateTime endTime = DateTime.ParseExact(slotRecord.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
-                DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+
+            //if required time can be checked in order to open queue
+            DateTime currentTime = DateTime.Now;
+            DateTime endTime = DateTime.ParseExact(slotRecord.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+            DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
 
-                if (currentTime > lockTime)
-                {
-                    // queue is open
-                    queueCanStart = true;
-                }
+            if (currentTime > lockTime)
+            {
+                // queue is open
+                queueCanStart = true;
+            }
 
-                else
-                {
-                    // queue cannot open before specified time
-                    queueCanStart = false;
-                }
+            else
+            {
+                // queue cannot open before specified time
+                queueCanStart = false;
+            }
 
 
 
@@ -2372,7 +2373,7 @@ namespace EAMS_DAL.Repository
                                 TotalVoters = boothExists.TotalVoters,
                                 LastFinalVotesPolled = null,
                                 VotesFinalPolledTime = null,
-                                
+
                                 VoteEnabled = false,
                                 Message = "Final Value Not Available"
 
@@ -2494,7 +2495,7 @@ namespace EAMS_DAL.Repository
             List<EventWiseBoothStatus> list = new List<EventWiseBoothStatus>();
 
             int totalPartyDispatched = 0; int totalPartyReached = 0; int totalIsetUpPolling = 0;
-            int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterinqueue = 0;
+            int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterturedout = 0; int totalvoterinqueue = 0;
             int totalQueue = 0; int totalfinalvotes = 0;
             int totalpollended = 0; int totalmcevm = 0; int totalpartdeparted = 0; int totalpartycollectoncentre = 0;
             int totalevmdeposited = 0;
@@ -2504,6 +2505,7 @@ namespace EAMS_DAL.Repository
             int pendingIsetUpPolling = 0;
             int pendingMockPoll = 0;
             int pendingPollStarted = 0;
+            int pendingVoterTurnedOut = 0;
             int pendingVoterInQueue = 0;
             int pendingFinalVotes = 0;
             int pendingPollEnded = 0;
@@ -2545,6 +2547,10 @@ namespace EAMS_DAL.Repository
                     {
                         totalfinalvotes += 1;
                     }
+                    if (electioInfoRecord.IsVoterTurnOut != null)
+                    {
+                        totalvoterturedout += 1;
+                    }
                     if (electioInfoRecord.IsPollEnded == true)
                     {
                         totalpollended += 1;
@@ -2574,6 +2580,7 @@ namespace EAMS_DAL.Repository
             pendingIsetUpPolling = soTotalBooths.Count - totalIsetUpPolling;
             pendingMockPoll = soTotalBooths.Count - totalmockpoll;
             pendingPollStarted = soTotalBooths.Count - totalpollstarted;
+            pendingVoterTurnedOut = soTotalBooths.Count - totalvoterturedout;
             pendingFinalVotes = soTotalBooths.Count - totalfinalvotes;
             pendingPollEnded = soTotalBooths.Count - totalpollended;
             pendingMCEVM = soTotalBooths.Count - totalmcevm;
@@ -2638,8 +2645,8 @@ namespace EAMS_DAL.Repository
                     EventWiseBoothStatus model_turn = new EventWiseBoothStatus();
                     model_turn.EventMasterId = 6;
                     model_turn.EventName = eventid.EventName;
-                    model_turn.Completed = totalvoterinqueue;
-                    model_turn.Pending = soTotalBooths.Count;
+                    model_turn.Completed = totalvoterturedout;
+                    model_turn.Pending = pendingVoterTurnedOut;
                     model_turn.TotalBooths = soTotalBooths.Count;
                     list.Add(model_turn);
                 }
@@ -2745,6 +2752,7 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
                     MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
                     PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    VoterTurnedOut = electionInfo.IsVoterTurnOut.GetValueOrDefault() ? 1 : 0,
                     PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
                     MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
                     PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
@@ -2768,6 +2776,7 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = group.Sum(e => e.SetupPollingStation),
                     MockPollDone = group.Sum(e => e.MockPollDone),
                     PollStarted = group.Sum(e => e.PollStarted),
+                    VoterTurnedOut = group.Sum(e => e.VoterTurnedOut),
                     PollEnded = group.Sum(e => e.PollEnded),
                     MCEVMOff = group.Sum(e => e.MCEVMOff),
                     PartyDeparted = group.Sum(e => e.PartyDeparted),
@@ -2803,6 +2812,7 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
                     MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
                     PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    VoterTurnedOut = electionInfo.IsVoterTurnOut.GetValueOrDefault() ? 1 : 0,
                     PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
                     MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
                     PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
@@ -2826,6 +2836,7 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = group.Sum(e => e.SetupPollingStation),
                     MockPollDone = group.Sum(e => e.MockPollDone),
                     PollStarted = group.Sum(e => e.PollStarted),
+                    VoterTurnedOut = group.Sum(e => e.VoterTurnedOut),
                     PollEnded = group.Sum(e => e.PollEnded),
                     MCEVMOff = group.Sum(e => e.MCEVMOff),
                     PartyDeparted = group.Sum(e => e.PartyDeparted),
@@ -2840,7 +2851,7 @@ namespace EAMS_DAL.Repository
         public async Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             var getElectionListStateWise = await _context.ElectionInfoMaster
-                    .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId) && d.AssemblyMasterId== Convert.ToInt32(assemblyId))
+                    .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId) && d.AssemblyMasterId == Convert.ToInt32(assemblyId))
                     .ToListAsync();
             var stateEventList = new List<EventActivityBoothWise>();
 
@@ -2860,12 +2871,13 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
                     MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
                     PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    VoterTurnedOut = electionInfo.IsVoterTurnOut.GetValueOrDefault() ? 1 : 0,
                     PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
                     MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
                     PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
                     PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
                     EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
-                    
+
                 };
 
                 stateEventList.Add(stateEvents);
@@ -2883,12 +2895,13 @@ namespace EAMS_DAL.Repository
                     SetupPollingStation = group.Sum(e => e.SetupPollingStation),
                     MockPollDone = group.Sum(e => e.MockPollDone),
                     PollStarted = group.Sum(e => e.PollStarted),
+                    VoterTurnedOut = group.Sum(e => e.VoterTurnedOut),
                     PollEnded = group.Sum(e => e.PollEnded),
                     MCEVMOff = group.Sum(e => e.MCEVMOff),
                     PartyDeparted = group.Sum(e => e.PartyDeparted),
                     PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
                     EVMDeposited = group.Sum(e => e.EVMDeposited),
-                    
+
                 })
                 .ToList();
 
@@ -2910,6 +2923,7 @@ namespace EAMS_DAL.Repository
             AddEventCount(dashboardCount, "SetupPollingStation", e => e.IsSetupOfPolling == true);
             AddEventCount(dashboardCount, "MockPollDone", e => e.IsMockPollDone == true);
             AddEventCount(dashboardCount, "PollStarted", e => e.IsPollStarted == true);
+            AddEventCount(dashboardCount, "VoterTurnOut", e => e.IsVoterTurnOut == true);
             AddEventCount(dashboardCount, "PollEnded", e => e.IsPollEnded == true);
             AddEventCount(dashboardCount, "MCEVMOff", e => e.IsMCESwitchOff == true);
             AddEventCount(dashboardCount, "PartyDeparted", e => e.IsPartyDeparted == true);

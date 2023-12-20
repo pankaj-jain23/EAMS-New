@@ -18,6 +18,7 @@ namespace EAMS_ACore.Models
         public int SetupPollingStation { get; set; }
         public int MockPollDone { get; set; }
         public int PollStarted { get; set; }
+        public int VoterTurnedOut { get; set; }
         public int PollEnded { get; set; }
         public int MCEVMOff { get; set; }
         public int PartyDeparted { get; set; }
@@ -35,6 +36,7 @@ namespace EAMS_ACore.Models
         public int SetupPollingStation { get; set; }
         public int MockPollDone { get; set; }
         public int PollStarted { get; set; }
+        public int VoterTurnedOut { get; set; }
         public int PollEnded { get; set; }
         public int MCEVMOff { get; set; }
         public int PartyDeparted { get; set; }

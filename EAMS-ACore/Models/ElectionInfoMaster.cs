@@ -37,6 +37,10 @@ namespace EAMS_ACore.Models
 
         public int? VoterInQueue { get; set; }
         public DateTime? VoterInQueueLastUpdate { get; set; }
+
+        public bool? IsVoterTurnOut { get; set; }
+        public DateTime? VotingTurnOutLastUpdate { get; set; }
+
         public bool? IsPollEnded { get; set; }
         public DateTime? IsPollEndedLastUpdate { get; set; }  
         public bool? IsMCESwitchOff { get; set; }

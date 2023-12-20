@@ -1,9 +1,12 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore;
+using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
+using EAMS_DAL.AuthRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace EAMS_BLL.Services
@@ -11,9 +14,11 @@ namespace EAMS_BLL.Services
     public class EamsService : IEamsService
     {
         private readonly IEamsRepository _eamsRepository;
-        public EamsService(IEamsRepository eamsRepository)
+        private readonly IAuthRepository _authRepository;
+        public EamsService(IEamsRepository eamsRepository, IAuthRepository authRepository)
         {
             _eamsRepository = eamsRepository;
+            _authRepository = authRepository;
         }
 
         #region State Master
@@ -289,7 +294,7 @@ namespace EAMS_BLL.Services
                         if (QueueCanStart == true)
                         {
                             bool queueTime = _eamsRepository.QueueTime(electionInfoRecord.BoothMasterId);
-                            if(queueTime ==true)
+                            if (queueTime == true)
                             {
                                 if (electionInfoRecord.FinalTVote == null)  // next event
                                 {
@@ -383,7 +388,7 @@ namespace EAMS_BLL.Services
                                             return new Response { Status = RequestStatusEnum.BadRequest, Message = "Final Votes Cannot be less than Last Votes Polled" };
 
                                         }
-                                       
+
                                     }
                                     else
                                     {
@@ -575,7 +580,7 @@ namespace EAMS_BLL.Services
             return new Response { Status = RequestStatusEnum.BadRequest, Message = "something went wrong" };
 
         }
-       
+
         public async Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId)
         {
             return await _eamsRepository.EventWiseBoothStatus(soId);
@@ -586,7 +591,7 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
 
-        } 
+        }
         public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
 
         {
@@ -607,15 +612,15 @@ namespace EAMS_BLL.Services
 
         public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId)
         {
-           return await _eamsRepository.GetEventListDistrictWiseById( stateId);
-        } 
-        public async Task<List<EventActivityCount>> GetEventListAssemblyWiseById(string stateId,string districtId)
+            return await _eamsRepository.GetEventListDistrictWiseById(stateId);
+        }
+        public async Task<List<EventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId)
         {
-           return await _eamsRepository.GetEventListAssemblyWiseById(stateId,districtId);
+            return await _eamsRepository.GetEventListAssemblyWiseById(stateId, districtId);
         }
         public async Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
-            return await _eamsRepository.GetEventListBoothWiseById(stateId, districtId,assemblyId);
+            return await _eamsRepository.GetEventListBoothWiseById(stateId, districtId, assemblyId);
         }
         #endregion
 
@@ -639,5 +644,46 @@ namespace EAMS_BLL.Services
             return _eamsRepository.GetEventSlotList();
         }
         #endregion
+
+        #region UserList
+        public async Task<List<UserList>> GetUserList(string userName, string type)
+        {
+            List<UserList> list = new List<UserList>();
+            if (type == "SO")
+            {
+               
+                return list = await _eamsRepository.GetUserList(userName,type);
+
+            }
+            else if (type == "ARO")
+            {
+              
+                var aroUsers = await _authRepository.FindUserListByName(userName);
+                foreach (var user in aroUsers)
+                {
+                    var mappedUser = new UserList
+                    {
+                        Name = user.UserName,
+                        MobileNumber = user.PhoneNumber
+                        // Map other properties as needed
+                    };
+
+                    list.Add(mappedUser);
+                }
+
+                return list;
+
+            }
+
+            return list.ToList();
+        }
+
+     
+        #endregion
+
+
+
+
+
     }
 }

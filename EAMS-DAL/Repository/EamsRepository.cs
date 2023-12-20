@@ -2956,6 +2956,27 @@ namespace EAMS_DAL.Repository
         }
         #endregion
 
+        #region UserList
+
+        public async Task<List<UserList>> GetUserList(string soName, string type)
+        {
+            var users = await _context.SectorOfficerMaster
+    .Where(u => EF.Functions.Like(u.SoName.ToUpper(), "%" + soName.ToUpper() + "%"))
+    .OrderBy(u => u.SOMasterId)
+    .Select(d => new UserList
+    {
+        Name = d.SoName,
+        MobileNumber = d.SoMobile,
+        UserType = type
+    })
+    .ToListAsync();
+            return users;
+        }
+
+
+        #endregion
+
+
 
     }
 }

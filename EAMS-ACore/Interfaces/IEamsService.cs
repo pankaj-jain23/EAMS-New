@@ -82,7 +82,9 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddEventSlot(List<SlotManagementMaster> addEventSlot);
         Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
-         
+
+
+        Task<List<UserList>> GetUserList(string soName, string type);
 
     }
 }

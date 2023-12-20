@@ -164,6 +164,16 @@ namespace EAMS_DAL.AuthRepository
             }
         }
         #endregion
+      
+
+        public async Task<List<UserRegistration>> FindUserListByName(string userName)
+        {
+            var users = await _userManager.Users
+                .Where(u => EF.Functions.Like(u.UserName.ToUpper(), "%" + userName.ToUpper() + "%"))
+                .ToListAsync();
+
+            return users;
+        }
 
 
         #region Check User Login

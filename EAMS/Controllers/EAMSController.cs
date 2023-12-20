@@ -1333,6 +1333,23 @@ namespace EAMS.Controllers
         #endregion
 
 
-       
+        #region UserList
+        [HttpGet]
+        [Route("GetUserList")]
+        public async Task<IActionResult> GetUserList(string userName,string  type)
+        {
+            var userList = await _EAMSService.GetUserList(userName,type);
+            var data = new
+            {
+                count = userList.Count,
+                data = userList
+            };
+            return Ok(data);
+
+        }
+        #endregion
+
+        
+
     }
 }

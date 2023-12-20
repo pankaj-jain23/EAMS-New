@@ -1497,6 +1497,8 @@ namespace EAMS_DAL.Repository
                     return electioInfoRecord.IsMockPollDone ?? false;
                 case "5":
                     return electioInfoRecord.IsPollStarted ?? false;
+                case "6":
+                    return electioInfoRecord.IsVoterTurnOut ?? false;
                 case "7":
                     return electioInfoRecord.VoterInQueue != null;
                 case "8":

@@ -1,23 +1,22 @@
 using EAMS.Helper;
-using AutoMapper;
+using EAMS.Hubs;
+using EAMS.Middleware;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
+using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_BLL.AuthServices;
 using EAMS_BLL.Services;
+using EAMS_DAL.AuthRepository;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using EAMS_ACore.IAuthRepository;
-using EAMS_DAL.AuthRepository;
 using Microsoft.OpenApi.Models;
-using EAMS.Middleware;
-using EAMS.Hubs;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,8 +83,9 @@ builder.Services
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IEamsService, EamsService>();
-builder.Services.AddTransient<IEamsRepository, EamsRepository>();
-builder.Services.AddHostedService<DatabaseListenerService>();
+builder.Services.AddTransient<IEamsRepository, EamsRepository>(); 
+builder.Services.AddHostedService<DatabaseListenerService>(); 
+
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });

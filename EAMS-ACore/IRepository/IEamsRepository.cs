@@ -93,7 +93,9 @@ namespace EAMS_ACore.IRepository
         Task<List<UserList>> GetUserList(string soName, string type);
 
         #region PollInterruption Interruption
-        Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason);
+        Task<Response> AddPollInterruption(PollInterruption pollinterruptionData);
+        Task<PollInterruption> GetPollInterruptionData(string boothMasterId);
+        Task<BoothMaster> GetBoothRecord(int boothMasterId);
         
         #endregion
 

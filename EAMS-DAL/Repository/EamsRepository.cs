@@ -2707,87 +2707,28 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region PollInterruption Interruption
-        public async Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string reason)
+        public async Task<Response> AddPollInterruption(PollInterruption PollInterruptionData)
         {
-            var pollInterruptionRecord = await GetPollInterruptionData(boothMasterId, stopTime, ResumeTime, reason);
-            var boothMasterRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
-            if (boothMasterRecord != null)
-            {
-                if (pollInterruptionRecord == null)
-                {
-                    // check stop time only as it is Fresh record
-                    if (stopTime != null)
-                    {
-                        bool ishmmformat = IsHHmmFormat(stopTime);
-                        if (ishmmformat)
-                        {
-                            DateTime currentTime = DateTime.Now;
-                            DateTime stopTimeConvert = DateTime.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
-                            TimeOnly stopTimeConverttime = TimeOnly.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
-                            if (stopTimeConvert <= currentTime)
-                            {
-
-                                PollInterruption pollInterruptionData = new PollInterruption()
-                                {
-                                    StateMasterId = boothMasterRecord.StateMasterId,
-                                    DistrictMasterId = boothMasterRecord.DistrictMasterId,
-                                    AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
-                                    BoothMasterId = boothMasterRecord.BoothMasterId,
-                                    StopTime = stopTimeConverttime,
-                                    InterruptionType = Convert.ToInt16(reason),
-                                    Flag="Initial",
-                                    CreatedAt=BharatDateTime(),
-                                    UpdatedAt=BharatDateTime(),
-                                    IsPollInterrupted=true,
-
-                                };
-                                _context.PollInterruptions.Add(pollInterruptionData);
-                                _context.SaveChanges();
-                                return new Response { Status = RequestStatusEnum.OK, Message = "Poll Interruption Added Successfully." };
-
-                            }
-                            else
-                            {
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Should Not be greater than Current time !" };
-                            }
-                        }
-                        else
-                        {
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Please Enter HH:mm Format Only" };
-                        }
-                        
-                    }
-                    else
-                    {
-                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Kindly Fill Stop Time!" };
-                    }
-
-                }
-                else
-                {
-                    //var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
-
-                }
-            }
-            else
-            {
-                return new Response { Status = RequestStatusEnum.NotFound, Message = "Booth Record Not Found" };
-            }
-            return null;
+            _context.PollInterruptions.Add(PollInterruptionData);
+            _context.SaveChanges();
+            return new Response { Status = RequestStatusEnum.OK, Message = "Poll Interruption Added Successfully." };
+            
         }
-        public async Task<PollInterruption> GetPollInterruptionData(string boothMasterId, string StopTime, string ResumeTime, string reason)
+        public async Task<PollInterruption> GetPollInterruptionData(string boothMasterId)
         {
             var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p=>p.PollInterruptionId).FirstOrDefaultAsync();
             return pollInterruptionRecord;
         }
+        
+        public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
+        {
+            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId ==boothMasterId).FirstOrDefaultAsync();
+            return boothRecord;
+        }
 
         #endregion
 
-        static bool IsHHmmFormat(string timeString)
-        {
-            DateTime dummyDate; // A dummy date to use for parsing
-            return DateTime.TryParseExact(timeString, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dummyDate);
-        }
+       
 
 
     }

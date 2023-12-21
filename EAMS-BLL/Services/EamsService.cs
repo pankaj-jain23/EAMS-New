@@ -8,6 +8,7 @@ using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.AuthRepository;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace EAMS_BLL.Services
 {
@@ -168,7 +169,7 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region EventActivity
-     
+
         public async Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster)
         {
             var electionInfoRecord = await _eamsRepository.EventUpdationStatus(electionInfoMaster);
@@ -299,83 +300,83 @@ namespace EAMS_BLL.Services
                     case 7:
                         //queue
                         //check only voter turn out entered or not, but not check last entered value
-                       
-                            var QueueCanStart = _eamsRepository.CanQueueStart(electionInfoRecord.BoothMasterId);
-                            if (QueueCanStart == true)
+
+                        var QueueCanStart = _eamsRepository.CanQueueStart(electionInfoRecord.BoothMasterId);
+                        if (QueueCanStart == true)
+                        {
+                            bool queueTime = _eamsRepository.QueueTime(electionInfoRecord.BoothMasterId);
+                            if (queueTime == true)
                             {
-                                bool queueTime = _eamsRepository.QueueTime(electionInfoRecord.BoothMasterId);
-                                if (queueTime == true)
+
+                                if (electionInfoRecord.FinalTVote == null)  // next event
                                 {
 
-                                    if (electionInfoRecord.FinalTVote == null)  // next event
+                                    if (electionInfoMaster.VoterInQueue != null)
                                     {
 
-                                        if (electionInfoMaster.VoterInQueue != null)
+                                        if (electionInfoRecord.VoterInQueue == null)
                                         {
-
-                                            if (electionInfoRecord.VoterInQueue == null)
+                                            Queue fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
+                                            if (electionInfoMaster.VoterInQueue <= fetchResult.TotalVoters)
                                             {
-                                                Queue fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
-                                                if (electionInfoMaster.VoterInQueue <= fetchResult.TotalVoters)
+
+                                                if (electionInfoMaster.VoterInQueue <= fetchResult.RemainingVotes)
                                                 {
-
-                                                    if (electionInfoMaster.VoterInQueue <= fetchResult.RemainingVotes)
-                                                    {
-                                                        electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
-                                                        electionInfoRecord.IsVoterTurnOut = true;
-                                                        electionInfoRecord.VotingTurnOutLastUpdate = BharatDateTime();
-                                                        electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                                        return await _eamsRepository.EventActivity(electionInfoRecord);
-                                                    }
-                                                    else
-                                                    {
-                                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voters in queue cannot exceed voter remaining!" };
-
-                                                    }
+                                                    electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                                                    electionInfoRecord.IsVoterTurnOut = true;
+                                                    electionInfoRecord.VotingTurnOutLastUpdate = BharatDateTime();
+                                                    electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                                 }
-
                                                 else
                                                 {
+                                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voters in queue cannot exceed voter remaining!" };
 
-                                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Polling should not be more than Total Voters!" };
                                                 }
-                                                // VotesPolled.
-                                                //RemainingVoters 
-                                                //queue_voters
-                                                //electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
-                                                //electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                                return await _eamsRepository.EventActivity(electionInfoRecord);
                                             }
+
                                             else
                                             {
-                                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value Already Entered. Pls proceed for the Final Voting value" };
-                                            }
 
+                                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Polling should not be more than Total Voters!" };
+                                            }
+                                            // VotesPolled.
+                                            //RemainingVoters 
+                                            //queue_voters
+                                            //electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
+                                            //electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                            return await _eamsRepository.EventActivity(electionInfoRecord);
                                         }
                                         else
                                         {
-
-                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be null" };
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value Already Entered. Pls proceed for the Final Voting value" };
                                         }
+
                                     }
                                     else
                                     {
 
-                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue has been Freezed as Final Vote has been entered." };
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue value cannot be null" };
                                     }
                                 }
                                 else
                                 {
-                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue will be Opened at specified Time." };
+
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue has been Freezed as Final Vote has been entered." };
                                 }
                             }
                             else
                             {
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Not Entered any Values." };
-
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Queue will be Opened at specified Time." };
                             }
-                        
-                      
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voter Turn Out Not Entered any Values." };
+
+                        }
+
+
                     case 8:
                         // Final Votes
                         if (electionInfoRecord.VoterInQueue != null) //check queue
@@ -623,8 +624,8 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.AddVoterTurnOut(boothMasterId, eventid, voterValue);
 
         }
-        
-        
+
+
 
         public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId)
         {
@@ -667,13 +668,13 @@ namespace EAMS_BLL.Services
             List<UserList> list = new List<UserList>();
             if (type == "SO")
             {
-               
-                return list = await _eamsRepository.GetUserList(userName,type);
+
+                return list = await _eamsRepository.GetUserList(userName, type);
 
             }
             else if (type == "ARO")
             {
-              
+
                 var aroUsers = await _authRepository.FindUserListByName(userName);
                 foreach (var user in aroUsers)
                 {
@@ -697,13 +698,110 @@ namespace EAMS_BLL.Services
 
         #endregion
 
-           #region PollInterruption Interruption
-        public async Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason)
+        #region PollInterruption Interruption
+        public async Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string reason)
         {
-            var electionInfoRecord = await _eamsRepository.AddPollInterruption(boothMasterId,stopTime,ResumeTime,Reason);
+
+            var boothMasterRecord = await _eamsRepository.GetBoothRecord(Convert.ToInt32(boothMasterId));
+            if (boothMasterRecord == null)
+            {
+                var pollInterruptionRecord = await _eamsRepository.GetPollInterruptionData(boothMasterId);
+
+                if (pollInterruptionRecord == null)
+                {
+                    // check stop time only as it is Fresh record
+                    if (stopTime != null && reason != null)
+                    {
+                        int interruptionreason = Convert.ToInt16(reason);
+
+                        // Get CU,BU from user
+                        bool ishmmformat = IsHHmmFormat(stopTime);
+                        if (ishmmformat)
+                        {
+                            DateTime currentTime = DateTime.Now;
+                            DateTime stopTimeConvert = DateTime.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+                            TimeOnly stopTimeConverttime = TimeOnly.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+                            if (stopTimeConvert <= currentTime)
+                            {
+                                PollInterruption pollInterruptionData = new PollInterruption()
+                                {
+                                    StateMasterId = boothMasterRecord.StateMasterId,
+                                    DistrictMasterId = boothMasterRecord.DistrictMasterId,
+                                    AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
+                                    BoothMasterId = boothMasterRecord.BoothMasterId,
+                                    StopTime = stopTimeConverttime,
+                                    InterruptionType = Convert.ToInt16(reason),
+                                    Flag = "Initial",
+                                    CreatedAt = BharatDateTime(),
+                                    UpdatedAt = BharatDateTime(),
+                                    IsPollInterrupted = true,
+
+
+                                };
+
+                                if ((InterruptionReason)interruptionreason == InterruptionReason.EVMFault)
+                                {
+                                    //get Cu BU old new
+                                    pollInterruptionData.NewCU = "";
+                                    pollInterruptionData.NewBU = "";
+                                    pollInterruptionData.OldBU = "";
+                                    pollInterruptionData.OldCU = "";
+
+                                    _eamsRepository.AddPollInterruption(pollInterruptionData);
+
+                                }
+                                else if ((InterruptionReason)interruptionreason == InterruptionReason.LawAndOrder)
+                                {
+                                    //get Cu BU old new
+                                    _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.NotFound, Message = "Reason is not Valid !" };
+                                }
+                            }
+                            else
+                            {
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Should Not be greater than Current time !" };
+                            }
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Please Enter HH:mm Format Only" };
+                        }
+                        //}
+                        //else if ((InterruptionReason)interruptionreason == InterruptionReason.LawAndOrder)
+                        //{
+
+                        //}
+
+
+                    }
+                    else
+                    {
+                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time and Reason is Mandatory to fill!" };
+                    }
+
+                }
+                else
+                {
+                    //var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+
+                }
+
+            }
+            else
+            {
+                return new Response { Status = RequestStatusEnum.NotFound, Message = "Booth Record Not Found" };
+            }
             return null;
         }
         #endregion
+        static bool IsHHmmFormat(string timeString)
+        {
+            DateTime dummyDate; // A dummy date to use for parsing
+            return DateTime.TryParseExact(timeString, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dummyDate);
+        }
 
 
     }

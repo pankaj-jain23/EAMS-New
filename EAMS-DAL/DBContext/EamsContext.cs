@@ -33,6 +33,10 @@ public partial class EamsContext :IdentityDbContext<UserRegistration>
 
     public virtual DbSet<PollDetail> PollDetails { get; set; }
 
+    public virtual DbSet<PollInterruption> PollInterruptions { get; set; }
+    public virtual DbSet<PollInterruptionHistory> PollInterruptionHistory { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

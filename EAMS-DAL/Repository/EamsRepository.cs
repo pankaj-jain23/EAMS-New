@@ -1863,9 +1863,9 @@ namespace EAMS_DAL.Repository
             return islastentryDone;
         }
 
-        public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
+        public async Task<EAMS_ACore.Models.Queue> GetVoterInQueue(string boothMasterId)
         {
-            QueueViewModel model;
+            EAMS_ACore.Models.Queue model;
             try
             {
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
@@ -1885,7 +1885,7 @@ namespace EAMS_DAL.Repository
                                 bool queueTimeOpen = QueueTime(Convert.ToInt32(boothMasterId));
                                 if (queueTimeOpen == true)
                                 {
-                                    model = new QueueViewModel()
+                                    model = new EAMS_ACore.Models.Queue()
                                     {
                                         BoothMasterId = boothExists.BoothMasterId,
                                         TotalVoters = boothExists.TotalVoters,
@@ -1901,7 +1901,7 @@ namespace EAMS_DAL.Repository
                                 }
                                 else
                                 {
-                                    model = new QueueViewModel()
+                                    model = new EAMS_ACore.Models.Queue()
                                     {
 
                                         BoothMasterId = boothExists.BoothMasterId,
@@ -1919,7 +1919,7 @@ namespace EAMS_DAL.Repository
                             }
                             else
                             {
-                                model = new QueueViewModel()
+                                model = new EAMS_ACore.Models.Queue()
                                 {
 
                                     BoothMasterId = boothExists.BoothMasterId,
@@ -1936,7 +1936,7 @@ namespace EAMS_DAL.Repository
                         }
                         else
                         {
-                            model = new QueueViewModel()
+                            model = new EAMS_ACore.Models.Queue()
                             {
 
                                 BoothMasterId = boothExists.BoothMasterId,
@@ -1954,7 +1954,7 @@ namespace EAMS_DAL.Repository
                     else
                     {
                         //Polling should not be more than Total Voters!
-                        model = new QueueViewModel()
+                        model = new EAMS_ACore.Models.Queue()
                         {
                             BoothMasterId = 0,
                             TotalVoters = null,
@@ -1973,7 +1973,7 @@ namespace EAMS_DAL.Repository
                 else
                 {
                     //Polling should not be more than Total Voters!
-                    model = new QueueViewModel()
+                    model = new EAMS_ACore.Models.Queue()
                     {
                         BoothMasterId = 0,
                         TotalVoters = null,
@@ -1991,7 +1991,7 @@ namespace EAMS_DAL.Repository
             }
             catch (Exception ex)
             {
-                model = new QueueViewModel()
+                model = new EAMS_ACore.Models.Queue()
                 {
 
                     Message = ex.Message
@@ -2003,9 +2003,9 @@ namespace EAMS_DAL.Repository
             return model;
         }
 
-        public async Task<QueueViewModel> GetTotalRemainingVoters(string boothMasterId)
+        public async Task<EAMS_ACore.Models.Queue> GetTotalRemainingVoters(string boothMasterId)
         {
-            QueueViewModel model = null;
+            EAMS_ACore.Models.Queue model = null;
             try
             {
                 var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
@@ -2015,7 +2015,7 @@ namespace EAMS_DAL.Repository
                 if (boothExists is not null)
                 {
 
-                    model = new QueueViewModel()
+                    model = new EAMS_ACore.Models.Queue()
                     {
                         TotalVoters = boothExists.TotalVoters,
                         VotesPolled = polldetail.VotesPolled,
@@ -2030,7 +2030,7 @@ namespace EAMS_DAL.Repository
             }
             catch (Exception ex)
             {
-                model = new QueueViewModel()
+                model = new EAMS_ACore.Models.Queue()
                 {
 
                     Message = ex.Message

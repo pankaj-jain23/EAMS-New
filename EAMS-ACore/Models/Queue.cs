@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EAMS_ACore.Models
 {
-    public class QueueViewModel
+    public class Queue
     {
      
         public int BoothMasterId { get; set; }

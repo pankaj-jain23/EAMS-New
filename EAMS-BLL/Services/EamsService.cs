@@ -315,7 +315,7 @@ namespace EAMS_BLL.Services
 
                                             if (electionInfoRecord.VoterInQueue == null)
                                             {
-                                                QueueViewModel fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
+                                                Queue fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
                                                 if (electionInfoMaster.VoterInQueue <= fetchResult.TotalVoters)
                                                 {
 
@@ -387,7 +387,7 @@ namespace EAMS_BLL.Services
                                 {
                                     // one more check that last votes polled value and final vote now should not be greater than total voters
 
-                                    QueueViewModel fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
+                                    Queue fetchResult = await _eamsRepository.GetTotalRemainingVoters(electionInfoMaster.BoothMasterId.ToString());
                                     if (electionInfoMaster.FinalTVote <= fetchResult.TotalVoters) //
                                     {
                                         if (electionInfoMaster.FinalTVote >= fetchResult.VotesPolled)// shoulbe greater n equal to last polled votes 
@@ -606,7 +606,7 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.GetLastUpdatedPollDetail(boothMasterId, eventid);
 
         }
-        public async Task<QueueViewModel> GetVoterInQueue(string boothMasterId)
+        public async Task<Queue> GetVoterInQueue(string boothMasterId)
 
         {
             return await _eamsRepository.GetVoterInQueue(boothMasterId);

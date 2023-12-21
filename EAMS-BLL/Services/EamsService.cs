@@ -168,7 +168,7 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region EventActivity
-
+     
         public async Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster)
         {
             var electionInfoRecord = await _eamsRepository.EventUpdationStatus(electionInfoMaster);
@@ -623,6 +623,8 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.AddVoterTurnOut(boothMasterId, eventid, voterValue);
 
         }
+        
+        
 
         public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId)
         {
@@ -692,11 +694,16 @@ namespace EAMS_BLL.Services
             return list.ToList();
         }
 
-     
+
         #endregion
 
-
-
+           #region PollInterruption Interruption
+        public async Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason)
+        {
+            var electionInfoRecord = await _eamsRepository.AddPollInterruption(boothMasterId,stopTime,ResumeTime,Reason);
+            return null;
+        }
+        #endregion
 
 
     }

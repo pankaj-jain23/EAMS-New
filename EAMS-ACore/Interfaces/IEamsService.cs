@@ -60,6 +60,7 @@ namespace EAMS_ACore.Interfaces
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
+        
         Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventid);
         Task<Queue> GetVoterInQueue(string boothMasterId);
         Task<FinalViewModel> GetFinalVotes(string boothMasterId);
@@ -83,8 +84,11 @@ namespace EAMS_ACore.Interfaces
         Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
 
-
         Task<List<UserList>> GetUserList(string soName, string type);
+
+        #region PollInterruption Interruption
+        Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason);
+        #endregion
 
     }
 }

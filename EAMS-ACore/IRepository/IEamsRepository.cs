@@ -56,6 +56,8 @@ namespace EAMS_ACore.IRepository
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);
+
+       
         bool CanPollStart(int boothMasterId, int eventid);
         bool CanQueueStart(int boothMasterId);
         bool QueueTime(int boothMasterId);
@@ -68,7 +70,6 @@ namespace EAMS_ACore.IRepository
         Task<Queue> GetTotalRemainingVoters(string boothMasterId);
         Task<Response> AddVoterTurnOut(string boothMasterId, int eventid, string voterValue);
        
-
         Task<ElectionInfoMaster> EventUpdationStatus(ElectionInfoMaster electionInfoMaster);
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
@@ -90,6 +91,11 @@ namespace EAMS_ACore.IRepository
         Task<List<SlotManagementMaster>> GetEventSlotList();
         #endregion
         Task<List<UserList>> GetUserList(string soName, string type);
+
+        #region PollInterruption Interruption
+        Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason);
+        
+        #endregion
 
     }
 }

@@ -1348,7 +1348,27 @@ namespace EAMS.Controllers
         }
         #endregion
 
-        
+        [HttpPost]
+        [Route("AddPollInterruption")]
+        public async Task<IActionResult> AddPollInterruption(string boothMasterId, string stopTime,string ResumeTime, string Reason)
+        {
+           
+            var result = await _EAMSService.AddPollInterruption(boothMasterId, stopTime, ResumeTime,Reason);
+            switch (result.Status)
+            {
+                case RequestStatusEnum.OK:
+                    return Ok(result.Message);
+                case RequestStatusEnum.BadRequest:
+                    return BadRequest(result.Message);
+                case RequestStatusEnum.NotFound:
+                    return NotFound(result.Message);
+
+                default:
+                    return StatusCode(500, "Internal Server Error");
+            }
+
+
+        }
 
     }
 }

@@ -264,7 +264,7 @@ namespace EAMS_BLL.AuthServices
             {
                 return new Response()
                 {
-                    Status = RequestStatusEnum.BadRequest,
+                    Status = RequestStatusEnum.NotFound,
                     Message = "Mobile Number does not exist"
                 };
 

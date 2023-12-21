@@ -666,10 +666,11 @@ namespace EAMS_BLL.Services
         public async Task<List<UserList>> GetUserList(string userName, string type)
         {
             List<UserList> list = new List<UserList>();
-            if (type == "SO")
+            if (type == "SO") 
             {
 
                 return list = await _eamsRepository.GetUserList(userName, type);
+  
 
             }
             else if (type == "ARO")

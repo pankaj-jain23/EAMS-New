@@ -2313,9 +2313,9 @@ namespace EAMS_DAL.Repository
                     {
                         if (electionInfoRecord.VoterInQueue != null)
                         {
-                            if (electionInfoRecord.IsPollEnded == false)
+                            if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
                             {
-                                bool FinalCanStart = CanFinalValueStart(Convert.ToInt32(boothMasterId)); ;
+                                bool FinalCanStart = CanFinalValueStart(Convert.ToInt32(boothMasterId));
                                 if (FinalCanStart == true)
                                 {
 

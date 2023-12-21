@@ -15,9 +15,9 @@ public class DatabaseListenerService : BackgroundService
     {
         _hubContext = hubContext;
         _scopeFactory = scopeFactory;
-    } 
+    }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    private async Task ListenToDatabaseChanges(CancellationToken stoppingToken)
     {
         using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -28,6 +28,10 @@ public class DatabaseListenerService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await conn.WaitAsync(stoppingToken);
+
+            // Introduce a delay to avoid frequent updates
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var scopedService = scope.ServiceProvider.GetRequiredService<IEamsService>();
@@ -36,7 +40,22 @@ public class DatabaseListenerService : BackgroundService
                 // Call the method to send the update to clients
                 await _hubContext.Clients.All.SendAsync("GetDashboardCount", latestRecord);
             }
-
         }
     }
-} 
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await ListenToDatabaseChanges(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                // Log or handle exceptions as needed
+                Console.Error.WriteLine($"Error in DatabaseListenerService: {ex}");
+            }
+        }
+    }
+}

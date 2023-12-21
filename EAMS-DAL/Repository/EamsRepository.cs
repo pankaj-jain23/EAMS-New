@@ -1502,7 +1502,9 @@ namespace EAMS_DAL.Repository
                 case "7":
                     return electioInfoRecord.VoterInQueue != null;
                 case "8":
-                    return electioInfoRecord.FinalTVote != null;
+                //return electioInfoRecord.FinalTVote != null;
+                return electioInfoRecord.IsPollEnded != null;
+
                 case "9":
                     return electioInfoRecord.IsPollEnded ?? false;
                 case "10":
@@ -2545,10 +2547,7 @@ namespace EAMS_DAL.Repository
                     {
                         totalpollstarted += 1;
                     }
-                    if (electioInfoRecord.FinalTVote != null)
-                    {
-                        totalfinalvotes += 1;
-                    }
+                   
                     if (electioInfoRecord.IsVoterTurnOut != null)
                     {
                         totalvoterturedout += 1;
@@ -2556,6 +2555,7 @@ namespace EAMS_DAL.Repository
                     if (electioInfoRecord.IsPollEnded == true)
                     {
                         totalpollended += 1;
+                        totalfinalvotes += 1;
                     }
                     if (electioInfoRecord.IsMCESwitchOff == true)
                     {

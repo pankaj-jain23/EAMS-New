@@ -2237,7 +2237,7 @@ namespace EAMS_DAL.Repository
             int totalmockpoll = 0; int totalpollstarted = 0; int totalvoterturedout = 0; int totalvoterinqueue = 0;
             int totalQueue = 0; int totalfinalvotes = 0;
             int totalpollended = 0; int totalmcevm = 0; int totalpartdeparted = 0; int totalpartycollectoncentre = 0;
-            int totalevmdeposited = 0;
+            int totalevmdeposited = 0; int totalPollInterrupted = 0;
 
             int pendingPartyDispatched = 0;
             int pendingPartyReached = 0;
@@ -2252,7 +2252,7 @@ namespace EAMS_DAL.Repository
             int pendingPartDeparted = 0;
             int pendingPartyCollectOnCentre = 0;
             int pendingEVMDeposited = 0;
-
+            int pendingInterruption = 0;
             //except voterturn out, queue and finl votes
 
             foreach (var boothRecord in soTotalBooths)
@@ -2458,7 +2458,16 @@ namespace EAMS_DAL.Repository
                     list.Add(model);
                 }
 
-
+                else if (eventid.EventMasterId == 14)
+                {
+                    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                    model.EventMasterId = eventid.EventMasterId;
+                    model.EventName = eventid.EventName;
+                    model.Completed = totalPollInterrupted;
+                    model.Pending = pendingInterruption;
+                    model.TotalBooths = soTotalBooths.Count;
+                    list.Add(model);
+                }
 
             }
 

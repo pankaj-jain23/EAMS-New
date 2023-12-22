@@ -905,7 +905,7 @@ namespace EAMS_BLL.Services
                             if (isStopformat == true && isResumeformat == true)
                             {
                                 // check last Resume time with pollInterruption.StopTime, it should be greater than stop
-                                bool IsNewStopGreaterLastResumeTime = CheckLastResumeTime(pollInterruptionRecord.ResumeTime, pollInterruption.StopTime.ToString());
+                                bool IsNewStopGreaterLastResumeTime = CheckLastResumeTime2(pollInterruptionRecord.ResumeTime, pollInterruption.StopTime.ToString());
                                 if (IsNewStopGreaterLastResumeTime == true)
                                 {
 

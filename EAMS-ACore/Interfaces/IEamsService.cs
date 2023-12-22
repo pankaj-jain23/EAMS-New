@@ -92,7 +92,10 @@ namespace EAMS_ACore.Interfaces
         Task<List<UserList>> GetUserList(string soName, string type);
 
         #region PollInterruption Interruption
-        Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason);
+        Task<Response> AddPollInterruption(PollInterruption Pollinterruptionl);
+        
+        Task<PollInterruption> GetPollInterruptionbyId(string interruptionMasterId);
+        
         #endregion
 
     }

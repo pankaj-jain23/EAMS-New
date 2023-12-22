@@ -720,29 +720,118 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region PollInterruption Interruption
-        public async Task<Response> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string reason)
+
+        public async Task<Response> AddPollInterruption(PollInterruption pollInterruption)
         {
 
-            var boothMasterRecord = await _eamsRepository.GetBoothRecord(Convert.ToInt32(boothMasterId));
-            if (boothMasterRecord == null)
+            var boothMasterRecord = await _eamsRepository.GetBoothRecord(Convert.ToInt32(pollInterruption.BoothMasterId));
+            if (boothMasterRecord != null)
             {
-                var pollInterruptionRecord = await _eamsRepository.GetPollInterruptionData(boothMasterId);
 
-                if (pollInterruptionRecord == null)
+                var pollInterruptionRecord = await _eamsRepository.GetPollInterruptionData(pollInterruption.BoothMasterId.ToString());
+
+                if (pollInterruptionRecord == null) // if no poll added in table
                 {
-                    // check stop time only as it is Fresh record
-                    if (stopTime != null && reason != null)
-                    {
-                        int interruptionreason = Convert.ToInt16(reason);
 
-                        // Get CU,BU from user
-                        bool ishmmformat = IsHHmmFormat(stopTime);
-                        if (ishmmformat)
+                    // check stop time or if resume time only as it is Fresh record
+                    if (pollInterruption.StopTime != null && pollInterruption.ResumeTime != null)
+                    { // check both time in HHM format && comaprison wd each other and from current time
+                        bool isStopformat = IsHHmmFormat(pollInterruption.StopTime.ToString()); bool isResumeformat = IsHHmmFormat(pollInterruption.ResumeTime.ToString());
+                        if (isStopformat == true && isResumeformat == true)
                         {
-                            DateTime currentTime = DateTime.Now;
-                            DateTime stopTimeConvert = DateTime.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
-                            TimeOnly stopTimeConverttime = TimeOnly.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
-                            if (stopTimeConvert <= currentTime)
+                            bool StopTimeisLessEqualToCurrentTime = StopTimeConvertTimeOnly(pollInterruption.StopTime.ToString());
+                            bool ResumeTimeisLessEqualToCurrentTime = ResumeTimeConvertTimeOnly(pollInterruption.ResumeTime.ToString());
+                            if (StopTimeisLessEqualToCurrentTime)
+                            {
+                                if (ResumeTimeisLessEqualToCurrentTime)
+                                {
+                                    bool isResumeGreaterOrEqualToStopTime = CompareStopandResumeTime(pollInterruption.StopTime.ToString(), pollInterruption.ResumeTime.ToString());
+                                    if (isResumeGreaterOrEqualToStopTime)
+                                    {
+                                        PollInterruption pollInterruptionData = new PollInterruption()
+                                        {
+                                            StateMasterId = boothMasterRecord.StateMasterId,
+                                            DistrictMasterId = boothMasterRecord.DistrictMasterId,
+                                            AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
+                                            BoothMasterId = boothMasterRecord.BoothMasterId,
+                                        };
+                                        if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
+
+                                        {
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.NewCU = pollInterruption.NewCU;
+                                            pollInterruptionData.NewBU = pollInterruption.NewBU;
+                                            pollInterruptionData.OldCU = pollInterruption.OldCU;
+                                            pollInterruptionData.OldBU = pollInterruption.OldBU;
+                                            pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Both.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = false;
+
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+
+                                        }
+                                        else if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.LawAndOrder)
+                                        {
+
+                                            pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Both.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = false;
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+                                        }
+                                        else
+                                        {
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Reason is not Valid" };
+                                        }
+
+
+
+                                    }
+                                    else
+                                    {
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Resume Time Cannot be less than Stop Time" };
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Resume Time Cannot be greater than Current Time" };
+
+                                }
+                            }
+                            else
+                            {
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Cannot be greater than Current Time" };
+
+                            }
+
+
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Time formats should be in 24Hr. format" };
+
+                        }
+                    }
+                    else if (pollInterruption.StopTime != null && pollInterruption.ResumeTime == null)
+                    {
+                        // user is entering only stopTime, so check hhm format && comprae from current time
+                        bool isStopformat = IsHHmmFormat(pollInterruption.StopTime.ToString());
+
+                        if (isStopformat == true)
+                        {
+                            bool StopTimeisLessEqualToCurrentTime = StopTimeConvertTimeOnly(pollInterruption.StopTime.ToString());
+                            if (StopTimeisLessEqualToCurrentTime)
                             {
                                 PollInterruption pollInterruptionData = new PollInterruption()
                                 {
@@ -750,63 +839,338 @@ namespace EAMS_BLL.Services
                                     DistrictMasterId = boothMasterRecord.DistrictMasterId,
                                     AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
                                     BoothMasterId = boothMasterRecord.BoothMasterId,
-                                    StopTime = stopTimeConverttime,
-                                    InterruptionType = Convert.ToInt16(reason),
-                                    Flag = "Initial",
-                                    CreatedAt = BharatDateTime(),
-                                    UpdatedAt = BharatDateTime(),
-                                    IsPollInterrupted = true,
-
-
                                 };
-
-                                if ((InterruptionReason)interruptionreason == InterruptionReason.EVMFault)
+                                if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
                                 {
-                                    //get Cu BU old new
-                                    pollInterruptionData.NewCU = "";
-                                    pollInterruptionData.NewBU = "";
-                                    pollInterruptionData.OldBU = "";
-                                    pollInterruptionData.OldCU = "";
+                                    pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                    pollInterruptionData.NewCU = pollInterruption.NewCU;
+                                    pollInterruptionData.NewBU = pollInterruption.NewBU;
+                                    pollInterruptionData.OldCU = pollInterruption.OldCU;
+                                    pollInterruptionData.OldBU = pollInterruption.OldBU;
+                                    pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
-                                    _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                    pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                    pollInterruptionData.Flag = InterruptionCategory.Stop.ToString();
+                                    pollInterruptionData.CreatedAt = BharatDateTime();
+                                    pollInterruptionData.UpdatedAt = BharatDateTime();
+                                    pollInterruptionData.IsPollInterrupted = true;
+
+                                    var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                    return result.Result;
 
                                 }
-                                else if ((InterruptionReason)interruptionreason == InterruptionReason.LawAndOrder)
+                                else if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.LawAndOrder)
                                 {
-                                    //get Cu BU old new
-                                    _eamsRepository.AddPollInterruption(pollInterruptionData);
+
+                                    pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                    pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                    pollInterruptionData.Flag = InterruptionCategory.Stop.ToString();
+                                    pollInterruptionData.CreatedAt = BharatDateTime();
+                                    pollInterruptionData.UpdatedAt = BharatDateTime();
+                                    pollInterruptionData.IsPollInterrupted = true;
+                                    var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                    return result.Result;
                                 }
                                 else
                                 {
-                                    return new Response { Status = RequestStatusEnum.NotFound, Message = "Reason is not Valid !" };
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Reason is not Valid" };
                                 }
                             }
                             else
                             {
-                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Should Not be greater than Current time !" };
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Cannot be greater than Current Time" };
                             }
                         }
                         else
                         {
-                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Please Enter HH:mm Format Only" };
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time format should be in 24Hr. format" };
+
                         }
-                        //}
-                        //else if ((InterruptionReason)interruptionreason == InterruptionReason.LawAndOrder)
-                        //{
-
-                        //}
-
-
                     }
-                    else
+                    else if (pollInterruption.StopTime == null && pollInterruption.ResumeTime != null)
                     {
-                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time and Reason is Mandatory to fill!" };
+                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time cannot be Empty!" };
+
                     }
 
                 }
+                // Poll interrupted data Already in database like resolved or pending        
                 else
                 {
-                    //var boothExists = await _context.BoothMaster.Where(p => p.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+                    if (pollInterruptionRecord.StopTime != null && pollInterruptionRecord.ResumeTime != null)
+                    {
+                        if (pollInterruption.StopTime != null && pollInterruption.ResumeTime != null)
+                        { // check both time in HHM format && comaprison wd each other and from current time
+                            bool isStopformat = IsHHmmFormat(pollInterruption.StopTime.ToString()); bool isResumeformat = IsHHmmFormat(pollInterruption.ResumeTime.ToString());
+                            if (isStopformat == true && isResumeformat == true)
+                            {
+                                // check last Resume time with pollInterruption.StopTime, it should be greater than stop
+                                bool IsNewStopGreaterLastResumeTime = CheckLastResumeTime(pollInterruptionRecord.ResumeTime, pollInterruption.StopTime.ToString());
+                                if (IsNewStopGreaterLastResumeTime == true)
+                                {
+
+
+                                    bool StopTimeisLessEqualToCurrentTime = StopTimeConvertTimeOnly(pollInterruption.StopTime.ToString());
+                                    bool ResumeTimeisLessEqualToCurrentTime = ResumeTimeConvertTimeOnly(pollInterruption.ResumeTime.ToString());
+                                    if (StopTimeisLessEqualToCurrentTime)
+                                    {
+                                        if (ResumeTimeisLessEqualToCurrentTime)
+                                        {
+                                            bool isResumeGreaterOrEqualToStopTime = CompareStopandResumeTime(pollInterruption.StopTime.ToString(), pollInterruption.ResumeTime.ToString());
+                                            if (isResumeGreaterOrEqualToStopTime)
+                                            {
+                                                PollInterruption pollInterruptionData = new PollInterruption()
+                                                {
+                                                    StateMasterId = pollInterruptionRecord.StateMasterId,
+                                                    DistrictMasterId = pollInterruptionRecord.DistrictMasterId,
+                                                    AssemblyMasterId = pollInterruptionRecord.AssemblyMasterId,
+                                                    BoothMasterId = pollInterruptionRecord.BoothMasterId,
+                                                };
+                                                if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
+
+                                                {
+                                                    pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                                    pollInterruptionData.NewCU = pollInterruption.NewCU;
+                                                    pollInterruptionData.NewBU = pollInterruption.NewBU;
+                                                    pollInterruptionData.OldCU = pollInterruption.OldCU;
+                                                    pollInterruptionData.OldBU = pollInterruption.OldBU;
+                                                    pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                                    pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                                    pollInterruptionData.Flag = InterruptionCategory.Both.ToString();
+                                                    pollInterruptionData.CreatedAt = BharatDateTime();
+                                                    pollInterruptionData.UpdatedAt = BharatDateTime();
+                                                    pollInterruptionData.IsPollInterrupted = false;
+
+                                                    var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                                    return result.Result;
+
+                                                }
+                                                else if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.LawAndOrder)
+                                                {
+
+                                                    pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                                    pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                                    pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                                    pollInterruptionData.Flag = InterruptionCategory.Both.ToString();
+                                                    pollInterruptionData.CreatedAt = BharatDateTime();
+                                                    pollInterruptionData.UpdatedAt = BharatDateTime();
+                                                    pollInterruptionData.IsPollInterrupted = false;
+                                                    var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                                    return result.Result;
+                                                }
+                                                else
+                                                {
+                                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Reason is not Valid" };
+                                                }
+
+
+
+                                            }
+                                            else
+                                            {
+                                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Resume Time Cannot be less than Stop Time" };
+
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Resume Time Cannot be greater than Current Time" };
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Cannot be greater than Current Time" };
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time should be greater than from Last Resume Time Entered" };
+                                }
+                            }
+                            else
+                            {
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Time formats should be in 24Hr. format" };
+
+                            }
+                        }
+                        else if (pollInterruption.StopTime != null && pollInterruption.ResumeTime == null)
+                        {
+                            // user is entering only stopTime, so check hhm format && comprae from current time
+                            bool isStopformat = IsHHmmFormat(pollInterruption.StopTime.ToString());
+
+                            if (isStopformat == true)
+                            {
+                                bool StopTimeisLessEqualToCurrentTime = StopTimeConvertTimeOnly(pollInterruption.StopTime.ToString());
+                                if (StopTimeisLessEqualToCurrentTime)
+                                {
+
+                                    // check last entered resume , newstoptime must be greater than equal to lastrsume
+                                    bool IsStopGreaterThanLastResumeTime = CheckLastResumeTime2(pollInterruptionRecord.ResumeTime, pollInterruption.StopTime.ToString());
+                                    if (IsStopGreaterThanLastResumeTime == true)
+                                    {
+                                        PollInterruption pollInterruptionData = new PollInterruption()
+                                        {
+                                            StateMasterId = boothMasterRecord.StateMasterId,
+                                            DistrictMasterId = boothMasterRecord.DistrictMasterId,
+                                            AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
+                                            BoothMasterId = boothMasterRecord.BoothMasterId,
+                                        };
+                                        if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
+
+                                        {
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.NewCU = pollInterruption.NewCU;
+                                            pollInterruptionData.NewBU = pollInterruption.NewBU;
+                                            pollInterruptionData.OldCU = pollInterruption.OldCU;
+                                            pollInterruptionData.OldBU = pollInterruption.OldBU;
+                                            pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Stop.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = true;
+
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+
+                                        }
+                                        else if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.LawAndOrder)
+
+                                        {
+
+                                            pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Stop.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = true;
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+                                        }
+                                        else
+                                        {
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Reason is not Valid" };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Should be Greater than Last Entered Resume Time" };
+                                    }
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time Cannot be greater than Current Time" };
+                                }
+                            }
+                            else
+                            {
+                                return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time format should be in 24Hr. format" };
+
+                            }
+                        }
+                        else if (pollInterruption.StopTime == null && pollInterruption.ResumeTime != null)
+                        {
+                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Stop Time cannot be Empty!" };
+
+                        }
+
+
+
+                    }
+
+                    //case cleared
+                    else if (pollInterruptionRecord.StopTime != null && pollInterruptionRecord.ResumeTime == null)
+                    {
+                        //need to enter Resume Time
+                        if (pollInterruption.ResumeTime.ToString() != null)
+                        {
+                            bool isResumeformat = IsHHmmFormat(pollInterruption.ResumeTime.ToString());
+
+                            if (isResumeformat == true)
+                            {
+                                bool ResumeTimeisLessEqualToCurrentTime = ResumeTimeConvertTimeOnly(pollInterruption.ResumeTime.ToString());
+                                if (ResumeTimeisLessEqualToCurrentTime == true)
+                                {
+
+                                    bool IsNewResumeTimeGreaterLastStopTime = CheckLastStopTime(pollInterruptionRecord.StopTime, pollInterruption.ResumeTime.ToString());
+                                    if (IsNewResumeTimeGreaterLastStopTime == true)
+                                    {
+                                        PollInterruption pollInterruptionData = new PollInterruption()
+                                        {
+                                            StateMasterId = pollInterruptionRecord.StateMasterId,
+                                            DistrictMasterId = pollInterruptionRecord.DistrictMasterId,
+                                            AssemblyMasterId = pollInterruptionRecord.AssemblyMasterId,
+                                            BoothMasterId = pollInterruptionRecord.BoothMasterId,
+                                        };
+                                        if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
+
+                                        {
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.NewCU = pollInterruption.NewCU;
+                                            pollInterruptionData.NewBU = pollInterruption.NewBU;
+                                            pollInterruptionData.OldCU = pollInterruption.OldCU;
+                                            pollInterruptionData.OldBU = pollInterruption.OldBU;
+                                            pollInterruptionData.StopTime = TimeOnly.ParseExact(pollInterruption.StopTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.InterruptionType = pollInterruptionRecord.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Resume.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = false;
+
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+
+                                        }
+                                        else if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.LawAndOrder)
+
+                                        {
+
+                                            pollInterruptionData.StopTime = pollInterruptionRecord.StopTime;
+                                            pollInterruptionData.ResumeTime = TimeOnly.ParseExact(pollInterruption.ResumeTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
+                                            pollInterruptionData.InterruptionType = pollInterruption.InterruptionType;
+                                            pollInterruptionData.Flag = InterruptionCategory.Resume.ToString();
+                                            pollInterruptionData.CreatedAt = BharatDateTime();
+                                            pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.IsPollInterrupted = false;
+                                            var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
+                                            return result.Result;
+                                        }
+                                        else
+                                        {
+                                            return new Response { Status = RequestStatusEnum.BadRequest, Message = "Reason is not Valid" };
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        return new Response { Status = RequestStatusEnum.NotFound, Message = "Resume Time must be greater than Last Entered Stop Time." };
+
+                                    }
+                                }
+                                else
+                                {
+                                    return new Response { Status = RequestStatusEnum.NotFound, Message = "Resume Time Cannot be greater than Current Time." };
+
+                                }
+                            }
+                            else
+                            {
+                                return new Response { Status = RequestStatusEnum.NotFound, Message = "Resume Time must be in 24Hr Format." };
+                            }
+                        }
+                        else
+                        {
+                            return new Response { Status = RequestStatusEnum.NotFound, Message = "Please Enter Resume Time in 24Hr Format." };
+                        }
+
+                    }
+
 
                 }
 
@@ -817,6 +1181,95 @@ namespace EAMS_BLL.Services
             }
             return null;
         }
+
+        //public async Task<PollInterruption> GetPollInterruption(string boothMasterId)
+        //{
+        //    var res = await _eamsRepository.GetPollInterruptionData(boothMasterId);
+        //    var boothExists = await _eamsRepository.GetBoothRecord(Convert.ToInt32(boothMasterId));
+        //    if (res.StopTime != null && res.ResumeTime != null)
+        //    {
+        //        PollInterruption pollInterruptionData = new PollInterruption()
+        //        {
+        //            StateMasterId = res.StateMasterId,
+        //            DistrictMasterId = res.DistrictMasterId,
+        //            AssemblyMasterId = res.AssemblyMasterId,
+        //            BoothMasterId = res.BoothMasterId,
+        //            StopTime = res.StopTime,
+        //            ResumeTime = res.ResumeTime,
+        //            PollInterruptionId = res.PollInterruptionId,
+        //            InterruptionType = res.InterruptionType,
+        //            Flag = "New",
+        //            UpdatedAt = res.UpdatedAt,
+        //            IsPollInterrupted = false,
+
+
+        //        };
+        //        return pollInterruptionData;
+        //    }
+        //    else if (res.StopTime != null && res.ResumeTime == null)
+        //    {
+        //        PollInterruption pollInterruptionData = new PollInterruption()
+        //        {
+        //            StateMasterId = res.StateMasterId,
+        //            DistrictMasterId = res.DistrictMasterId,
+        //            AssemblyMasterId = res.AssemblyMasterId,
+        //            BoothMasterId = res.BoothMasterId,
+        //            StopTime = res.StopTime,
+        //            ResumeTime = res.ResumeTime,
+        //            PollInterruptionId = res.PollInterruptionId,
+        //            InterruptionType = res.InterruptionType,
+        //            Flag = "Resume",
+        //            UpdatedAt = res.UpdatedAt,
+        //            IsPollInterrupted = true,
+
+
+        //        };
+        //        return pollInterruptionData;
+        //    }
+        //    else if (res == null)
+        //    {
+        //        PollInterruption pollInterruptionData = new PollInterruption()
+        //        {
+        //            StateMasterId = res.StateMasterId,
+        //            DistrictMasterId = res.DistrictMasterId,
+        //            AssemblyMasterId = res.AssemblyMasterId,
+        //            BoothMasterId = res.BoothMasterId,
+        //            StopTime = res.StopTime,
+        //            ResumeTime = res.ResumeTime,
+        //            PollInterruptionId = res.PollInterruptionId,
+        //            InterruptionType = res.InterruptionType,
+        //            Flag = "Initial",
+        //            IsPollInterrupted = false,
+
+
+        //        };
+        //        return pollInterruptionData;
+        //    }
+        //    else
+        //    {
+        //        PollInterruption pollInterruptionData = new PollInterruption()
+        //        {
+        //            StateMasterId = boothExists.StateMasterId,
+        //            DistrictMasterId = boothExists.DistrictMasterId,
+        //            AssemblyMasterId = boothExists.AssemblyMasterId,
+        //            BoothMasterId = boothExists.BoothMasterId,
+        //            StopTime = null,
+        //            ResumeTime = null,
+        //            Flag = "Initial",
+        //            IsPollInterrupted = false,
+
+
+        //        };
+        //        return pollInterruptionData;
+
+        //    }
+        //}
+
+
+        public Task<PollInterruption> GetPollInterruptionbyId(string boothMasterId)
+        {
+            return _eamsRepository.GetPollInterruptionData(boothMasterId);
+        }
         #endregion
         static bool IsHHmmFormat(string timeString)
         {
@@ -824,6 +1277,118 @@ namespace EAMS_BLL.Services
             return DateTime.TryParseExact(timeString, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out dummyDate);
         }
 
+        static bool StopTimeConvertTimeOnly(string stopTime)
+        {
+            DateTime currentTime = DateTime.Now;
+            DateTime stopTimeConvert = DateTime.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+            TimeOnly stopTimeConverttime = TimeOnly.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (stopTimeConvert <= currentTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool ResumeTimeConvertTimeOnly(string resumeTime)
+        {
+            DateTime currentTime = DateTime.Now;
+            DateTime resumeTimeConvert = DateTime.ParseExact(resumeTime, "HH:mm", CultureInfo.InvariantCulture);
+            TimeOnly resumeTimeConvertTime = TimeOnly.ParseExact(resumeTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (resumeTimeConvert <= currentTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool CompareStopandResumeTime(string stopTime, string resumeTime)
+        {
+            DateTime currentTime = DateTime.Now;
+            DateTime stopTimeConvert = DateTime.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+            //TimeOnly stopTimeConvertTime = TimeOnly.ParseExact(stopTime, "HH:mm", CultureInfo.InvariantCulture);
+
+            DateTime resumeTimeConvert = DateTime.ParseExact(resumeTime, "HH:mm", CultureInfo.InvariantCulture);
+            // TimeOnly resumeTimeConvertTime = TimeOnly.ParseExact(resumeTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (resumeTimeConvert >= stopTimeConvert)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        static bool CheckLastResumeTime(TimeOnly? InterruptionRecordResumeTime, string newStopTime)
+        {
+
+
+            TimeOnly newStopTimeConverttime = TimeOnly.ParseExact(newStopTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (InterruptionRecordResumeTime >= newStopTimeConverttime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool CheckLastResumeTime2(TimeOnly? InterruptionRecordResumeTime, string newStopTime)
+        {
+
+
+            TimeOnly newStopTimeConverttime = TimeOnly.ParseExact(newStopTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (newStopTimeConverttime >= InterruptionRecordResumeTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool CheckLastStopTime(TimeOnly? InterruptionRecordStopTime, string newResumeTime)
+        {
+
+
+            TimeOnly newResumeTimeConverttime = TimeOnly.ParseExact(newResumeTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (newResumeTimeConverttime >= InterruptionRecordStopTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public string GetInterruptionReason(string reason)
+        {
+            int interruptionreason = Convert.ToInt16(reason);
+            string reasonStatus = "";
+            if ((InterruptionReason)interruptionreason == InterruptionReason.EVMFault)
+            {
+                reasonStatus = InterruptionReason.EVMFault.ToString();
+
+
+
+            }
+            else if ((InterruptionReason)interruptionreason == InterruptionReason.LawAndOrder)
+            {
+                reasonStatus = InterruptionReason.LawAndOrder.ToString();
+            }
+            else
+            {
+                reasonStatus = "";
+            }
+            return reasonStatus;
+        }
 
     }
 }

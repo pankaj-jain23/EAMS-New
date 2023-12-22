@@ -102,6 +102,7 @@ namespace EAMS_ACore.IRepository
         Task<PollInterruption> GetPollInterruptionData(string boothMasterId);
         Task<BoothMaster> GetBoothRecord(int boothMasterId);
         
+        
         #endregion
 
     }

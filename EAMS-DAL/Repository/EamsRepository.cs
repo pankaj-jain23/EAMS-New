@@ -2735,19 +2735,22 @@ namespace EAMS_DAL.Repository
         }
         public async Task<PollInterruption> GetPollInterruptionData(string boothMasterId)
         {
-            var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p=>p.PollInterruptionId).FirstOrDefaultAsync();
+            var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p => p.PollInterruptionId).FirstOrDefaultAsync();
             return pollInterruptionRecord;
         }
-        
+      
+
         public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
         {
             var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId ==boothMasterId).FirstOrDefaultAsync();
             return boothRecord;
         }
 
+        
+
         #endregion
 
-       
+
 
 
     }

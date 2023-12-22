@@ -73,12 +73,12 @@ namespace EAMS_DAL.Repository
         public async Task<List<StateMaster>> GetState()
         {
             var stateList = await _context.StateMaster.Select(d => new StateMaster
-                {
-                    StateCode = d.StateCode,
-                    StateName = d.StateName,
-                    StateMasterId = d.StateMasterId,
-                    StateStatus = d.StateStatus
-                })
+            {
+                StateCode = d.StateCode,
+                StateName = d.StateName,
+                StateMasterId = d.StateMasterId,
+                StateStatus = d.StateStatus
+            })
                 .ToListAsync();
 
             return stateList;
@@ -130,7 +130,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task<StateMaster> GetStateById(string stateId)
         {
-            var stateRecord = await _context.StateMaster.Where(d=>d.StateMasterId==Convert.ToInt32(stateId)).FirstOrDefaultAsync();
+            var stateRecord = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).FirstOrDefaultAsync();
             return stateRecord;
         }
         #endregion
@@ -198,7 +198,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task<DistrictMaster> GetDistrictRecordById(string districtId)
         {
-            var districtRecord = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId)) 
+            var districtRecord = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId))
                .FirstOrDefaultAsync();
             return districtRecord;
         }
@@ -276,7 +276,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)
         {
-            var assemblyRecord =await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
+            var assemblyRecord = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
             return assemblyRecord;
         }
 
@@ -428,7 +428,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task<SectorOfficerMaster> GetSOById(string soMasterId)
         {
-            var soRecord =await _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soMasterId)).FirstOrDefaultAsync();
+            var soRecord = await _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soMasterId)).FirstOrDefaultAsync();
             return soRecord;
         }
         #endregion
@@ -650,8 +650,8 @@ namespace EAMS_DAL.Repository
 
         public async Task<BoothMaster> GetBoothById(string boothMasterId)
         {
-            var boothRecord =await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
-          
+            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+
             return boothRecord;
         }
         #endregion
@@ -703,7 +703,7 @@ namespace EAMS_DAL.Repository
 
         }
 
-       
+
         public async Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId, string soId)
         {
             var soTotalBooths = _context.BoothMaster.Where(p => p.AssignedTo == soId).ToList();
@@ -859,6 +859,7 @@ namespace EAMS_DAL.Repository
                     }
                     else if (eventList.EventMasterId == 6)
                     {
+                        bool isQueue = electioInfoRecord.VoterInQueue != null;
                         EventWiseBooth model = new EventWiseBooth()
                         {
                             StateMasterId = soTotalBooths.StateMasterId,
@@ -869,7 +870,7 @@ namespace EAMS_DAL.Repository
                             BoothMasterId = Convert.ToInt32(soTotalBooths.BoothMasterId),
                             BoothName = soTotalBooths.BoothName,
                             BoothCode = soTotalBooths.BoothCode_No,
-                            UpdateStatus = false
+                            UpdateStatus = isQueue
                         };
                         eventwiseboothlist.Add(model);
                     }
@@ -1233,12 +1234,14 @@ namespace EAMS_DAL.Repository
                 case "5":
                     return electioInfoRecord.IsPollStarted ?? false;
                 case "6":
-                    return electioInfoRecord.IsVoterTurnOut ?? false;
+                    //  return electioInfoRecord.IsVoterTurnOut ?? false;
+                    return electioInfoRecord.VoterInQueue != null;
+
                 case "7":
                     return electioInfoRecord.VoterInQueue != null;
                 case "8":
-                //return electioInfoRecord.FinalTVote != null;
-                return electioInfoRecord.IsPollEnded != null;
+                    //return electioInfoRecord.FinalTVote != null;
+                    return electioInfoRecord.IsPollEnded != null;
 
                 case "9":
                     return electioInfoRecord.IsPollEnded ?? false;
@@ -1336,7 +1339,7 @@ namespace EAMS_DAL.Repository
             ).FirstOrDefault();
             return electionInfoRecord;
         }
-      
+
         public async Task<VoterTurnOutPolledDetailViewModel> GetLastUpdatedPollDetail(string boothMasterId, int eventmasterid)
         {
             VoterTurnOutPolledDetailViewModel model;
@@ -2282,7 +2285,7 @@ namespace EAMS_DAL.Repository
                     {
                         totalpollstarted += 1;
                     }
-                   
+
                     if (electioInfoRecord.IsVoterTurnOut != null)
                     {
                         totalvoterturedout += 1;
@@ -2717,7 +2720,7 @@ namespace EAMS_DAL.Repository
         #endregion
 
         #region UserList
-         public async Task<List<UserList>> GetUserList(string soName, string type)
+        public async Task<List<UserList>> GetUserList(string soName, string type)
         {
             var users = await _context.SectorOfficerMaster
     .Where(u => EF.Functions.Like(u.SoName.ToUpper(), "%" + soName.ToUpper() + "%"))
@@ -2740,18 +2743,17 @@ namespace EAMS_DAL.Repository
             _context.PollInterruptions.Add(PollInterruptionData);
             _context.SaveChanges();
             return new Response { Status = RequestStatusEnum.OK, Message = "Poll Interruption Added Successfully." };
-            
+
         }
         public async Task<PollInterruption> GetPollInterruptionData(string boothMasterId)
         {
             var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p => p.PollInterruptionId).FirstOrDefaultAsync();
             return pollInterruptionRecord;
-        }
-      
+        } 
 
         public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
         {
-            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId ==boothMasterId).FirstOrDefaultAsync();
+            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == boothMasterId).FirstOrDefaultAsync();
             return boothRecord;
         }
 

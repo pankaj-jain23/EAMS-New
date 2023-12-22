@@ -6,7 +6,7 @@ namespace EAMS.ViewModels
     {
         [Required(ErrorMessage = "State Master Id is required")]
         public int StateMasterId { get; set; } 
-        public string StateName { get; set; }
+        
 
         [Required(ErrorMessage = "District Name is required")]
         public string DistrictName { get; set; }

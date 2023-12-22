@@ -77,8 +77,7 @@ namespace EAMS.Helper
 
             CreateMap<CombinedMaster, DistrictMasterViewModel>()
                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))
-               .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictId))
-               .ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName))
+               .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictId)) 
                .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
                .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode))
                .ReverseMap();

@@ -15,7 +15,7 @@ public class DatabaseListenerService : BackgroundService
     {
         _hubContext = hubContext;
         _scopeFactory = scopeFactory;
-    } 
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -25,18 +25,28 @@ public class DatabaseListenerService : BackgroundService
         using var cmd = new NpgsqlCommand("LISTEN dashboard_change", conn);
         await cmd.ExecuteNonQueryAsync();
 
+        var notification = conn.WaitAsync(stoppingToken);
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            await conn.WaitAsync(stoppingToken);
+            await notification;
+
             using (var scope = _scopeFactory.CreateScope())
             {
                 var scopedService = scope.ServiceProvider.GetRequiredService<IEamsService>();
-                var latestRecord = await scopedService.GetDashBoardCount();
+                var currentRecord = await scopedService.GetDashBoardCount();
+                var latestRecord = await scopedService.GetDashBoardCount(); // Fetch the latest record
 
-                // Call the method to send the update to clients
-                await _hubContext.Clients.All.SendAsync("GetDashboardCount", latestRecord);
+                // Check if there is an actual change in the database
+                if (!currentRecord.Equals(latestRecord))
+                {
+                    // Call the method to send the update to clients
+                    await _hubContext.Clients.All.SendAsync("GetDashboardCount", latestRecord);
+                }
             }
 
+            // Start waiting for the next notification
+            notification = conn.WaitAsync(stoppingToken);
         }
     }
-} 
+}

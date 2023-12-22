@@ -85,7 +85,7 @@ namespace EAMS_BLL.AuthServices
                 if (user != null)
                 {
 
-                    var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
+                    var expireRefreshToken = BharatTimeDynamic(0, 7, 0, 0, 0);
 
                     var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration["JWTKey:RefreshTokenValidityInDays"]);
                     user.RefreshToken = _Token.RefreshToken;
@@ -183,7 +183,7 @@ namespace EAMS_BLL.AuthServices
                                 response.RefreshToken = GenerateRefreshToken();
                                 response.Message = "OTP Verified Successfully ";
                                 response.Status = RequestStatusEnum.OK;
-                                var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0); ;
+                                var expireRefreshToken = BharatTimeDynamic(0, 7, 0, 0, 0); ;
 
 
                                 soRecord.RefreshToken = response.RefreshToken;
@@ -378,7 +378,7 @@ namespace EAMS_BLL.AuthServices
                                 };
                 var newAccessToken = GenerateToken(authClaims);
                 var newRefreshToken = GenerateRefreshToken();
-                var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
+                var expireRefreshToken = BharatTimeDynamic(0, 7, 0, 0, 0);
                 soUser.RefreshToken = newRefreshToken;
                 soUser.RefreshTokenExpiryTime = expireRefreshToken;
                 var isSucceed = await _authRepository.SectorOfficerMasterRecord(soUser);
@@ -417,7 +417,7 @@ namespace EAMS_BLL.AuthServices
                 };
                 var newAccessToken = GenerateToken(authClaims);
                 var newRefreshToken = GenerateRefreshToken();
-                var expireRefreshToken = BharatTimeDynamic(0, 1, 0, 0, 0);
+                var expireRefreshToken = BharatTimeDynamic(0, 7, 0, 0, 0);
                 user.RefreshToken = newRefreshToken;
                 user.RefreshTokenExpiryTime = (DateTime)expireRefreshToken;
                 await _userManager.UpdateAsync(user);

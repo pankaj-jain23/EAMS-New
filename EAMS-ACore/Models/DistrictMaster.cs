@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EAMS_ACore
 {
@@ -29,12 +30,15 @@ namespace EAMS_ACore
         public DateTime? DistrictDeletedAt { get; set; } = DateTime.UtcNow;
 
         public bool DistrictStatus { get; set; }=true;
-                
+
+        [JsonIgnore]
         public virtual List<AssemblyMaster>? AssemblyMaster
         {
             get;
             set;
         }
+
+        [JsonIgnore]
         public virtual List<BoothMaster> BoothMaster
         {
             get;

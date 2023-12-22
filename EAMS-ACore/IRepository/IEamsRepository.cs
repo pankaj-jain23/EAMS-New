@@ -11,19 +11,22 @@ namespace EAMS_ACore.IRepository
         Task<List<StateMaster>> GetState();
         Task<Response> UpdateStateById(StateMaster stateMaster);
         Task<Response> AddState(StateMaster stateMaster);
+        Task<StateMaster> GetStateById(string Id);
+
         #endregion
 
         #region District Master
         Task<List<CombinedMaster>> GetDistrictById(string stateMasterId);
         Task<Response> UpdateDistrictById(DistrictMaster districtMaster);
         Task<Response> AddDistrict(DistrictMaster districtMaster);
+        Task<DistrictMaster> GetDistrictRecordById(string districtId);
         #endregion
 
         #region Assembly Master
         Task<List<CombinedMaster>> GetAssemblies(string stateId, string districtId);
         Task<Response> UpdateAssembliesById(AssemblyMaster assemblyMaster);
-
         Task<Response> AddAssemblies(AssemblyMaster assemblyMaster);
+        Task<AssemblyMaster> GetAssemblyById(string assemblyId);
         #endregion
 
         #region SO Master
@@ -32,6 +35,7 @@ namespace EAMS_ACore.IRepository
         Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<Response> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId);
+        Task<SectorOfficerMaster> GetSOById(string soId);
         #endregion
 
         #region Booth Master
@@ -40,6 +44,7 @@ namespace EAMS_ACore.IRepository
         Task<Response> UpdateBooth(BoothMaster boothMaster);
         Task<Response> BoothMapping(List<BoothMaster> boothMaster);
         Task<Response> ReleaseBooth(BoothMaster boothMaster);
+        Task<BoothMaster> GetBoothById(string boothMasterId);
         #endregion
 
         #region Event Master

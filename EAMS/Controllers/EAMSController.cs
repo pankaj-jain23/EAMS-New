@@ -5,8 +5,12 @@ using EAMS_ACore;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
+using EAMS_DAL.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Mono.TextTemplating;
+using OpenTelemetry.Logs;
 
 namespace EAMS.Controllers
 {
@@ -109,6 +113,23 @@ namespace EAMS.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetStateById")]
+        public async Task<IActionResult> GetStateById(string stateMasterId)
+        {
+            var stateRecord = await _EAMSService.GetStateById(stateMasterId);
+            if (stateRecord != null)
+            {
+                return Ok(stateRecord);
+            }
+            else
+            {
+                return NotFound($"[{stateMasterId}] not exist");
+            }
+
+
+        }
+
 
         #endregion
 
@@ -169,6 +190,7 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+
         [HttpPost]
         [Route("AddDistrict")]
         public async Task<IActionResult> AddDistrict(AddDistrictMasterViewModel addDistrictViewModel)
@@ -196,10 +218,35 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpGet]
+        [Route("GetDistrictById")]
+        public async Task<IActionResult> GetDistrictById(string distictMasterId)
+        {
+            var districtRecord = await _EAMSService.GetDistrictRecordById(distictMasterId);
+            if (districtRecord != null)
+            {
+                var dataMapping = new
+                {
+                    DistrictMasterId = districtRecord.DistrictMasterId,
+                    DistrictName = districtRecord.DistrictName,
+                    DistrictCode = districtRecord.DistrictCode,
+                    Status = districtRecord.DistrictStatus
+
+                };
+
+
+                return Ok(dataMapping);
+            }
+            else
+            {
+                return NotFound($"[{distictMasterId}] not exist");
+            }
+        }
+
         #endregion
 
         #region Assembliy Master
-
         [HttpGet]
         [Route("GetAssembliesListById")]
         public async Task<IActionResult> AssembliesListById(string stateId, string districtId)
@@ -282,6 +329,33 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpGet]
+        [Route("GetAssemblyById")]
+        public async Task<IActionResult> GetAssemblyById(string assemblyMasterId)
+        {
+            var assemblyRecord = await _EAMSService.GetAssemblyById(assemblyMasterId);
+            if (assemblyRecord != null)
+            {
+                var dataMapping = new
+                {
+                    AssemblyMasterId = assemblyRecord.AssemblyMasterId,
+                    AssemblyName = assemblyRecord.AssemblyName,
+                    AssemblyCode=assemblyRecord.AssemblyCode,
+                    AssemblyType=assemblyRecord.AssemblyType,
+                    AssemblyStatus=assemblyRecord.AssemblyStatus,
+
+                };
+
+
+                return Ok(dataMapping);
+            }
+            else
+            {
+                return NotFound($"[{assemblyMasterId}] not exist");
+            }
+        }
+
         #endregion
 
         #region  SO Master
@@ -410,6 +484,32 @@ namespace EAMS.Controllers
             return Ok(data);
         }
 
+        [HttpGet]
+        [Route("GetSOById")]
+        public async Task<IActionResult> GetSOById(string soMasterId)
+        {
+            var soRecord = await _EAMSService.GetSOById(soMasterId);
+            if (soRecord != null)
+            {
+                var dataMapping = new
+                {
+                    SOMasterId = soRecord.SOMasterId,
+                    SOName = soRecord.SoName,
+                    AssemblyCode = soRecord.SoAssemblyCode,
+                    SOMobile  = soRecord.SoMobile,
+                    Status = soRecord.SoStatus,
+
+                };
+
+
+                return Ok(dataMapping);
+            }
+            else
+            {
+                return NotFound($"[{soMasterId}] not exist");
+            }
+
+        }
         #endregion
 
         #region Booth Master
@@ -513,7 +613,6 @@ namespace EAMS.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("BoothMapping")]
         public async Task<IActionResult> BoothMapping(BoothMappingViewModel boothMappingViewModel)
@@ -602,6 +701,31 @@ namespace EAMS.Controllers
                 return BadRequest(ModelState);
             }
         }
+
+        [HttpGet]
+        [Route("GetBoothById")]        
+        public async Task<IActionResult> GetBoothById(string boothMasterId)
+        {
+            var boothRecord =await _EAMSService.GetBoothById(boothMasterId);
+            if (boothRecord != null)
+            {
+                var dataMapping = new
+                {
+                    BoothMasterId = boothRecord.BoothMasterId,
+                    BoothName = boothRecord.BoothName, 
+                    Status = boothRecord.BoothStatus
+
+                };
+
+
+                return Ok(dataMapping);
+            }
+            else
+            {
+                return NotFound($"[{boothMasterId}] not exist");
+            }
+        }
+ 
 
         #endregion
 
@@ -1223,7 +1347,7 @@ namespace EAMS.Controllers
             var result = await _EAMSService.EventActivity(electionInfoMaster);
             return result;
         }
-     
+
         #region Event Count for Dashboard
 
         [HttpGet]
@@ -1331,13 +1455,13 @@ namespace EAMS.Controllers
 
         }
         #endregion
-        
+
         #region UserList
         [HttpGet]
         [Route("GetUserList")]
-        public async Task<IActionResult> GetUserList(string userName,string  type)
+        public async Task<IActionResult> GetUserList(string userName, string type)
         {
-            var userList = await _EAMSService.GetUserList(userName,type);
+            var userList = await _EAMSService.GetUserList(userName, type);
             var data = new
             {
                 count = userList.Count,
@@ -1348,12 +1472,13 @@ namespace EAMS.Controllers
         }
         #endregion
 
+        
         [HttpPost]
         [Route("AddPollInterruption")]
-        public async Task<IActionResult> AddPollInterruption(string boothMasterId, string stopTime,string ResumeTime, string Reason)
+        public async Task<IActionResult> AddPollInterruption(string boothMasterId, string stopTime, string ResumeTime, string Reason)
         {
-           
-            var result = await _EAMSService.AddPollInterruption(boothMasterId, stopTime, ResumeTime,Reason);
+
+            var result = await _EAMSService.AddPollInterruption(boothMasterId, stopTime, ResumeTime, Reason);
             switch (result.Status)
             {
                 case RequestStatusEnum.OK:

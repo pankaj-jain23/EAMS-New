@@ -72,9 +72,7 @@ namespace EAMS_DAL.Repository
 
         public async Task<List<StateMaster>> GetState()
         {
-            var stateList = await _context.StateMaster
-                .Include(d => d.DistrictMasters)
-                .Select(d => new StateMaster
+            var stateList = await _context.StateMaster.Select(d => new StateMaster
                 {
                     StateCode = d.StateCode,
                     StateName = d.StateName,
@@ -102,7 +100,6 @@ namespace EAMS_DAL.Repository
                 return new Response { Status = RequestStatusEnum.NotFound, Message = "State Not Found" + stateMaster.StateName };
             }
         }
-
         public async Task<Response> AddState(StateMaster stateMaster)
         {
             try
@@ -130,6 +127,11 @@ namespace EAMS_DAL.Repository
                 // Handle the exception appropriately, logging or other actions.
                 return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
+        }
+        public async Task<StateMaster> GetStateById(string stateId)
+        {
+            var stateRecord = await _context.StateMaster.Where(d=>d.StateMasterId==Convert.ToInt32(stateId)).FirstOrDefaultAsync();
+            return stateRecord;
         }
         #endregion
 
@@ -194,7 +196,12 @@ namespace EAMS_DAL.Repository
                 return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
-
+        public async Task<DistrictMaster> GetDistrictRecordById(string districtId)
+        {
+            var districtRecord = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId)) 
+               .FirstOrDefaultAsync();
+            return districtRecord;
+        }
         #endregion
 
         #region Assembly Master
@@ -267,7 +274,11 @@ namespace EAMS_DAL.Repository
                 return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
             }
         }
-
+        public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)
+        {
+            var assemblyRecord =await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
+            return assemblyRecord;
+        }
 
         #endregion
 
@@ -348,7 +359,6 @@ namespace EAMS_DAL.Repository
 
             }
         }
-
         public async Task<Response> UpdateSectorOfficer(SectorOfficerMaster updatedSectorOfficer)
         {
             var existingSectorOfficer = await _context.SectorOfficerMaster
@@ -384,8 +394,6 @@ namespace EAMS_DAL.Repository
                 return new Response { Status = RequestStatusEnum.OK, Message = "SO User WIth given Mobile Number : " + updatedSectorOfficer.SoMobile + " " + "Already Exists" };
             }
         }
-
-
         public async Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId)
         {
 
@@ -417,6 +425,11 @@ namespace EAMS_DAL.Repository
                             };
             var count = boothlist.Count();
             return await boothlist.ToListAsync();
+        }
+        public async Task<SectorOfficerMaster> GetSOById(string soMasterId)
+        {
+            var soRecord =await _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soMasterId)).FirstOrDefaultAsync();
+            return soRecord;
         }
         #endregion
 
@@ -635,6 +648,12 @@ namespace EAMS_DAL.Repository
             }
         }
 
+        public async Task<BoothMaster> GetBoothById(string boothMasterId)
+        {
+            var boothRecord =await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+          
+            return boothRecord;
+        }
         #endregion
 
         #region Event Master

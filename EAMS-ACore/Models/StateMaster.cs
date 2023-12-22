@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EAMS_ACore
 {
@@ -20,18 +21,24 @@ namespace EAMS_ACore
 
         public bool StateStatus { get; set; }=true;
 
+        [JsonIgnore]
         public virtual List<DistrictMaster> DistrictMasters { get; set; } = new List<DistrictMaster>();
+
+        [JsonIgnore]
         public virtual List<AssemblyMaster> AssemblyMaster
         {
             get;
             set;
         }
 
+        [JsonIgnore]
         public virtual List<ParliamentConstituencyMaster> ParliamentConstituencyMaster
         {
             get;
             set;
-        } 
+        }
+
+        [JsonIgnore]
         public virtual List<BoothMaster> BoothMaster
         {
             get;

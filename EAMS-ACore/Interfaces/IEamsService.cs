@@ -10,6 +10,7 @@ namespace EAMS_ACore.Interfaces
         Task<List<StateMaster>> GetState();
         Task<Response> UpdateStateById(StateMaster stateMaster);
         Task<Response> AddState(StateMaster stateMaster);
+        Task<StateMaster> GetStateById(string Id);
 
         #endregion
 
@@ -17,13 +18,14 @@ namespace EAMS_ACore.Interfaces
         Task<List<CombinedMaster>> GetDistrictById(string stateMasterId);
         Task<Response> UpdateDistrictById(DistrictMaster districtMaster);
         Task<Response> AddDistrict(DistrictMaster districtMaster);
-
+        Task<DistrictMaster> GetDistrictRecordById(string districtId);
         #endregion
 
         #region Assembly Master
         Task<List<CombinedMaster>> GetAssemblies(string stateId, string assemblyId);
         Task<Response> UpdateAssembliesById(AssemblyMaster assemblyMaster);
         Task<Response> AddAssemblies(AssemblyMaster assemblyMaster);
+        Task<AssemblyMaster> GetAssemblyById(string assemblyId);
         #endregion
 
         #region SO Master
@@ -33,6 +35,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<Response> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId);
+        Task<SectorOfficerMaster> GetSOById(string soId);
         #endregion
 
         #region BoothMaster
@@ -43,6 +46,8 @@ namespace EAMS_ACore.Interfaces
         Task<Response> BoothMapping(List<BoothMaster> boothMaster);
 
         Task<Response> ReleaseBooth(BoothMaster boothMaster);
+
+        Task<BoothMaster> GetBoothById(string boothMasterId);
         #endregion
 
         #region EventMaster

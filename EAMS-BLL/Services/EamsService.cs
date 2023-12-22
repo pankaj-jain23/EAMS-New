@@ -1,13 +1,10 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore;
-using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
-using EAMS_DAL.AuthRepository;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace EAMS_BLL.Services
@@ -47,6 +44,11 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.AddState(stateMaster);
 
         }
+        public Task<StateMaster> GetStateById(string stateId)
+        {
+            return _eamsRepository.GetStateById(stateId);
+        }
+        
 
         #endregion
 
@@ -68,6 +70,10 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.AddDistrict(districtMaster);
         }
+        public async Task<DistrictMaster> GetDistrictRecordById(string districtId)
+        {
+            return await _eamsRepository.GetDistrictRecordById(districtId);
+        }
         #endregion   
 
         #region Assembly  Master
@@ -84,6 +90,11 @@ namespace EAMS_BLL.Services
         public async Task<Response> AddAssemblies(AssemblyMaster assemblyMaster)
         {
             return await _eamsRepository.AddAssemblies(assemblyMaster);
+        }
+
+        public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)
+        {
+            return await _eamsRepository.GetAssemblyById(assemblyMasterId);
         }
         #endregion
 
@@ -110,6 +121,10 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId, soId);
         }
 
+        public async Task<SectorOfficerMaster> GetSOById(string soMasterId)
+        {
+            return await _eamsRepository.GetSOById(soMasterId);
+        }
         #endregion
 
         #region Booth Master
@@ -135,6 +150,11 @@ namespace EAMS_BLL.Services
         public async Task<Response> ReleaseBooth(BoothMaster boothMaster)
         {
             return await _eamsRepository.ReleaseBooth(boothMaster);
+        }
+
+        public async Task<BoothMaster> GetBoothById(string boothMasterId)
+        {
+            return await _eamsRepository.GetBoothById(boothMasterId);
         }
 
         #endregion

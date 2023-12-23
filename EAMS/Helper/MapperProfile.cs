@@ -54,6 +54,11 @@ namespace EAMS.Helper
             CreateMap<GetRefreshTokenViewModel, GetRefreshToken>().ReverseMap();
             #endregion
 
+            #region UpdateMasterStatusViewModel UpdateMasterStatus
+
+            CreateMap<UpdateMasterStatusViewModel, UpdateMasterStatus>().ReverseMap();
+            #endregion
+
             #region StateMasterViewModel and  StateMaster 
             CreateMap<StateMasterViewModel, StateMaster>()
                 .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))
@@ -77,7 +82,7 @@ namespace EAMS.Helper
 
             CreateMap<CombinedMaster, DistrictMasterViewModel>()
                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateId))
-               .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictId)) 
+               .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictId))
                .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
                .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode))
                .ReverseMap();
@@ -256,20 +261,21 @@ namespace EAMS.Helper
             #endregion
 
 
+
             #region InterruptionViewModel CombinedMaster
             CreateMap<InterruptionViewModel, PollInterruption>()
                 .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.boothMasterId))
                 .ForMember(dest => dest.InterruptionType, opt => opt.MapFrom(src => src.Reason))
-                
+
                 .ForMember(dest => dest.StopTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.stopTime) ? null : (TimeOnly?)TimeOnly.Parse(src.stopTime)))
                  .ForMember(dest => dest.ResumeTime, opt => opt.MapFrom(src => string.IsNullOrEmpty(src.ResumeTime) ? null : (TimeOnly?)TimeOnly.Parse(src.ResumeTime)))
                  .ForMember(dest => dest.NewCU, opt => opt.MapFrom(src => src.newCU))
                 .ForMember(dest => dest.NewBU, opt => opt.MapFrom(src => src.newBU))
                 .ForMember(dest => dest.OldBU, opt => opt.MapFrom(src => src.oldBu))
                 .ForMember(dest => dest.OldCU, opt => opt.MapFrom(src => src.oldCu))
-                //.ForMember(dest => dest.IsPollInterrupted, opt => opt.MapFrom(src => src.IsPollInterrupted))
-                //.ForMember(dest => dest.Flag, opt => opt.MapFrom(src => src.Flag))
-                
+             //.ForMember(dest => dest.IsPollInterrupted, opt => opt.MapFrom(src => src.IsPollInterrupted))
+             //.ForMember(dest => dest.Flag, opt => opt.MapFrom(src => src.Flag))
+
 
              .ReverseMap();
             #endregion    

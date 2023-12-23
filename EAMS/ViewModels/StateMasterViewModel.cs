@@ -5,14 +5,10 @@ namespace EAMS.ViewModels
 {
     public class StateMasterViewModel
     {
-        public int StateId { get; set; }
-
-        [Required(ErrorMessage = "StateName is required")]
-        public string StateName { get; set; }
-        [Required(ErrorMessage = "StateCode is required")]
+        public int StateId { get; set; } 
+        public string StateName { get; set; } 
         public string StateCode { get; set; }
-
-        [Required(ErrorMessage = "IsStatus is required")]
+         
         public bool IsStatus { get; set; }  
 
     }

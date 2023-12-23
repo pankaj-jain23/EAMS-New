@@ -34,12 +34,12 @@ namespace EAMS_DAL.AuthRepository
             _context = context;
         }
         #region AddDynamicRole && Get Role
-        public async Task<AuthServiceResponse> AddDynamicRole(Role role)
+        public async Task<ServiceResponse> AddDynamicRole(Role role)
         {
             var existingRole = await _roleManager.FindByNameAsync(role.RoleName);
             if (existingRole != null)
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "Role already exists!"
@@ -54,7 +54,7 @@ namespace EAMS_DAL.AuthRepository
 
             if (!result.Succeeded)
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "Role creation failed! Please check role details and try again."
@@ -62,7 +62,7 @@ namespace EAMS_DAL.AuthRepository
             }
             else
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = true,
                     Message = "Role created successfully!"
@@ -84,12 +84,12 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region LoginAsync && GenerateToken
-        public async Task<AuthServiceResponse> LoginAsync(Login login)
+        public async Task<ServiceResponse> LoginAsync(Login login)
         {
             var user = await _userManager.FindByNameAsync(login.UserName);
 
             if (user is null)
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "Invalid Credentials"
@@ -98,7 +98,7 @@ namespace EAMS_DAL.AuthRepository
             var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, login.Password);
 
             if (!isPasswordCorrect)
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "Invalid Credentials"
@@ -120,7 +120,7 @@ namespace EAMS_DAL.AuthRepository
 
             //  var token = GenerateNewJsonWebToken(authClaims);
 
-            return new AuthServiceResponse()
+            return new ServiceResponse()
             {
                 IsSucceed = true,
                 // Message = token
@@ -130,7 +130,7 @@ namespace EAMS_DAL.AuthRepository
 
         #region RegisterAsync
 
-        public async Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration)
+        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration)
         {
             throw new NotImplementedException();
         }
@@ -142,12 +142,12 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region FindUserByName
-        public async Task<AuthServiceResponse> FindUserByName(UserRegistration userRegistration)
+        public async Task<ServiceResponse> FindUserByName(UserRegistration userRegistration)
         {
             var userExists = await _userManager.FindByNameAsync(userRegistration.UserName);
             if (userExists != null)
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "User Already Exist"
@@ -155,7 +155,7 @@ namespace EAMS_DAL.AuthRepository
             }
             else
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = true,
                     Message = "User Not Exist"
@@ -222,14 +222,14 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region CreateUser
-        public async Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
+        public async Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
         {
             try
             {
                 var createUserResult = await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
                 if (!createUserResult.Succeeded)
                 {
-                    return new AuthServiceResponse()
+                    return new ServiceResponse()
                     {
                         IsSucceed = false,
                         Message = "User creation failed! Please check user details and try again.",
@@ -250,7 +250,7 @@ namespace EAMS_DAL.AuthRepository
                         if (!userRoleResult.Succeeded)
                         {
                             // Handle role assignment failure
-                            return new AuthServiceResponse()
+                            return new ServiceResponse()
                             {
                                 IsSucceed = false,
                                 Message = $"Failed to assign roles to user '{userRegistration.UserName}'.",
@@ -260,7 +260,7 @@ namespace EAMS_DAL.AuthRepository
                     }
                 }
 
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = true,
                     Message = $"User '{userRegistration.UserName}' created successfully!."
@@ -270,7 +270,7 @@ namespace EAMS_DAL.AuthRepository
             {
                 // Log the exception details for investigation
                 // Example: _logger.LogError(ex, "An error occurred while creating a user.");
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = ex.Message,
@@ -280,7 +280,7 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region  UpdateUser
-        public async Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration)
+        public async Task<ServiceResponse> UpdateUser(UserRegistration userRegistration)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace EAMS_DAL.AuthRepository
                 var updateUser = await _userManager.UpdateAsync(userRegistration);
                 if (updateUser.Succeeded is true)
                 {
-                    return new AuthServiceResponse()
+                    return new ServiceResponse()
                     {
                         IsSucceed = true,
                         Message = "User Updated Succesfully"
@@ -304,7 +304,7 @@ namespace EAMS_DAL.AuthRepository
                 }
                 else
                 {
-                    return new AuthServiceResponse()
+                    return new ServiceResponse()
                     {
                         IsSucceed = false,
                         Message = "User Updation Failed!!w"
@@ -327,7 +327,7 @@ namespace EAMS_DAL.AuthRepository
             var soRecord = await _context.SectorOfficerMaster.Where(d => d.SoMobile == validateMobile.MobileNumber).FirstOrDefaultAsync();
             return soRecord;
         }
-        public async Task<AuthServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster)
+        public async Task<ServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster)
         {
             var soRecord = _context.SectorOfficerMaster.Where(d => d.SoMobile == sectorOfficerMaster.SoMobile).FirstOrDefault();
             if (soRecord != null)
@@ -350,14 +350,14 @@ namespace EAMS_DAL.AuthRepository
                 }
                 _context.SectorOfficerMaster.Update(soRecord);
                 _context.SaveChanges();
-                return new AuthServiceResponse
+                return new ServiceResponse
                 {
                     IsSucceed = true,
                 };
             }
             else
             {
-                return new AuthServiceResponse
+                return new ServiceResponse
                 {
                     IsSucceed = false,
                 };
@@ -374,12 +374,12 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region CreateSO Pin
-        public async Task<AuthServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soId)
+        public async Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soId)
         {
             var soRecord = _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(soId)).FirstOrDefault();
             if (soRecord == null)
             {
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = false,
                     Message = "SO User Not Exist"
@@ -390,7 +390,7 @@ namespace EAMS_DAL.AuthRepository
                 soRecord.AppPin = createSOPin.ConfirmSOPin;
                 _context.SectorOfficerMaster.Update(soRecord);
                 _context.SaveChanges();
-                return new AuthServiceResponse()
+                return new ServiceResponse()
                 {
                     IsSucceed = true,
                     Message = "PIN Created SuccessFully"

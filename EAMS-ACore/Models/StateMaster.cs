@@ -13,11 +13,11 @@ namespace EAMS_ACore
 
         public string StateCode { get; set; }
 
-        public DateTime? StateCreatedAt { get; set; }=DateTime.UtcNow;
+        public DateTime? StateCreatedAt { get; set; } 
 
-        public DateTime? StateUpdatedAt { get; set; }= DateTime.UtcNow;
+        public DateTime? StateUpdatedAt { get; set; }
 
-        public DateTime? StateDeletedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? StateDeletedAt { get; set; } 
 
         public bool StateStatus { get; set; }=true;
 

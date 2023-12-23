@@ -28,6 +28,24 @@ namespace EAMS.Controllers
 
         }
 
+        #region MasterUpdation Status
+        [HttpPut]
+        [Route("UpdateMasterStatus")]
+        public async Task<IActionResult> UpdateMaster(UpdateMasterStatusViewModel updateMasterStatus)
+        {
+            var mappedData = _mapper.Map<UpdateMasterStatus>(updateMasterStatus);
+            var isSucced=await _EAMSService.UpdateMasterStatus(mappedData);
+            if (isSucced.IsSucceed)
+            {
+                return Ok(isSucced);
+            }
+            else
+            {
+                return BadRequest(isSucced);
+            } 
+        }
+        #endregion
+
         #region State master
         [HttpGet]
         [Route("StateList")]
@@ -120,7 +138,15 @@ namespace EAMS.Controllers
             var stateRecord = await _EAMSService.GetStateById(stateMasterId);
             if (stateRecord != null)
             {
-                return Ok(stateRecord);
+                var mappedData = new
+                {
+                    StateMasterId=stateRecord.StateMasterId,
+                    StateName=stateRecord.StateName,
+                    StateCode=stateRecord.StateCode,
+                    IsStatus=stateRecord.StateStatus
+
+                };
+                return Ok(mappedData);
             }
             else
             {
@@ -228,10 +254,12 @@ namespace EAMS.Controllers
             {
                 var dataMapping = new
                 {
+                    StateMasterId=districtRecord.StateMasterId,
+                    StateName=districtRecord.StateMaster.StateName,
                     DistrictMasterId = districtRecord.DistrictMasterId,
                     DistrictName = districtRecord.DistrictName,
                     DistrictCode = districtRecord.DistrictCode,
-                    Status = districtRecord.DistrictStatus
+                    IsStatus = districtRecord.DistrictStatus
 
                 };
 
@@ -339,11 +367,19 @@ namespace EAMS.Controllers
             {
                 var dataMapping = new
                 {
+                    StateMasterId = assemblyRecord.StateMasterId,
+                    StateName = assemblyRecord.StateMaster.StateName,
+                    DistrictMasterId = assemblyRecord.DistrictMaster.DistrictMasterId,
+                    DistrictName = assemblyRecord.DistrictMaster.DistrictName,
+                    DistrictCode = assemblyRecord.DistrictMaster.DistrictCode, 
                     AssemblyMasterId = assemblyRecord.AssemblyMasterId,
                     AssemblyName = assemblyRecord.AssemblyName,
                     AssemblyCode=assemblyRecord.AssemblyCode,
                     AssemblyType=assemblyRecord.AssemblyType,
-                    AssemblyStatus=assemblyRecord.AssemblyStatus,
+                    PcMasterId=assemblyRecord.ParliamentConstituencyMaster.PCMasterId,
+                    PcName=assemblyRecord.ParliamentConstituencyMaster.PcName,
+                    IsStatus = assemblyRecord.AssemblyStatus,
+
 
                 };
 
@@ -491,18 +527,10 @@ namespace EAMS.Controllers
             var soRecord = await _EAMSService.GetSOById(soMasterId);
             if (soRecord != null)
             {
-                var dataMapping = new
-                {
-                    SOMasterId = soRecord.SOMasterId,
-                    SOName = soRecord.SoName,
-                    AssemblyCode = soRecord.SoAssemblyCode,
-                    SOMobile  = soRecord.SoMobile,
-                    Status = soRecord.SoStatus,
-
-                };
+                 
 
 
-                return Ok(dataMapping);
+                return Ok(soRecord);
             }
             else
             {
@@ -711,9 +739,21 @@ namespace EAMS.Controllers
             {
                 var dataMapping = new
                 {
+                    StateMasterId = boothRecord.StateMasterId,
+                    StateName = boothRecord.StateMaster.StateName,
+                    DistrictMasterId = boothRecord.DistrictMaster.DistrictMasterId,
+                    DistrictName = boothRecord.DistrictMaster.DistrictName,
+                    DistrictCode = boothRecord.DistrictMaster.DistrictCode,
+                    AssemblyMasterId = boothRecord.AssemblyMasterId,
+                    AssemblyName = boothRecord.AssemblyMaster.AssemblyName,
+                    AssemblyCode = boothRecord.AssemblyMaster.AssemblyCode,
+                    AssemblyType = boothRecord.AssemblyMaster.AssemblyType,  
                     BoothMasterId = boothRecord.BoothMasterId,
-                    BoothName = boothRecord.BoothName, 
-                    Status = boothRecord.BoothStatus
+                    BoothName = boothRecord.BoothName,
+                    BoothCode_No = boothRecord.BoothCode_No,
+                    BoothNoAuxy = boothRecord.BoothNoAuxy,
+                    TotalVoters = boothRecord.TotalVoters, 
+                    IsStatus = boothRecord.BoothStatus
 
                 };
 
@@ -1472,11 +1512,10 @@ namespace EAMS.Controllers
         }
         #endregion
 
+        #region PollInterruption
 
         [HttpPost]
-        [Route("AddPollInterruption")]
-
-        
+        [Route("AddPollInterruption")]        
         public async Task<IActionResult> AddPollInterruption(InterruptionViewModel interruptionViewModel)
         {
             var mappedData = _mapper.Map<PollInterruption>(interruptionViewModel);
@@ -1507,6 +1546,6 @@ namespace EAMS.Controllers
             return Ok(data);
 
         }
-
+        #endregion
     }
 }

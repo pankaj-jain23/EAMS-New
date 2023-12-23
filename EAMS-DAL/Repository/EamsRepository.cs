@@ -4,14 +4,9 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
-using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Globalization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Net.NetworkInformation;
 
 namespace EAMS_DAL.Repository
 {
@@ -22,6 +17,120 @@ namespace EAMS_DAL.Repository
         {
             _context = context;
         }
+        #region UpdateMaster
+        public async Task<ServiceResponse> UpdateMasterStatus(UpdateMasterStatus updateMasterStatus)
+        {
+            switch (updateMasterStatus.Type)
+            {
+                case "StateMaster":
+                    var isStateExist = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(updateMasterStatus.Id)).FirstOrDefaultAsync();
+                    if (isStateExist != null)
+                    {
+                        isStateExist.StateStatus = updateMasterStatus.IsStatus;
+                        _context.StateMaster.Update(isStateExist);
+                        _context.SaveChanges();
+                        return new ServiceResponse
+                        {
+                            IsSucceed = true,
+                        };
+                    }
+                    else
+                    {
+                        return new ServiceResponse
+                        {
+                            IsSucceed = false,
+                        };
+                    }
+
+                case "DistrictMaster":
+                    var isDistrictExist = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(updateMasterStatus.Id)).FirstOrDefaultAsync();
+                    if (isDistrictExist != null)
+                    {
+                        isDistrictExist.DistrictStatus = updateMasterStatus.IsStatus;
+                        _context.DistrictMaster.Update(isDistrictExist);
+                        _context.SaveChanges();
+                        return new ServiceResponse
+                        {
+                            IsSucceed = true,
+                        };
+                    }
+                    else
+                    {
+                        return new ServiceResponse
+                        {
+                            IsSucceed = false,
+                        };
+                    }
+
+                case "AssemblyMaster":
+                    var isAssemblyExist = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(updateMasterStatus.Id)).FirstOrDefaultAsync();
+                    if (isAssemblyExist != null)
+                    {
+                        isAssemblyExist.AssemblyStatus = updateMasterStatus.IsStatus;
+                        _context.AssemblyMaster.Update(isAssemblyExist);
+                        _context.SaveChanges();
+                        return new ServiceResponse
+                        {
+                            IsSucceed = true,
+                        };
+                    }
+                    else
+                    {
+                        return new ServiceResponse
+                        {
+                            IsSucceed = false,
+                        };
+                    }
+
+                case "SOMaster":
+                    var isSOExist = await _context.SectorOfficerMaster.Where(d => d.SOMasterId == Convert.ToInt32(updateMasterStatus.Id)).FirstOrDefaultAsync();
+                    if (isSOExist != null)
+                    {
+                        isSOExist.SoStatus = updateMasterStatus.IsStatus;
+                        _context.SectorOfficerMaster.Update(isSOExist);
+                        _context.SaveChanges();
+                        return new ServiceResponse
+                        {
+                            IsSucceed = true,
+                        };
+                    }
+                    else
+                    {
+                        return new ServiceResponse
+                        {
+                            IsSucceed = false,
+                        };
+                    }
+
+                case "BoothMaster":
+                    var isBoothExist = await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(updateMasterStatus.Id)).FirstOrDefaultAsync();
+                    if (isBoothExist != null)
+                    {
+                        isBoothExist.BoothStatus = updateMasterStatus.IsStatus;
+                        _context.BoothMaster.Update(isBoothExist);
+                        _context.SaveChanges();
+                        return new ServiceResponse
+                        {
+                            IsSucceed = true,
+                        };
+                    }
+                    else
+                    {
+                        return new ServiceResponse
+                        {
+                            IsSucceed = false,
+                        };
+                    }
+
+                default:
+                    return new ServiceResponse
+                    {
+                        IsSucceed = false,
+                    };
+
+            }
+        }
+        #endregion
 
         #region Common method
         private DateTime? ConvertStringToUtcDateTime(string dateString)
@@ -90,6 +199,9 @@ namespace EAMS_DAL.Repository
             if (stateMasterRecord != null)
             {
                 stateMasterRecord.StateName = stateMaster.StateName;
+                stateMasterRecord.StateCode = stateMaster.StateCode;
+                stateMasterRecord.StateStatus = stateMaster.StateStatus;
+                stateMasterRecord.StateUpdatedAt = BharatDateTime();
                 _context.StateMaster.Update(stateMasterRecord);
                 _context.SaveChanges();
                 return new Response { Status = RequestStatusEnum.OK, Message = "State Updated Successfully" + stateMaster.StateName };
@@ -111,6 +223,7 @@ namespace EAMS_DAL.Repository
 
                 if (stateExist == null)
                 {
+                    stateMaster.StateCreatedAt = BharatDateTime();
                     _context.StateMaster.Add(stateMaster);
                     _context.SaveChanges();
 
@@ -163,6 +276,9 @@ namespace EAMS_DAL.Repository
             {
                 var districtMasterRecord = _context.DistrictMaster.Where(d => d.DistrictMasterId == districtMaster.DistrictMasterId).FirstOrDefault();
                 districtMasterRecord.DistrictName = districtMaster.DistrictName;
+                districtMasterRecord.DistrictCode = districtMaster.DistrictCode;
+                districtMasterRecord.DistrictStatus = districtMaster.DistrictStatus;
+                districtMasterRecord.DistrictUpdatedAt = BharatDateTime();
                 _context.DistrictMaster.Update(districtMasterRecord);
                 _context.SaveChanges();
                 return new Response { Status = RequestStatusEnum.OK, Message = "District Updated Successfully" + districtMaster.DistrictName };
@@ -177,10 +293,11 @@ namespace EAMS_DAL.Repository
         {
             try
             {
-                var districtExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName).FirstOrDefault();
+                var isExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName).FirstOrDefault();
 
-                if (districtExist == null)
+                if (isExist == null)
                 {
+                    districtMaster.DistrictCreatedAt = BharatDateTime(); ;
                     _context.DistrictMaster.Add(districtMaster);
                     _context.SaveChanges();
                     return new Response { Status = RequestStatusEnum.OK, Message = "District Added Successfully" + districtMaster.DistrictName };
@@ -198,7 +315,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task<DistrictMaster> GetDistrictRecordById(string districtId)
         {
-            var districtRecord = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId))
+            var districtRecord = await _context.DistrictMaster.Include(d => d.StateMaster).Where(d => d.DistrictMasterId == Convert.ToInt32(districtId))
                .FirstOrDefaultAsync();
             return districtRecord;
         }
@@ -237,6 +354,8 @@ namespace EAMS_DAL.Repository
                 assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;
                 assembliesMasterRecord.AssemblyType = assemblyMaster.AssemblyType;
                 assembliesMasterRecord.AssemblyStatus = assemblyMaster.AssemblyStatus;
+                assembliesMasterRecord.AssemblyUpdatedAt = BharatDateTime();
+
 
                 var ss = _context.AssemblyMaster.Update(assembliesMasterRecord);
                 _context.SaveChanges();
@@ -257,6 +376,7 @@ namespace EAMS_DAL.Repository
 
                 if (assemblieExist == null)
                 {
+                    assemblyMaster.AssemblyCreatedAt = BharatDateTime();
                     _context.AssemblyMaster.Add(assemblyMaster);
                     _context.SaveChanges();
 
@@ -276,7 +396,12 @@ namespace EAMS_DAL.Repository
         }
         public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)
         {
-            var assemblyRecord = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
+            var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
+            return assemblyRecord;
+        }
+        public async Task<AssemblyMaster> GetAssemblyByCode(string assemblyCode)
+        {
+            var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyCode == Convert.ToInt32(assemblyCode)).FirstOrDefaultAsync();
             return assemblyRecord;
         }
 
@@ -342,20 +467,21 @@ namespace EAMS_DAL.Repository
 
             return soProfile;
         }
-        public async Task<Response> AddSectorOfficer(SectorOfficerMaster addSectorOfficerMaster)
+        public async Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster)
         {
-            var soUserExist = _context.SectorOfficerMaster.Where(d => d.SoMobile == addSectorOfficerMaster.SoMobile).FirstOrDefault();
-            if (soUserExist == null)
+            var isExist = _context.SectorOfficerMaster.Where(d => d.SoMobile == sectorOfficerMaster.SoMobile).FirstOrDefault();
+            if (isExist == null)
             {
-                _context.SectorOfficerMaster.Add(addSectorOfficerMaster);
+                sectorOfficerMaster.SoCreatedAt = BharatDateTime();
+                _context.SectorOfficerMaster.Add(sectorOfficerMaster);
                 _context.SaveChanges();
-                return new Response { Status = RequestStatusEnum.OK, Message = "SO User" + addSectorOfficerMaster.SoName + " " + "Added Successfully" };
+                return new Response { Status = RequestStatusEnum.OK, Message = "SO User" + sectorOfficerMaster.SoName + " " + "Added Successfully" };
 
 
             }
             else
             {
-                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO User" + addSectorOfficerMaster.SoName + " " + "Already Exists" };
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO User" + sectorOfficerMaster.SoName + " " + "Already Exists" };
 
             }
         }
@@ -381,7 +507,8 @@ namespace EAMS_DAL.Repository
                 existingSectorOfficer.SoOfficeName = updatedSectorOfficer.SoOfficeName;
                 existingSectorOfficer.SoAssemblyCode = updatedSectorOfficer.SoAssemblyCode;
                 existingSectorOfficer.SoDesignation = updatedSectorOfficer.SoDesignation;
-                existingSectorOfficer.SOUpdatedAt = updatedSectorOfficer.SOUpdatedAt;
+                existingSectorOfficer.SoStatus = updatedSectorOfficer.SoStatus;
+                existingSectorOfficer.SOUpdatedAt = BharatDateTime();
 
                 _context.SectorOfficerMaster.Update(existingSectorOfficer);
                 await _context.SaveChangesAsync();
@@ -504,9 +631,7 @@ namespace EAMS_DAL.Repository
                 if (boothExist == null)
                 {
                     // Set UTC time directly in the model
-                    boothMaster.BoothCreatedAt = DateTime.UtcNow;
-                    boothMaster.BoothUpdatedAt = DateTime.UtcNow;
-                    boothMaster.BoothDeletedAt = DateTime.UtcNow;
+                    boothMaster.BoothCreatedAt = BharatDateTime();
                     _context.BoothMaster.Add(boothMaster);
                     _context.SaveChanges();
 
@@ -545,8 +670,9 @@ namespace EAMS_DAL.Repository
                     existingbooth.BoothNoAuxy = boothMaster.BoothNoAuxy;
                     existingbooth.Longitude = boothMaster.Longitude;
                     existingbooth.Latitude = boothMaster.Latitude;
-                    existingbooth.BoothUpdatedAt = boothMaster.BoothUpdatedAt;
+                    existingbooth.BoothUpdatedAt = BharatDateTime();
                     existingbooth.TotalVoters = boothMaster.TotalVoters;
+                    existingbooth.BoothStatus = boothMaster.BoothStatus;
 
                     _context.BoothMaster.Update(existingbooth);
                     await _context.SaveChangesAsync();
@@ -650,7 +776,7 @@ namespace EAMS_DAL.Repository
 
         public async Task<BoothMaster> GetBoothById(string boothMasterId)
         {
-            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
+            var boothRecord = await _context.BoothMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.AssemblyMaster).Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).FirstOrDefaultAsync();
 
             return boothRecord;
         }
@@ -675,18 +801,21 @@ namespace EAMS_DAL.Repository
         }
 
 
-        public async Task<Response> UpdateEventById(EventMaster eventMaster1)
+        public async Task<Response> UpdateEventById(EventMaster eventMaster)
         {
-            if (eventMaster1.EventName != null && eventMaster1.EventSequence != null)
+            if (eventMaster.EventName != null && eventMaster.EventSequence != null)
             {
 
-                var eventMaster = _context.EventMaster.Where(d => d.EventMasterId == eventMaster1.EventMasterId).FirstOrDefault();
-                if (eventMaster != null)
+                var eventExist = _context.EventMaster.Where(d => d.EventMasterId == eventMaster.EventMasterId).FirstOrDefault();
+                if (eventExist != null)
                 {
-                    eventMaster.EventName = eventMaster1.EventName;
-                    _context.EventMaster.Update(eventMaster);
+                    eventExist.EventName = eventMaster.EventName;
+                    eventExist.Status = eventMaster.Status;
+                    eventExist.EventSequence = eventMaster.EventSequence;
+                    eventExist.UpdatedAt = BharatDateTime();
+                    _context.EventMaster.Update(eventExist);
                     _context.SaveChanges();
-                    return new Response { Status = RequestStatusEnum.OK, Message = "Event+" + eventMaster1.EventName + " " + "added successfully" };
+                    return new Response { Status = RequestStatusEnum.OK, Message = "Event+" + eventMaster.EventName + " " + "added successfully" };
                 }
                 else
                 {
@@ -2723,15 +2852,15 @@ namespace EAMS_DAL.Repository
         public async Task<List<UserList>> GetUserList(string soName, string type)
         {
             var users = await _context.SectorOfficerMaster
-    .Where(u => EF.Functions.Like(u.SoName.ToUpper(), "%" + soName.ToUpper() + "%"))
-    .OrderBy(u => u.SOMasterId)
-    .Select(d => new UserList
-    {
-        Name = d.SoName,
-        MobileNumber = d.SoMobile,
-        UserType = type
-    })
-    .ToListAsync();
+            .Where(u => EF.Functions.Like(u.SoName.ToUpper(), "%" + soName.ToUpper() + "%"))
+            .OrderBy(u => u.SOMasterId)
+            .Select(d => new UserList
+            {
+                Name = d.SoName,
+                MobileNumber = d.SoMobile,
+                UserType = type
+            })
+            .ToListAsync();
             return users;
         }
 
@@ -2749,7 +2878,7 @@ namespace EAMS_DAL.Repository
         {
             var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p => p.PollInterruptionId).FirstOrDefaultAsync();
             return pollInterruptionRecord;
-        } 
+        }
 
         public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
         {
@@ -2757,7 +2886,7 @@ namespace EAMS_DAL.Repository
             return boothRecord;
         }
 
-        
+
 
         #endregion
 

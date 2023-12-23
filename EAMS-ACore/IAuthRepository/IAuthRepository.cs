@@ -12,21 +12,21 @@ namespace EAMS_ACore.IAuthRepository
 {
     public interface IAuthRepository
     {
-        Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration);
-        Task<AuthServiceResponse> LoginAsync(Login login);
+        Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration);
+        Task<ServiceResponse> LoginAsync(Login login);
 
-        Task<AuthServiceResponse> AddDynamicRole(Role role);
+        Task<ServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
         Task<SectorOfficerMaster> ValidateMobile(ValidateMobile validateMobile);
 
-        Task<AuthServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster);
-        Task<AuthServiceResponse> FindUserByName(UserRegistration userRegistration);
+        Task<ServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster);
+        Task<ServiceResponse> FindUserByName(UserRegistration userRegistration);
         Task<List<UserRegistration>> FindUserListByName(string userName);
         Task<UserRegistration> CheckUserLogin(Login login);
-        Task<AuthServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
-        Task<AuthServiceResponse> UpdateUser(UserRegistration userRegistration);
+        Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
+        Task<ServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);
-        Task<AuthServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId);
+        Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId);
 
         Task<SectorOfficerMaster>GetSOById(int soId);
 

@@ -28,6 +28,30 @@ namespace EAMS_BLL.Services
 
             return DateTime.SpecifyKind(hiINDateTime, DateTimeKind.Utc);
         }
+
+        #region UpdateMaster
+        public async Task<ServiceResponse> UpdateMasterStatus(UpdateMasterStatus updateMasterStatus)
+        {
+            var isSucced = await _eamsRepository.UpdateMasterStatus(updateMasterStatus);
+            if (isSucced.IsSucceed)
+            {
+                return new ServiceResponse { 
+                IsSucceed= true,
+                Message="Status Updated Successfully"
+                };
+                 
+            }
+            else
+            {
+                return new ServiceResponse
+                {
+                    IsSucceed = false,
+                    Message = "Status not Updated! "
+                };
+            }
+        }
+        #endregion
+
         #region State Master
 
         public Task<List<StateMaster>> GetState()
@@ -48,7 +72,7 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.GetStateById(stateId);
         }
-        
+
 
         #endregion
 
@@ -121,9 +145,33 @@ namespace EAMS_BLL.Services
             return await _eamsRepository.GetBoothListBySoId(stateMasterId, districtMasterId, assemblyMasterId, soId);
         }
 
-        public async Task<SectorOfficerMaster> GetSOById(string soMasterId)
+        public async Task<SectorOfficerMasterCustom> GetSOById(string soMasterId)
         {
-            return await _eamsRepository.GetSOById(soMasterId);
+            var soRecord = await _eamsRepository.GetSOById(soMasterId);
+            //var stateRecord = await _eamsRepository.GetStateById(soRecord.StateMasterId.ToString());
+            //var districtRecord = await _eamsRepository.GetDistrictRecordById(stateRecord);
+            var soCustomRecord = await _eamsRepository.GetAssemblyByCode(soRecord.SoAssemblyCode.ToString());
+            SectorOfficerMasterCustom sectorOfficerMasterCustom = new SectorOfficerMasterCustom()
+            {
+                StateMasterId = soCustomRecord.StateMasterId,
+                StateName = soCustomRecord.StateMaster.StateName,
+                DistrictMasterId = soCustomRecord.DistrictMasterId,
+                DistrictName = soCustomRecord.DistrictMaster.DistrictName,
+                DistrictStatus = soCustomRecord.DistrictMaster.DistrictStatus,
+                DistrictCode = soCustomRecord.DistrictMaster.DistrictCode,
+                AssemblyMasterId = soCustomRecord.AssemblyMasterId,
+                AssemblyName = soCustomRecord.AssemblyName,
+                AssemblyCode = soCustomRecord.AssemblyCode, 
+                SoMasterId=soRecord.SOMasterId,
+                SoName=soRecord.SoName,
+                SoMobile=soRecord.SoMobile,
+                SoOfficeName=soRecord.SoOfficeName,
+                SoDesignation=soRecord.SoDesignation,
+                IsStatus=soRecord.SoStatus
+                    
+
+            };
+            return sectorOfficerMasterCustom;
         }
         #endregion
 
@@ -686,11 +734,11 @@ namespace EAMS_BLL.Services
         public async Task<List<UserList>> GetUserList(string userName, string type)
         {
             List<UserList> list = new List<UserList>();
-            if (type == "SO") 
+            if (type == "SO")
             {
 
                 return list = await _eamsRepository.GetUserList(userName, type);
-  
+
 
             }
             else if (type == "ARO")
@@ -1390,5 +1438,6 @@ namespace EAMS_BLL.Services
             return reasonStatus;
         }
 
+      
     }
 }

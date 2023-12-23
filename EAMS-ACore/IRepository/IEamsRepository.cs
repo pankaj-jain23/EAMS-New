@@ -7,6 +7,10 @@ namespace EAMS_ACore.IRepository
 {
     public interface IEamsRepository
     {
+        #region UpdateMasterStatus
+        Task<ServiceResponse> UpdateMasterStatus(UpdateMasterStatus updateMasterStatus);
+        #endregion
+
         #region State Master
         Task<List<StateMaster>> GetState();
         Task<Response> UpdateStateById(StateMaster stateMaster);
@@ -27,6 +31,8 @@ namespace EAMS_ACore.IRepository
         Task<Response> UpdateAssembliesById(AssemblyMaster assemblyMaster);
         Task<Response> AddAssemblies(AssemblyMaster assemblyMaster);
         Task<AssemblyMaster> GetAssemblyById(string assemblyId);
+        Task<AssemblyMaster> GetAssemblyByCode(string assemblyCode);
+
         #endregion
 
         #region SO Master

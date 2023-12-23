@@ -11,13 +11,13 @@ namespace EAMS_ACore.AuthInterfaces
 {
     public interface IAuthService
     {
-        Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration,List<string>roleId);
+        Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration,List<string>roleId);
         Task<Token> LoginAsync(Login login);
-        Task<AuthServiceResponse> AddDynamicRole(Role role);
+        Task<ServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
         Task<Response> ValidateMobile(ValidateMobile validateMobile);
         Task<Token> GetRefreshToken(GetRefreshToken getRefreshToken);
-        Task<AuthServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);
+        Task<ServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);
 
     }
 }

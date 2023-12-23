@@ -6,6 +6,10 @@ namespace EAMS_ACore.Interfaces
 {
     public interface IEamsService
     {
+        #region UpdateMasterStatus
+        Task<ServiceResponse> UpdateMasterStatus(UpdateMasterStatus updateMasterStatus);
+        #endregion
+
         #region State Master
         Task<List<StateMaster>> GetState();
         Task<Response> UpdateStateById(StateMaster stateMaster);
@@ -35,7 +39,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<Response> UpdateSectorOfficer(SectorOfficerMaster sectorOfficerMaster);
         Task<List<CombinedMaster>> GetBoothListBySoId(string stateMasterId, string districtMasterId, string assemblyMasterId, string soId);
-        Task<SectorOfficerMaster> GetSOById(string soId);
+        Task<SectorOfficerMasterCustom> GetSOById(string soId);
         #endregion
 
         #region BoothMaster

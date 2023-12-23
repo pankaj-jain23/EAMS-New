@@ -30,7 +30,7 @@ namespace EAMS_BLL.AuthServices
         }
 
         #region AddDynamicRole && Get Role
-        public async Task<AuthServiceResponse> AddDynamicRole(Role role)
+        public async Task<ServiceResponse> AddDynamicRole(Role role)
         {
 
             return await _authRepository.AddDynamicRole(role);
@@ -123,7 +123,7 @@ namespace EAMS_BLL.AuthServices
         #endregion
 
         #region Register
-        public async Task<AuthServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId)
+        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId)
         {
             var userExists = await _authRepository.FindUserByName(userRegistration);
             if (userExists.IsSucceed == false)
@@ -497,7 +497,7 @@ namespace EAMS_BLL.AuthServices
         #endregion
 
         #region CreateSO Pin
-        public async Task<AuthServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soID)
+        public async Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soID)
         {
             return await _authRepository.CreateSOPin(createSOPin, soID);
         }

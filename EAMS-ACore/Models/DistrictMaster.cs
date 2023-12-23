@@ -23,11 +23,11 @@ namespace EAMS_ACore
 
         public string DistrictCode { get; set; }            
 
-        public DateTime? DistrictCreatedAt { get; set; }= DateTime.UtcNow;
+        public DateTime? DistrictCreatedAt { get; set; } 
 
-        public DateTime? DistrictUpdatedAt { get; set; }=DateTime.UtcNow;
+        public DateTime? DistrictUpdatedAt { get; set; } 
 
-        public DateTime? DistrictDeletedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? DistrictDeletedAt { get; set; }  
 
         public bool DistrictStatus { get; set; }=true;
 

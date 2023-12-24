@@ -514,7 +514,7 @@ namespace EAMS.Controllers
             {
                 AssignedCount = mappedData.Count,
                 UnAssignedCount = unAssignedMappedData.Count,
-                Assigned = mappedData,
+                Assigned = mappedData.OrderBy(p => Int32.Parse(p.BoothCode_No)),
                 Unassigned = unAssignedMappedData
             };
             return Ok(data);
@@ -561,7 +561,7 @@ namespace EAMS.Controllers
                     var data = new
                     {
                         count = boothList.Count,
-                        data = boothList
+                        data = boothList.OrderBy(p=>Int32.Parse(p.BoothAuxy)).ToList()
                     };
                     return Ok(data);
 
@@ -864,7 +864,7 @@ namespace EAMS.Controllers
                 var data = new
                 {
                     count = eventWiseBoothList.Count,
-                    data = eventWiseBoothList
+                    data = eventWiseBoothList.OrderBy(p=>Int32.Parse(p.BoothCode))
                 };
                 return Ok(data);
             }
@@ -887,7 +887,7 @@ namespace EAMS.Controllers
                 var data = new
                 {
                     count = eventWiseBoothList.Count,
-                    data = eventWiseBoothList
+                    data = eventWiseBoothList.OrderBy(p => Int32.Parse(p.BoothCode))
                 };
                 return Ok(data);
             }

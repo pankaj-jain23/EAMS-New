@@ -9,6 +9,7 @@
         public int SoId { get; set; }
         public int BoothMasterId { get; set; }
         public string BoothName { get; set; }
+        public string BoothCode_No { get; set; }
         public bool IsAssigned { get; set; }
 
     }

@@ -22,7 +22,7 @@ namespace EAMS_ACore.HelperModels
         public int soMasterId { get; set; }
         public string soName { get; set; }
         public string soMobile { get; set; }
-
+        public string BoothCode_No { get; set; }
 
         public int BoothMasterId { get; set; }
         public string BoothName { get; set; }

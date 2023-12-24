@@ -547,6 +547,8 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
+                                
+                                BoothCode_No=bt.BoothCode_No,
                                 IsAssigned = bt.IsAssigned,
                                 soMasterId = Convert.ToInt32(soId)
 

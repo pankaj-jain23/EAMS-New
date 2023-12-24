@@ -3,6 +3,8 @@ using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
+using EAMS_ACore.Interfaces;
+using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -18,15 +20,19 @@ namespace EAMS_BLL.AuthServices
     {
         private readonly IConfiguration _configuration;
         private readonly IAuthRepository _authRepository;
+        private readonly IEamsService _EAMSService;
+        private readonly IEamsRepository _eamsRepository;
         private readonly UserManager<UserRegistration> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthService(IConfiguration configuration, IAuthRepository authRepository, UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager)
+        public AuthService(IConfiguration configuration, IAuthRepository authRepository, UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager, IEamsService eamsService, IEamsRepository eamsRepository)
         {
             _configuration = configuration;
             _authRepository = authRepository;
             _userManager = userManager;
             _roleManager = roleManager;
+            _EAMSService = eamsService;
+            _eamsRepository = eamsRepository;
         }
 
         #region AddDynamicRole && Get Role
@@ -63,11 +69,17 @@ namespace EAMS_BLL.AuthServices
             {
                 // Retrieve user roles
                 var userRoles = await _authRepository.GetRoleByUser(login);
+
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, login.UserName),
+                    new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId",user.Id),
+                    new Claim("StateMasterId",user.StateMasterId.ToString()),
+                    new Claim("DistrictMasterId",user.DistrictMasterId.ToString()),
+                    new Claim("AssemblyMasterId",user.AssemblyMasterId.ToString()),
+
                 };
 
                 // Add user roles to authClaims
@@ -170,10 +182,15 @@ namespace EAMS_BLL.AuthServices
                             // Check if OTP is still valid
                             if (timeNow <= soRecord.OTPExpireTime)
                             {
+                                var userAssembly = await _eamsRepository.GetAssemblyByCode(soRecord.SoAssemblyCode.ToString());
+
                                 var authClaims = new List<Claim>
                                 {
-                                    new Claim(ClaimTypes.Name,"Test"),
-                                    new Claim(ClaimTypes.NameIdentifier,"sd"),
+                                    new Claim(ClaimTypes.Name,soRecord.SoName),
+                                    new Claim(ClaimTypes.MobilePhone,soRecord.SoMobile),
+                                    new Claim("StateMasterId",userAssembly.StateMasterId.ToString()),
+                                    new Claim("DistrictMasterId",userAssembly.DistrictMasterId.ToString()),
+                                    new Claim("AssemblyMasterId",userAssembly.AssemblyMasterId.ToString()),
                                     new Claim("SoId",soRecord.SOMasterId.ToString()),
                                     new Claim("JWTID", Guid.NewGuid().ToString()),
                                     new Claim(ClaimTypes.Role,"SO")

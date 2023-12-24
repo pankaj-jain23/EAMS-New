@@ -5,6 +5,7 @@ using EAMS_ACore;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
+using EAMS_ACore.NotificationModels;
 
 namespace EAMS.Helper
 {
@@ -48,6 +49,10 @@ namespace EAMS.Helper
 
             #region TokenViewModel Token
             CreateMap<TokenViewModel, Token>().ReverseMap();
+            #endregion
+
+            #region NotificationViewModel NotificationModel
+            CreateMap<NotificationViewModel, Notification>().ReverseMap();
             #endregion
 
             #region GetRefreshTokenViewModel GetRefreshToken

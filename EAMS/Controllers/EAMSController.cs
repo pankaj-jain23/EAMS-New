@@ -5,14 +5,9 @@ using EAMS_ACore;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
-using EAMS_DAL.Migrations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Logging;
-using Mono.TextTemplating;
-using OpenTelemetry.Logs;
-using System.Drawing;
+using Microsoft.AspNetCore.Mvc;  
+using System.Security.Claims; 
 
 namespace EAMS.Controllers
 {
@@ -563,7 +558,7 @@ namespace EAMS.Controllers
                     var data = new
                     {
                         count = boothList.Count,
-                        data = boothList.OrderBy(p=>Int32.Parse(p.BoothAuxy)).ToList()
+                        data = boothList .ToList()
                     };
                     return Ok(data);
 
@@ -580,6 +575,46 @@ namespace EAMS.Controllers
                 return BadRequest("State, District and Assembly Master Id's cannot be null");
             }
         }
+
+        [HttpGet]
+        [Route("GetBoothListForARO")]
+        [Authorize]
+        public async Task<IActionResult> GetBoothListForARO()
+        {
+            Claim stateMaster = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
+            Claim districtMaster = User.Claims.FirstOrDefault(c => c.Type == "DistrictMasterId");
+            Claim assemblyMaster = User.Claims.FirstOrDefault(c => c.Type == "AssemblyMasterId");
+            string stateMasterId = stateMaster.Value;
+            string districtMasterId = districtMaster.Value;
+            string assemblyMasterId = assemblyMaster.Value;
+
+            if (stateMasterId != null && districtMasterId != null && assemblyMasterId != null)
+            {
+                var boothList = await _EAMSService.GetBoothListById(stateMasterId, districtMasterId, assemblyMasterId);  // Corrected to await the asynchronous method
+                if (boothList != null)
+                {
+                    var data = new
+                    {
+                        count = boothList.Count,
+                        data = boothList.ToList()
+                    };
+                    return Ok(data);
+
+                }
+                else
+                {
+                    return NotFound("Data Not Found");
+
+                }
+            }
+            else
+            {
+
+                return BadRequest("State, District and Assembly Master Id's cannot be null");
+            }
+        }
+
+
         /// <summary>
         /// Insert Booth Under Assembly, District, State
         /// </summary>
@@ -1418,7 +1453,7 @@ namespace EAMS.Controllers
             if (eventDistrictWiseList is not null)
                 return Ok(eventDistrictWiseList);
             else
-                return NotFound();
+                return NotFound(); 
         }
         [HttpGet]
         [Route("GetAssemblyWiseEventListById")]
@@ -1430,7 +1465,7 @@ namespace EAMS.Controllers
             else
                 return NotFound();
         }
-        [HttpGet]
+        [HttpGet]   
         [Route("GetBoothWiseEventListById")]
         public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
@@ -1613,5 +1648,6 @@ namespace EAMS.Controllers
            
         }
             #endregion
+
         }
 }

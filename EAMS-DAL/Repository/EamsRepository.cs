@@ -575,7 +575,7 @@ namespace EAMS_DAL.Repository
                             on asem.DistrictMasterId equals dist.DistrictMasterId
                             join state in _context.StateMaster
                              on dist.StateMasterId equals state.StateMasterId
-
+                            orderby bt.BoothNoAuxy  
                             select new CombinedMaster
                             {
                                 StateId = Convert.ToInt32(stateMasterId),
@@ -590,9 +590,8 @@ namespace EAMS_DAL.Repository
                                 IsStatus=bt.BoothStatus
                                 
 
-                            };
-            var count = boothlist.Count();
-            return await boothlist.ToListAsync();
+                            }; 
+            return await  boothlist.ToListAsync();
         }
 
         public async Task<List<CombinedMaster>> GetBoothListByAssemblyId(string stateMasterId, string districtMasterId, string assemblyMasterId)
@@ -2723,19 +2722,21 @@ namespace EAMS_DAL.Repository
             return groupedStateEventList;
         }
 
-        public async Task<List<EventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId)
+        public async Task<List<AssemblyEventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId)
         {
             var getElectionListStateWise = await _context.ElectionInfoMaster
                     .Where(d => d.DistrictMasterId == Convert.ToInt32(districtId) && d.StateMasterId == Convert.ToInt32(stateId))
                     .ToListAsync();
-            var stateEventList = new List<EventActivityCount>();
+            var stateEventList = new List<AssemblyEventActivityCount>();
 
             foreach (var electionInfo in getElectionListStateWise)
             {
 
-                var stateEvents = new EventActivityCount
+                var stateEvents = new AssemblyEventActivityCount
                 {
                     Key = electionInfo.AssemblyMasterId,
+                    StateMasterId=electionInfo.StateMasterId,
+                    DistrictMasterId=electionInfo.DistrictMasterId,
                     Name = _context.AssemblyMaster
                         .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId))
                         .Select(d => d.AssemblyName)
@@ -2760,9 +2761,11 @@ namespace EAMS_DAL.Repository
 
             var groupedStateEventList = stateEventList
                 .GroupBy(e => e.Key)
-                .Select(group => new EventActivityCount
+                .Select(group => new AssemblyEventActivityCount
                 {
                     Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
+                    StateMasterId=group.Distinct().Select(d => d.StateMasterId).FirstOrDefault(),
+                    DistrictMasterId=group.Distinct().Select(d => d.DistrictMasterId).FirstOrDefault(),
                     Name = group.Select(d => d.Name).FirstOrDefault(),
                     Type = group.Select(d => d.Type).FirstOrDefault(),
                     PartyDispatch = group.Sum(e => e.PartyDispatch),

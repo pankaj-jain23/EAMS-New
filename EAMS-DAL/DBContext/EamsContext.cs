@@ -2,6 +2,7 @@
 using EAMS_ACore;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.Models;
+using EAMS_ACore.NotificationModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace EAMS_DAL.DBContext;
@@ -35,6 +36,7 @@ public partial class EamsContext :IdentityDbContext<UserRegistration>
 
     public virtual DbSet<PollInterruption> PollInterruptions { get; set; }
     public virtual DbSet<PollInterruptionHistory> PollInterruptionHistory { get; set; }
+    public virtual DbSet<Notification> Notification { get; set; }
 
 
 

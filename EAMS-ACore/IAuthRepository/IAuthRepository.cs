@@ -26,8 +26,7 @@ namespace EAMS_ACore.IAuthRepository
         Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
         Task<ServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);
-        Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId);
-
+        Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId); 
         Task<SectorOfficerMaster>GetSOById(int soId);
         Task<UserList> GetDashboardProfile(string userId);
 

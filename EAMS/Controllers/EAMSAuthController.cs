@@ -33,7 +33,7 @@ namespace EAMS.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Invalid payload");
                 var mappedData = _mapper.Map<UserRegistration>(registerViewModel);
-                var roleId=registerViewModel.RoleId;
+                var roleId = registerViewModel.RoleId;
                 var registerResult = await _authService.RegisterAsync(mappedData, roleId);
                 if (registerResult.IsSucceed == false)
                 {
@@ -121,8 +121,6 @@ namespace EAMS.Controllers
             if (ModelState.IsValid)
             {
                 var mappedData = _mapper.Map<ValidateMobile>(validateMobileViewModel);
-
-
                 var result = await _authService.ValidateMobile(mappedData);
 
                 switch (result.Status)
@@ -170,7 +168,7 @@ namespace EAMS.Controllers
                 if (result.IsSucceed is false)
                     return BadRequest(result.Message);
                 else
-                return Ok(result);
+                    return Ok(result);
             }
             catch (Exception ex)
             {
@@ -182,7 +180,7 @@ namespace EAMS.Controllers
         #region CreateSoPin
         [HttpPost]
         [Route("CreateSOPin")]
-        [Authorize (Roles ="SO")]
+        [Authorize(Roles = "SO")]
         public async Task<IActionResult> CreateSOPin(CreateSOPinViewModel createSOPinViewModel)
         {
             // Retrieve SoId from the claims
@@ -196,16 +194,16 @@ namespace EAMS.Controllers
             var soID = soIdClaim.Value;
 
             var mappedData = _mapper.Map<CreateSOPin>(createSOPinViewModel);
-            var result =await _authService.CreateSOPin(mappedData, soID);
-            if(result.IsSucceed is true)
+            var result = await _authService.CreateSOPin(mappedData, soID);
+            if (result.IsSucceed is true)
             {
-                return Ok(result);  
+                return Ok(result);
             }
             else
             {
                 return BadRequest(result);
             }
-             
+
         }
 
 
@@ -217,23 +215,21 @@ namespace EAMS.Controllers
         //}
         #endregion
 
-
+        #region DashBoardProfile
         [HttpGet]
         [Route("GetDashboardProfile")]
         [Authorize]
         public async Task<IActionResult> GetDashboardProfile()
         {
-            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "DashboardUser");
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var soId = soIdClaim.Value;
             var userRecord = await _authService.GetDashboardProfile(soId);
-            //var userList = await _EAMSService.GetUserList(userName, type);
-            //var data = new
-            //{
-            //    count = userList.Count,
-            //    data = userList
-            //};
-            return Ok(userRecord);
+            if (userRecord is not null)
+                return Ok(userRecord);
+            else
+                return NotFound();
 
         }
+        #endregion
     }
 }

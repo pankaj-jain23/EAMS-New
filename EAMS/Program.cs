@@ -18,9 +18,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args); 
+var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddSignalR(); 
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
@@ -71,7 +71,7 @@ builder.Services
             ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
             ValidAudience = builder.Configuration["JWT:ValidAudience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
-             ClockSkew = TimeSpan.Zero // Set to zero or adjust according to your requirements
+            ClockSkew = TimeSpan.Zero // Set to zero or adjust according to your requirements
 
         };
     });
@@ -79,8 +79,10 @@ builder.Services
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 builder.Services.AddTransient<IEamsService, EamsService>();
-builder.Services.AddTransient<IEamsRepository, EamsRepository>(); 
-builder.Services.AddHostedService<DatabaseListenerService>(); 
+builder.Services.AddTransient<IEamsRepository, EamsRepository>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
+builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
+builder.Services.AddHostedService<DatabaseListenerService>();
 
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -127,11 +129,11 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors();  
+app.UseCors();
 app.UseAuthentication();
 app.UseMiddleware<TokenExpirationMiddleware>();
-app.UseAuthorization(); 
- app.UseHttpsRedirection();
+app.UseAuthorization();
+app.UseHttpsRedirection();
 app.MapControllers();
 app.MapHub<DashBoardHub>("/DashBoardHub");
 app.Run();

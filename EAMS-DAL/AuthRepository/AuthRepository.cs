@@ -164,7 +164,7 @@ namespace EAMS_DAL.AuthRepository
             }
         }
         #endregion
-      
+
 
         public async Task<List<UserRegistration>> FindUserListByName(string userName)
         {
@@ -366,11 +366,6 @@ namespace EAMS_DAL.AuthRepository
         }
 
 
-
-
-
-
-
         #endregion
 
         #region CreateSO Pin
@@ -418,38 +413,54 @@ namespace EAMS_DAL.AuthRepository
 
         public async Task<UserList> GetDashboardProfile(string userId)
         {
-            UserList user_record = new UserList();
-            var userRecord = await _context.Users.Where(d => d.Id == userId).FirstOrDefaultAsync();
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user != null)
+
+            var userRecord = await _userManager.FindByIdAsync(userId); 
+            var stateName = await _context.StateMaster.Where(d => d.StateMasterId == userRecord.StateMasterId).Select(d => d.StateName).FirstOrDefaultAsync();
+            var districtName = await _context.DistrictMaster.Where(d => d.DistrictMasterId == userRecord.DistrictMasterId).Select(d => d.DistrictName).FirstOrDefaultAsync();
+            var assemblyName = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == userRecord.AssemblyMasterId).Select(d => d.AssemblyName).FirstOrDefaultAsync();
+            if (userRecord != null)
             {
-                var roles = await _userManager.GetRolesAsync(user);
+                var roles = await _userManager.GetRolesAsync(userRecord);
 
                 var rolesList = roles.Select(role => new Role
                 {
-                    
+
                     RoleId = role,
                     RoleName = role
                 }).ToList();
 
                 if (userRecord != null && rolesList != null)
                 {
+                    UserList userList = new UserList()
+                    {
+                        Name = userRecord.UserName,
+                        MobileNumber = userRecord.PhoneNumber,
+                        StateId = userRecord.StateMasterId,
+                        StateName = stateName,
+                        DistrictId = userRecord.DistrictMasterId,
+                        DistrictName = districtName,
+                        AssemblyId = userRecord.AssemblyMasterId,
+                        AssemblyName = assemblyName,
+                        Roles= rolesList
+
+                    };
+
+                    return userList;
 
 
-                    user_record.Name = userRecord.UserName;
-                    user_record.MobileNumber = userRecord.PhoneNumber;
-                    user_record.UserType = string.Join(", ", rolesList.Select(r => r.RoleName));
-                    
                 }
                 else
                 {
                     return null;
                 }
             }
+            else
+            {
+                return null;
+            }
 
-            return user_record;
 
         }
 
-            }
+    }
 }

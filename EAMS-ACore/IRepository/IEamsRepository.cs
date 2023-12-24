@@ -107,6 +107,9 @@ namespace EAMS_ACore.IRepository
         #region PollInterruption Interruption
         Task<Response> AddPollInterruption(PollInterruption pollinterruptionData);
         Task<PollInterruption> GetPollInterruptionData(string boothMasterId);
+        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard();
+
+        
         Task<BoothMaster> GetBoothRecord(int boothMasterId);
         
         

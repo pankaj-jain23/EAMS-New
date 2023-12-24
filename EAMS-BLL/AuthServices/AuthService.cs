@@ -502,6 +502,14 @@ namespace EAMS_BLL.AuthServices
             return await _authRepository.CreateSOPin(createSOPin, soID);
         }
 
+
+
+
         #endregion
+
+        public async Task<UserList> GetDashboardProfile(string UserID)
+        {
+            return await _authRepository.GetDashboardProfile(UserID);
+        }
     }
 }

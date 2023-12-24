@@ -2936,6 +2936,7 @@ namespace EAMS_DAL.Repository
             return pollInterruptionRecord;
         }
 
+      
         public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
         {
             var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == boothMasterId).FirstOrDefaultAsync();
@@ -2943,6 +2944,50 @@ namespace EAMS_DAL.Repository
         }
 
 
+
+        public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard()
+        {
+
+            var query = @"
+    SELECT DISTINCT ON (pi.""AssemblyMasterId"", pi.""BoothMasterId"")
+        pi.""AssemblyMasterId"", bm.""BoothMasterId"", pi.""CreatedAt"", pi.*, am.""AssemblyName""
+    FROM public.""PollInterruptions"" pi
+    JOIN public.""AssemblyMaster"" am ON pi.""AssemblyMasterId"" = am.""AssemblyMasterId""
+    JOIN public.""BoothMaster"" bm ON bm.""BoothMasterId"" = pi.""BoothMasterId"" 
+        AND am.""AssemblyMasterId"" = bm.""AssemblyMasterId""
+    ORDER BY pi.""AssemblyMasterId"", pi.""BoothMasterId"", pi.""CreatedAt"" DESC;
+";
+
+            //  var ww = _context.PollInterruptions.FromSqlRaw(query).ToList();
+
+            var result = from pi in _context.PollInterruptions
+                         join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                         join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                         orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                         select new
+                         {
+                             pi.AssemblyMasterId,
+                             bm.BoothMasterId,
+                             pi.CreatedAt,
+                             pi, // Include all columns from PollInterruptions
+                             am.AssemblyName
+                         } into distinctResult
+                         group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                         select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+            // Execute the query and retrieve the results
+            var finalResult = result.ToList();
+
+
+
+            return null;
+
+
+
+
+
+            //return finalResult;
+        }
 
         #endregion
 

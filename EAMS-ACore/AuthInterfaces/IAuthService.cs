@@ -1,6 +1,7 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,10 @@ namespace EAMS_ACore.AuthInterfaces
         Task<Response> ValidateMobile(ValidateMobile validateMobile);
         Task<Token> GetRefreshToken(GetRefreshToken getRefreshToken);
         Task<ServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);
+        Task<UserList> GetDashboardProfile(string userId);
+
+
+
 
     }
 }

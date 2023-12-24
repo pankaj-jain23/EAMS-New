@@ -100,7 +100,8 @@ namespace EAMS_ACore.Interfaces
         Task<Response> AddPollInterruption(PollInterruption Pollinterruptionl);
         
         Task<PollInterruption> GetPollInterruptionbyId(string interruptionMasterId);
-        
+        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard();
+
         #endregion
 
     }

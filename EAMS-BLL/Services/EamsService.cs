@@ -1338,6 +1338,14 @@ namespace EAMS_BLL.Services
         {
             return _eamsRepository.GetPollInterruptionData(boothMasterId);
         }
+
+
+       public Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard()
+        {
+            return _eamsRepository.GetPollInterruptionDashboard();
+        }
+
+
         #endregion
         static bool IsHHmmFormat(string timeString)
         {

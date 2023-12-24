@@ -9,6 +9,7 @@ using EAMS_DAL.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Mono.TextTemplating;
 using OpenTelemetry.Logs;
 
@@ -850,6 +851,7 @@ namespace EAMS.Controllers
         public async Task<IActionResult> GetBoothListByEventId(string eventId)
         {
             var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "SoId");
+
             if (soIdClaim == null)
             {
                 // Handle the case where the SoId claim is not present
@@ -1527,6 +1529,10 @@ namespace EAMS.Controllers
             return Ok(data);
 
         }
+
+      
+        
+
         #endregion
 
         #region PollInterruption
@@ -1578,6 +1584,29 @@ namespace EAMS.Controllers
             return Ok(pollInterruptionData);
 
         }
-        #endregion
-    }
+
+        [HttpGet]
+        [Route("GetPollInterruptionDashboard")]
+        public async Task<IActionResult> GetPollInterruptionDashboard()
+        {
+            var data_record = await  _EAMSService.GetPollInterruptionDashboard();
+            if (data_record != null)
+            {
+                var data = new
+                {
+                    count = data_record.Count,
+                    data = data_record.Where(p=>p.isPollInterrupted== true).OrderBy(p=>p.DistrictMasterId).ThenBy(p=>p.AssemblyMasterId).ThenBy(p => Int32.Parse(p.BoothCode_No)).ToList()
+                };
+                return Ok(data);
+
+            }
+            else
+            {
+                return NotFound("Data Not Found");
+
+            }
+           
+        }
+            #endregion
+        }
 }

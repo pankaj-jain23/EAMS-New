@@ -415,5 +415,41 @@ namespace EAMS_DAL.AuthRepository
             }
         }
         #endregion
-    }
+
+        public async Task<UserList> GetDashboardProfile(string userId)
+        {
+            UserList user_record = new UserList();
+            var userRecord = await _context.Users.Where(d => d.Id == userId).FirstOrDefaultAsync();
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                var rolesList = roles.Select(role => new Role
+                {
+                    
+                    RoleId = role,
+                    RoleName = role
+                }).ToList();
+
+                if (userRecord != null && rolesList != null)
+                {
+
+
+                    user_record.Name = userRecord.UserName;
+                    user_record.MobileNumber = userRecord.PhoneNumber;
+                    user_record.UserType = string.Join(", ", rolesList.Select(r => r.RoleName));
+                    
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return user_record;
+
+        }
+
+            }
 }

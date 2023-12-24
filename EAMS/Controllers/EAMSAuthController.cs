@@ -6,6 +6,7 @@ using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EAMS.Controllers
 {
@@ -215,5 +216,24 @@ namespace EAMS.Controllers
         //    return Ok();
         //}
         #endregion
+
+
+        [HttpGet]
+        [Route("GetDashboardProfile")]
+        [Authorize]
+        public async Task<IActionResult> GetDashboardProfile()
+        {
+            var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "DashboardUser");
+            var soId = soIdClaim.Value;
+            var userRecord = await _authService.GetDashboardProfile(soId);
+            //var userList = await _EAMSService.GetUserList(userName, type);
+            //var data = new
+            //{
+            //    count = userList.Count,
+            //    data = userList
+            //};
+            return Ok(userRecord);
+
+        }
     }
 }

@@ -285,7 +285,7 @@ namespace EAMS_DAL.Repository
             }
             else
             {
-                return new Response { Status = RequestStatusEnum.BadRequest, Message = "District Not Found" + districtMaster.DistrictName };
+                return new Response { Status = RequestStatusEnum.NotFound, Message = "District Not Found" + districtMaster.DistrictName };
             }
         }
 
@@ -300,12 +300,12 @@ namespace EAMS_DAL.Repository
                     districtMaster.DistrictCreatedAt = BharatDateTime(); ;
                     _context.DistrictMaster.Add(districtMaster);
                     _context.SaveChanges();
-                    return new Response { Status = RequestStatusEnum.OK, Message = "District Added Successfully" + districtMaster.DistrictName };
+                    return new Response { Status = RequestStatusEnum.OK, Message = "District Added Successfully " + districtMaster.DistrictName };
                 }
                 else
                 {
 
-                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Same District Already Exists" + districtMaster.DistrictName };
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "District Already Exist " + districtMaster.DistrictName };
                 }
             }
             catch (Exception ex)
@@ -431,7 +431,9 @@ namespace EAMS_DAL.Repository
                              AssemblyCode = asem.AssemblyCode,
                              soName = so.SoName,
                              soMobile = so.SoMobile,
-                             soMasterId = so.SOMasterId
+                             soMasterId = so.SOMasterId,
+                             IsStatus=so.SoStatus
+                             
 
                          };
 
@@ -582,8 +584,9 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
-                                IsAssigned = bt.IsAssigned
-
+                                IsAssigned = bt.IsAssigned,
+                                IsStatus=bt.BoothStatus
+                                
 
                             };
             var count = boothlist.Count();

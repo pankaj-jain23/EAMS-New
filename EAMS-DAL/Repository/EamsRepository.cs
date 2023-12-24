@@ -802,7 +802,28 @@ namespace EAMS_DAL.Repository
 
             return eventData;
         }
-
+        public async Task<ServiceResponse> UpdateEventStaus(EventMaster eventMaster)
+        {
+            var isExist = _context.EventMaster.Where(d => d.EventMasterId == eventMaster.EventMasterId).FirstOrDefault();
+            if (isExist != null)
+            {
+                isExist.Status = eventMaster.Status;
+                _context.EventMaster.Update(isExist);
+                _context.SaveChanges();
+                return new ServiceResponse
+                {
+                    IsSucceed = true,
+                    
+                };
+            }
+            else
+            {
+                return new ServiceResponse
+                {
+                    IsSucceed = false, 
+                };
+            }
+        }
 
         public async Task<Response> UpdateEventById(EventMaster eventMaster)
         {

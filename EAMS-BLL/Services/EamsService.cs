@@ -213,7 +213,27 @@ namespace EAMS_BLL.Services
             return _eamsRepository.GetEventList();
         }
 
+        public async Task<ServiceResponse> UpdateEventStaus(EventMaster eventMaster)
+        {
+            var isSucced = await _eamsRepository.UpdateEventStaus(eventMaster);
+            if (isSucced.IsSucceed)
+            {
+                return new ServiceResponse
+                {
+                    IsSucceed = true,
+                    Message = "Status Updated Successfully"
+                };
 
+            }
+            else
+            {
+                return new ServiceResponse
+                {
+                    IsSucceed = false,
+                    Message = "Status not Updated! "
+                };
+            }
+        }
         public async Task<Response> UpdateEventById(EventMaster eventMaster)
         {
             return await _eamsRepository.UpdateEventById(eventMaster);

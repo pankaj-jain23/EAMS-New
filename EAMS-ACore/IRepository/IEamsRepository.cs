@@ -55,6 +55,7 @@ namespace EAMS_ACore.IRepository
 
         #region Event Master
         Task<List<EventMaster>> GetEventList();
+        Task<ServiceResponse> UpdateEventStaus(EventMaster eventMaster);
         Task<Response> UpdateEventById(EventMaster eventMaster);
         Task<List<EventWiseBooth>> GetBoothListByEventId(string eventId,string soId);
         Task<List<EventWiseBooth>> GetBoothStatusforARO(string assemblyMasterId, string boothMasterId);

@@ -166,6 +166,15 @@ namespace EAMS.Helper
 
             #endregion
 
+            #region UpdateEventStatusViewModel and EventMaster
+
+            CreateMap<UpdateEventStatusViewModel, EventMaster>()
+                .ForMember(dest => dest.EventMasterId, opt => opt.MapFrom(src => src.EventMasterId)) 
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsStatus))
+                .ReverseMap();
+
+            #endregion
+
             #region SectorOfficerViewModel SectorOfficerMaster
             CreateMap<SectorOfficerViewModel, SectorOfficerMaster>()
               .ForMember(dest => dest.SOMasterId, opt => opt.MapFrom(src => src.SoId))

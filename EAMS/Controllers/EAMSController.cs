@@ -799,6 +799,23 @@ namespace EAMS.Controllers
         }
 
         [HttpPut]
+        [Route("UpdateEventStaus")]
+        public async Task<IActionResult> UpdateEventStaus(UpdateEventStatusViewModel updateEventStatusViewModel)
+        {
+            var mappedData = _mapper.Map<EventMaster>(updateEventStatusViewModel);
+            var isSucced = await _EAMSService.UpdateEventStaus(mappedData);
+            if (isSucced.IsSucceed)
+            {
+                return Ok(isSucced);
+            }
+            else
+            {
+                return BadRequest(isSucced);
+            }
+
+        }
+
+        [HttpPut]
         [Route("UpdateEventById")]
         public async Task<IActionResult> UpdateEventById(EventMasterViewModel eventMaster)
         {

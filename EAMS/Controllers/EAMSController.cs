@@ -1542,8 +1542,23 @@ namespace EAMS.Controllers
         [Route("GetPollInterruptionbyId")]
         public async Task<IActionResult> GetPollInterruptionbyId(string boothMasterId)
         {
-            var data = await _EAMSService.GetPollInterruptionbyId(boothMasterId);
-            return Ok(data);
+            PollInterruption? data= await _EAMSService.GetPollInterruptionbyId(boothMasterId);
+            PollInterruption pollInterruptionData = new PollInterruption();
+            if (data == null)
+            {
+                
+                pollInterruptionData.BoothMasterId = Convert.ToInt32(boothMasterId);
+                pollInterruptionData.Flag = "Fresh";
+                pollInterruptionData.IsPollInterrupted = false;
+               
+            }
+            else
+            {
+                pollInterruptionData = data;
+
+            }
+
+            return Ok(pollInterruptionData);
 
         }
         #endregion

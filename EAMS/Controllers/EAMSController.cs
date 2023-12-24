@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Mono.TextTemplating;
 using OpenTelemetry.Logs;
+using System.Drawing;
 
 namespace EAMS.Controllers
 {
@@ -1587,15 +1588,19 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetPollInterruptionDashboard")]
-        public async Task<IActionResult> GetPollInterruptionDashboard()
+        public async Task<IActionResult> GetPollInterruptionDashboard(string StateId)
         {
-            var data_record = await  _EAMSService.GetPollInterruptionDashboard();
+            var data_record = await  _EAMSService.GetPollInterruptionDashboard(StateId);
+            var filtered_pending = data_record.Where(p => p.isPollInterrupted == true).ToList();
+            var filtered_resolved = data_record.Where(p => p.isPollInterrupted == false).ToList();
             if (data_record != null)
             {
                 var data = new
                 {
-                    count = data_record.Count,
-                    data = data_record.Where(p=>p.isPollInterrupted== true).OrderBy(p=>p.DistrictMasterId).ThenBy(p=>p.AssemblyMasterId).ThenBy(p => Int32.Parse(p.BoothCode_No)).ToList()
+                    totalInterruptions= data_record.Count,
+                    Pending = filtered_pending.Count,
+                    Resolved = filtered_resolved.Count,
+                    data = filtered_pending
                 };
                 return Ok(data);
 

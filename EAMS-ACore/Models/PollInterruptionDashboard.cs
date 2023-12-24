@@ -13,6 +13,7 @@ namespace EAMS_ACore.Models
         public int StateMasterId { get; set; }
         
         public int DistrictMasterId { get; set; }
+        public string DistrictName { get; set; }
         public int AssemblyMasterId { get; set; }
         public string AssemblyName { get; set; }
         public int BoothMasterId { get; set; }

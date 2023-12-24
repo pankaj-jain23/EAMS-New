@@ -2945,32 +2945,34 @@ namespace EAMS_DAL.Repository
 
 
 
-        public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard()
+        public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string StateId)
         {
 
-            var query = @"
-    SELECT DISTINCT ON (pi.""AssemblyMasterId"", pi.""BoothMasterId"")
-        pi.""AssemblyMasterId"", bm.""BoothMasterId"", pi.""CreatedAt"", pi.*, am.""AssemblyName""
-    FROM public.""PollInterruptions"" pi
-    JOIN public.""AssemblyMaster"" am ON pi.""AssemblyMasterId"" = am.""AssemblyMasterId""
-    JOIN public.""BoothMaster"" bm ON bm.""BoothMasterId"" = pi.""BoothMasterId"" 
-        AND am.""AssemblyMasterId"" = bm.""AssemblyMasterId""
-    ORDER BY pi.""AssemblyMasterId"", pi.""BoothMasterId"", pi.""CreatedAt"" DESC;
-";
+           
 
             //  var ww = _context.PollInterruptions.FromSqlRaw(query).ToList();
 
             var result = from pi in _context.PollInterruptions
+                         join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
                          join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
                          join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                         where pi.StateMasterId == Convert.ToInt16(StateId)
                          orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
-                         select new
+                         select new PollInterruptionDashboard
                          {
-                             pi.AssemblyMasterId,
-                             bm.BoothMasterId,
-                             pi.CreatedAt,
-                             pi, // Include all columns from PollInterruptions
-                             am.AssemblyName
+                             PollInterruptionMasterId=pi.PollInterruptionId,
+                             StateMasterId=pi.StateMasterId,
+                             DistrictMasterId=pi.DistrictMasterId,
+                             AssemblyMasterId= pi.AssemblyMasterId,
+                             AssemblyName=am.AssemblyName,
+                             BoothMasterId=bm.BoothMasterId,
+                             BoothName=bm.BoothName,
+                             CreatedAt=pi.CreatedAt,
+                             InterruptionType=pi.InterruptionType,
+                             StopTime=pi.StopTime,
+                             ResumeTime=pi.ResumeTime,
+                             isPollInterrupted=pi.IsPollInterrupted
+
                          } into distinctResult
                          group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
                          select groupedResult.OrderByDescending(r => r.CreatedAt).First();
@@ -2980,7 +2982,7 @@ namespace EAMS_DAL.Repository
 
 
 
-            return null;
+            return finalResult;
 
 
 

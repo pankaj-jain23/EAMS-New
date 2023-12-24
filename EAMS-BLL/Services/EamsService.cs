@@ -1340,11 +1340,7 @@ namespace EAMS_BLL.Services
         }
 
 
-       public Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard()
-        {
-            return _eamsRepository.GetPollInterruptionDashboard();
-        }
-
+     
 
         #endregion
         static bool IsHHmmFormat(string timeString)
@@ -1466,6 +1462,10 @@ namespace EAMS_BLL.Services
             return reasonStatus;
         }
 
-      
+        public Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string stateId)
+        {
+            return _eamsRepository.GetPollInterruptionDashboard(stateId);
+        }
+
     }
 }

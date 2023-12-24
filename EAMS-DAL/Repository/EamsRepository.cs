@@ -1618,11 +1618,9 @@ namespace EAMS_DAL.Repository
                                 }
                                 else
                                 {
-                                    // check whether last slot entry done or not in polled detail
-                                    var getLastSlot = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
-                                    bool lastSlotEntryDone = GetLastSlotEntryDone(Convert.ToInt32(boothMasterId), boothExists.StateMasterId, boothExists.DistrictMasterId, boothExists.AssemblyMasterId, 6, getLastSlot.SlotManagementId);
-
-                                    if (lastSlotEntryDone == true)
+                                    var getLastSlotRecord = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
+                                    bool lastslotexceededtime = TimeExceedLastSlot(getLastSlotRecord);
+                                    if(lastslotexceededtime== true)
                                     {
                                         model = new VoterTurnOutPolledDetailViewModel()
                                         {
@@ -1631,7 +1629,7 @@ namespace EAMS_DAL.Repository
                                             VotesPolled = polldetail.VotesPolled,
                                             VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
                                             VoteEnabled = false,
-                                            Message = "Voter Turn Out Entry Done for Last Slot, Kindly Proceed for Voter in Queue"
+                                            Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue"
 
 
 
@@ -1648,7 +1646,39 @@ namespace EAMS_DAL.Repository
                                             Message = "Slot Not Available"
 
                                         };
+
                                     }
+                                    // check whether last slot entry done or not in polled detail
+                                    /* var getLastSlot = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
+                                     bool lastSlotEntryDone = GetLastSlotEntryDone(Convert.ToInt32(boothMasterId), boothExists.StateMasterId, boothExists.DistrictMasterId, boothExists.AssemblyMasterId, 6, getLastSlot.SlotManagementId);
+
+                                     if (lastSlotEntryDone == true)
+                                     {
+                                         model = new VoterTurnOutPolledDetailViewModel()
+                                         {
+                                             BoothMasterId = boothExists.BoothMasterId,
+                                             TotalVoters = boothExists.TotalVoters,
+                                             VotesPolled = polldetail.VotesPolled,
+                                             VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                             VoteEnabled = false,
+                                             Message = "Voter Turn Out Entry Done for Last Slot, Kindly Proceed for Voter in Queue"
+
+
+
+                                         };
+                                     }
+                                     else
+                                     {
+                                         model = new VoterTurnOutPolledDetailViewModel()
+                                         {
+                                             BoothMasterId = boothExists.BoothMasterId,
+                                             TotalVoters = boothExists.TotalVoters,
+                                             VotesPolled = 0,
+                                             VoteEnabled = false,
+                                             Message = "Slot Not Available"
+
+                                         };
+                                     }*/
                                 }
                             }
 

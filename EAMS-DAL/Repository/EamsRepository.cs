@@ -1529,6 +1529,7 @@ namespace EAMS_DAL.Repository
                                             {
                                                 model = new VoterTurnOutPolledDetailViewModel()
                                                 {
+                                                    
                                                     BoothMasterId = boothExists.BoothMasterId,
                                                     TotalVoters = boothExists.TotalVoters,
                                                     VotesPolled = polldetail.VotesPolled,
@@ -1621,18 +1622,36 @@ namespace EAMS_DAL.Repository
                                     bool lastslotexceededtime = TimeExceedLastSlot(getLastSlotRecord);
                                     if(lastslotexceededtime== true)
                                     {
-                                        model = new VoterTurnOutPolledDetailViewModel()
+                                        if (polldetail != null)
                                         {
-                                            BoothMasterId = boothExists.BoothMasterId,
-                                            TotalVoters = boothExists.TotalVoters,
-                                            VotesPolled = polldetail.VotesPolled,
-                                            VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
-                                            VoteEnabled = false,
-                                            Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue"
+                                            model = new VoterTurnOutPolledDetailViewModel()
+                                            {
+                                                BoothMasterId = boothExists.BoothMasterId,
+                                                TotalVoters = boothExists.TotalVoters,
+                                                VotesPolled = polldetail.VotesPolled,
+                                                VotesPolledRecivedTime = polldetail.VotesPolledRecivedTime,
+                                                VoteEnabled = false,
+                                                Message = "Voter Turn Out Closed, Kindly Proceed for Voter in Queue"
 
 
 
-                                        };
+                                            };
+                                        }
+                                        else
+                                        {
+                                            model = new VoterTurnOutPolledDetailViewModel()
+                                            {
+                                                BoothMasterId = boothExists.BoothMasterId,
+                                                TotalVoters = boothExists.TotalVoters,
+                                                VotesPolled = 0,
+                                                VotesPolledRecivedTime = null,
+                                                VoteEnabled = false,
+                                                Message = "Voter Turn Out Closed, You have entered no values in the Slots. Kindly Proceed for Queue."
+
+
+
+                                            };
+                                        }
                                     }
                                     else
                                     {
@@ -1642,7 +1661,7 @@ namespace EAMS_DAL.Repository
                                             TotalVoters = boothExists.TotalVoters,
                                             VotesPolled = 0,
                                             VoteEnabled = false,
-                                            Message = "Slot Not Available"
+                                            Message = "Slot not available."
 
                                         };
 

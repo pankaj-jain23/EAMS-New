@@ -1191,8 +1191,8 @@ namespace EAMS.Controllers
                 AssemblyMasterId = electionInfoViewModel.AssemblyMasterId,
                 BoothMasterId = electionInfoViewModel.BoothMasterId,
                 EventMasterId = electionInfoViewModel.EventMasterId,
-                IsPartyDispatched = electionInfoViewModel.EventStatus
-
+                IsPartyDispatched = electionInfoViewModel.EventStatus,
+                
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);
             return result;

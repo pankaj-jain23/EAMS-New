@@ -1460,7 +1460,7 @@ namespace EAMS_DAL.Repository
 
                         if (electionInfoMaster.EventMasterId == 1)
                         {
-
+                            electionInfoMaster.PartyDispatchedLastUpdate = BharatDateTime();
                             _context.ElectionInfoMaster.Add(electionInfoMaster);
                             _context.SaveChanges();
                             return new Response { Status = RequestStatusEnum.OK, Message = "Status Added Successfully" };

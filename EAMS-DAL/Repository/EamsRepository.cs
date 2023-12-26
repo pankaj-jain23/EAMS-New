@@ -2395,9 +2395,11 @@ namespace EAMS_DAL.Repository
             DateTime endTime = DateTime.ParseExact(slotRecord.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
             DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
-            var lastEnteredTime = lastReceviedTime.Value.Hour + ":" + lastReceviedTime.Value.Minute;
-            DateTime lsttime = DateTime.ParseExact(lastEnteredTime, "HH:mm", CultureInfo.InvariantCulture);
-            if (lsttime > endTime && lsttime < lockTime)
+             var lastEnteredTime = lastReceviedTime.Value.Hour + ":" + lastReceviedTime.Value.Minute;
+            
+
+            //DateTime lsttime = DateTime.ParseExact(lastEnteredTime, "HH:mm", CultureInfo.InvariantCulture);
+            if (lastReceviedTime > endTime && lastReceviedTime < lockTime)
             {
                 //  lastEnteredTime is between endTime and lockTime.
                 return slotTurnOutValueAlreadyExists = true;

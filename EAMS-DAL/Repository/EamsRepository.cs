@@ -2267,7 +2267,7 @@ namespace EAMS_DAL.Repository
                                         BoothMasterId = boothExists.BoothMasterId,
                                         TotalVoters = boothExists.TotalVoters,
                                         LastFinalVotesPolled = electionInfoRecord.FinalTVote,
-                                        //VotesFinalPolledTime=,
+                                        VotesFinalPolledTime = electionInfoRecord.VotingLastUpdate,
                                         VoteEnabled = true,
                                         Message = "Final Value is Available"
 
@@ -2282,7 +2282,7 @@ namespace EAMS_DAL.Repository
                                         BoothMasterId = boothExists.BoothMasterId,
                                         TotalVoters = boothExists.TotalVoters,
                                         LastFinalVotesPolled = electionInfoRecord.FinalTVote,
-                                        //VotesFinalPolledTime = electionInfoRecord.FinalTVote,
+                                        VotesFinalPolledTime = electionInfoRecord.VotingLastUpdate,
 
                                         VoteEnabled = true,
                                         Message = "Final Value is Available, Last Entered :" + electionInfoRecord.FinalTVote

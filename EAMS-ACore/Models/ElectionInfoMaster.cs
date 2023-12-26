@@ -27,10 +27,10 @@ namespace EAMS_ACore.Models
         public DateTime? SetupOfPollingLastUpdate { get; set; }
 
         public bool? IsMockPollDone { get; set; }
-        public DateTime MockPollDoneLastUpdate { get; set; }
+        public DateTime? MockPollDoneLastUpdate { get; set; }
 
         public bool? IsPollStarted { get; set; }
-        public DateTime PollStartedLastUpdate { get; set; }
+        public DateTime? PollStartedLastUpdate { get; set; }
 
         public int? FinalTVote { get; set; }
         public DateTime? VotingLastUpdate { get; set; }

@@ -273,7 +273,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsPartyDispatched = electionInfoMaster.IsPartyDispatched;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                //electionInfoRecord.PartyDispatchedLastUpdate = _eamsRepository.BharatDateTime();
+                                electionInfoRecord.PartyDispatchedLastUpdate = BharatDateTime();
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else
@@ -295,6 +295,7 @@ namespace EAMS_BLL.Services
                             if (electionInfoRecord.IsSetupOfPolling == false || electionInfoRecord.IsSetupOfPolling == null)
                             {
                                 electionInfoRecord.IsPartyReached = electionInfoMaster.IsPartyReached;
+                                electionInfoRecord.PartyReachedLastUpdate = BharatDateTime();
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
@@ -319,6 +320,7 @@ namespace EAMS_BLL.Services
                             if (electionInfoRecord.IsMockPollDone == false || electionInfoRecord.IsMockPollDone == null)
                             {
                                 electionInfoRecord.IsSetupOfPolling = electionInfoMaster.IsSetupOfPolling;
+                                electionInfoRecord.SetupOfPollingLastUpdate = BharatDateTime();
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
@@ -343,6 +345,7 @@ namespace EAMS_BLL.Services
                             if (electionInfoRecord.IsPollStarted == false || electionInfoRecord.IsPollStarted == null)
                             {
                                 electionInfoRecord.IsMockPollDone = electionInfoMaster.IsMockPollDone;
+                                electionInfoRecord.MockPollDoneLastUpdate = BharatDateTime();
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
@@ -369,6 +372,7 @@ namespace EAMS_BLL.Services
                             var pollCanStart = _eamsRepository.CanPollStart(electionInfoRecord.BoothMasterId, 6);
                             if (pollCanStart == true)
                             {
+                                electionInfoRecord.PollStartedLastUpdate = BharatDateTime();
                                 electionInfoRecord.IsPollStarted = electionInfoMaster.IsPollStarted;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
@@ -490,6 +494,7 @@ namespace EAMS_BLL.Services
                                         if (electionInfoMaster.FinalTVote >= fetchResult.VotesPolled)// shoulbe greater n equal to last polled votes 
                                         {
                                             electionInfoRecord.FinalTVote = electionInfoMaster.FinalTVote;
+                                            electionInfoRecord.VotingLastUpdate = BharatDateTime();
                                             electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                             return await _eamsRepository.EventActivity(electionInfoRecord);
                                         }
@@ -536,6 +541,7 @@ namespace EAMS_BLL.Services
                                 if (electionInfoRecord.IsPollEnded == false || electionInfoRecord.IsPollEnded == null)
                                 {
                                     electionInfoRecord.IsPollEnded = electionInfoMaster.IsPollEnded;
+                                    electionInfoRecord.IsPollEndedLastUpdate = BharatDateTime();
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
@@ -569,6 +575,7 @@ namespace EAMS_BLL.Services
                                 {
                                     electionInfoRecord.IsMCESwitchOff = electionInfoMaster.IsMCESwitchOff;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.MCESwitchOffLastUpdate = BharatDateTime();
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -601,6 +608,7 @@ namespace EAMS_BLL.Services
                                 {
                                     electionInfoRecord.IsPartyDeparted = electionInfoMaster.IsPartyDeparted;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PartyDepartedLastUpdate = BharatDateTime();
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -633,6 +641,7 @@ namespace EAMS_BLL.Services
                                 {
                                     electionInfoRecord.IsPartyReachedCollectionCenter = electionInfoMaster.IsPartyReachedCollectionCenter;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PartyReachedLastUpdate = BharatDateTime();
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -664,6 +673,7 @@ namespace EAMS_BLL.Services
                             {
                                 electionInfoRecord.IsEVMDeposited = electionInfoMaster.IsEVMDeposited;
                                 electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                electionInfoRecord.PartyReachedCollectionCenterLastUpdate = BharatDateTime();
                                 return await _eamsRepository.EventActivity(electionInfoRecord);
                             }
                             else

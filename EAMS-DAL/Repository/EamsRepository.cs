@@ -2202,7 +2202,7 @@ namespace EAMS_DAL.Repository
             DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
 
-            if (currentTime > lockTime)
+            if (currentTime >= lockTime)
             {
                 // queue is open
                 queueCanStart = true;

@@ -45,8 +45,7 @@ namespace EAMS.Controllers
 
         #region State master
         [HttpGet]
-        [Route("StateList")]
-        [Authorize(Roles = "ECI")]
+        [Route("StateList")] 
         public async Task<IActionResult> StateList()
         {
             var stateList = await _EAMSService.GetState();

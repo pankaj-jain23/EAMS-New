@@ -135,7 +135,7 @@ namespace EAMS_BLL.AuthServices
         #endregion
 
         #region Register
-        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId, List<string> stateIds, List<string> districtIds, List<string> pcIds, List<string> assemblyIds)
+        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleIds)
         {
             var userExists = await _authRepository.FindUserByName(userRegistration);
             if (userExists.IsSucceed == false)
@@ -145,7 +145,7 @@ namespace EAMS_BLL.AuthServices
             }
             else
             {
-                var createUserResult = await _authRepository.CreateUser(userRegistration, roleId,stateIds,districtIds,pcIds,assemblyIds);
+                var createUserResult = await _authRepository.CreateUser(userRegistration, roleIds);
 
                 if (createUserResult.IsSucceed == true)
                 {
@@ -380,12 +380,13 @@ namespace EAMS_BLL.AuthServices
             {
                 var soId = principal.Claims.FirstOrDefault(d => d.Type == "SoId").Value;
                 var soUser = await _authRepository.GetSOById(Convert.ToInt32(soId));
-                if (soUser == null || soUser.RefreshToken != model.RefreshToken || soUser.RefreshTokenExpiryTime <= DateTime.Now)
+                if (soUser == null || !IsRefreshTokenValid(soUser.RefreshTokenExpiryTime))
                 {
                     _TokenViewModel.IsSucceed = false;
                     _TokenViewModel.Message = "Invalid access token or refresh token";
                     return _TokenViewModel;
                 }
+                
                 var authClaims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Name,soUser.SoName),
@@ -476,13 +477,14 @@ namespace EAMS_BLL.AuthServices
             return Convert.ToBase64String(randomNumber);
         }
         private async Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string? token)
-        {
-            var te = _configuration["JWTKey:Secret"];
+        { 
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
                 ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
+                ValidateLifetime = false, // Disable lifetime validation
+
                 ValidAudience = "https://localhost:3000",
                 ValidIssuer = "https://localhost:7082",
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDFSADFdfafeitt32t2r457f4f8ewf4waefeafjewfweAEFSDAFFEWFWAEAFaffd")),
@@ -510,7 +512,12 @@ namespace EAMS_BLL.AuthServices
                 throw ex;
             }
         }
-
+        private bool IsRefreshTokenValid(DateTime refreshTokenExpiryTime)
+        {
+            // Implement your business logic to check whether the refresh token is still valid.
+            // You might consider checking against the current date, or additional custom conditions.
+            return refreshTokenExpiryTime > DateTime.Now;
+        }
         #endregion
 
         #region CreateSO Pin

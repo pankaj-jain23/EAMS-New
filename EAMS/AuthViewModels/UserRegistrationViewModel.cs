@@ -4,14 +4,7 @@ namespace EAMS.AuthViewModels
 {
     public class UserRegistrationViewModel
     {
-        [Required(ErrorMessage = "StateMasterId is required")]
-        public List<string> StateMasterId { get; set; }
-
-        public List<string> DistrictMasterId { get; set; }
-        public List<string> PCMasterId { get; set; }
-
-        [Required(ErrorMessage = "AssemblyMasterId is required")]
-        public List<string> AssemblyMasterId { get; set; }
+        public List<StateViewModel> UserStates { get; set; }
 
         [Required(ErrorMessage = "PhoneNumber is required")]
         public string PhoneNumber { get; set; }
@@ -27,5 +20,28 @@ namespace EAMS.AuthViewModels
             get;
             set;
         }
+    }
+    public class StateViewModel
+    {
+        public int StateMasterId { get; set; } 
+        public List<DistrictViewModel> Districts { get; set; }
+        public List<PCConstituencyViewModel> PCConstituencies { get; set; }
+    }
+
+    public class DistrictViewModel
+    {
+        public int DistrictMasterId { get; set; } 
+        public List<AssemblyViewModel> Assemblies { get; set; }
+    }
+
+    public class AssemblyViewModel
+    {
+        public int AssemblyMasterId { get; set; } 
+    }
+
+    public class PCConstituencyViewModel
+    {
+        public int PCMasterId { get; set; } 
+        public List<AssemblyViewModel> Assemblies { get; set; }
     }
 }

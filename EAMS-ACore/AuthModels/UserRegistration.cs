@@ -19,10 +19,18 @@ namespace EAMS_ACore.AuthModels
         [Key]
         public int UserStateId { get; set; }
         public int? StateMasterId { get; set; }
-        
+
         public string Id { get; set; }
         [ForeignKey("Id")]
         public virtual UserRegistration UserRegistration { get; set; }
+
+        public int UserDistrictId { get; set; }
+        [ForeignKey("UserDistrictId")]
+        public virtual UserDistrict UserDistrict { get; set; }
+
+        public int UserPCConstituencyId { get; set; }
+        [ForeignKey("UserPCConstituencyId")]
+        public virtual UserPCConstituency UserPCConstituency { get; set; }
     }
 
     public class UserDistrict
@@ -34,6 +42,10 @@ namespace EAMS_ACore.AuthModels
         public string Id { get; set; }
         [ForeignKey("Id")]
         public virtual UserRegistration UserRegistration { get; set; }
+
+        public int UserAssemblyId { get; set; }
+        [ForeignKey("UserAssemblyId")]
+        public virtual UserAssembly UserAssembly { get; set; }
     }
 
     public class UserAssembly
@@ -52,10 +64,13 @@ namespace EAMS_ACore.AuthModels
         [Key]
         public int UserPCConstituencyId { get; set; }
         public int? PCMasterId { get; set; }
-     
+
         public string Id { get; set; }
         [ForeignKey("Id")]
         public virtual UserRegistration UserRegistration { get; set; }
+        public int UserAssemblyId { get; set; }
+        [ForeignKey("UserAssemblyId")]
+        public virtual UserAssembly UserAssembly { get; set; }
     }
 
 }

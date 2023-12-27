@@ -222,7 +222,7 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region CreateUser
-        public async Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds, List<string> stateIds, List<string> districtIds, List<string> pcIds, List<string> assemblyIds)
+        public async Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
         {
             try
             {
@@ -239,6 +239,10 @@ namespace EAMS_DAL.AuthRepository
                 }
 
                 var user = await _userManager.FindByNameAsync(userRegistration.UserName);
+                user.UserStates = userRegistration.UserStates;
+                user.UserDistricts = userRegistration.UserDistricts;
+                user.UserAssemblies = userRegistration.UserAssemblies;
+                user.UserPCConstituencies = userRegistration.UserPCConstituencies;
 
                 if (roleIds != null && roleIds.Any())
                 {
@@ -262,72 +266,10 @@ namespace EAMS_DAL.AuthRepository
 
                 }
 
-                if (stateIds != null && stateIds.Any())
-                {
-                    foreach (var id in stateIds)
-                    {
-                        UserState userState = new UserState()
-                        {
-                            StateMasterId = Convert.ToInt32(id),
-                            Id = user.Id
-                        };
-                        var userResult = _context.UserState.Add(userState);
-                        _context.SaveChanges();
+                 
 
+                _context.SaveChanges();
 
-
-                    }
-                }
-                if (districtIds != null && districtIds.Any())
-                {
-                    foreach (var id in districtIds)
-                    {
-                        UserDistrict userDistrict = new UserDistrict()
-                        {
-                            DistrictMasterId = Convert.ToInt32(id),
-                            Id = user.Id
-                        };
-                        var userResult = _context.UserDistrict.Add(userDistrict);
-                        _context.SaveChanges();
-
-                        // Handle role assignment failure
-
-
-                    }
-                }
-                if (pcIds != null && pcIds.Any())
-                {
-                    foreach (var id in pcIds)
-                    {
-                        UserPCConstituency userPc = new UserPCConstituency()
-                        {
-                            PCMasterId = Convert.ToInt32(id),
-                            Id = user.Id
-                        };
-                        var userResult = _context.UserPCConstituency.Add(userPc);
-                        _context.SaveChanges();
-
-                        // Handle role assignment failure
-
-
-                    }
-                }
-                if (assemblyIds != null && assemblyIds.Any())
-                {
-                    foreach (var id in assemblyIds)
-                    {
-                        UserAssembly userAssembly = new UserAssembly()
-                        {
-                            AssemblyMasterId = Convert.ToInt32(id),
-                            Id = user.Id
-                        };
-                        var userResult = _context.UserAssembly.Add(userAssembly);
-                        _context.SaveChanges();
-
-
-
-                    }
-                }
                 return new ServiceResponse()
                 {
                     IsSucceed = true,

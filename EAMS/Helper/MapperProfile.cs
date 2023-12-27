@@ -22,13 +22,26 @@ namespace EAMS.Helper
 
             #region UserRegistration UserRegistration  
             CreateMap<UserRegistrationViewModel, UserRegistration>()
-                //.ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
-                //.ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
-                //.ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
-                //.ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
-                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
+           .ForMember(dest => dest.UserStates, opt => opt.MapFrom(src => src.UserStates))
+           .ForMember(dest => dest.UserDistricts, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.Districts)))
+           .ForMember(dest => dest.UserAssemblies, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.Districts.SelectMany(district => district.Assemblies))))
+           .ForMember(dest => dest.UserPCConstituencies, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.PCConstituencies)))
+           .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+           .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+           .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
+           .ReverseMap();
+
+            CreateMap<StateViewModel, UserState>() 
                 .ReverseMap();
+
+            CreateMap<DistrictViewModel, UserDistrict>() 
+                .ReverseMap();
+
+            CreateMap<AssemblyViewModel, UserAssembly>().ReverseMap();
+
+            CreateMap<PCConstituencyViewModel, UserPCConstituency>() 
+                .ReverseMap();
+
             #endregion
 
             #region RoleViewModel Roles
@@ -174,7 +187,7 @@ namespace EAMS.Helper
             #region UpdateEventStatusViewModel and EventMaster
 
             CreateMap<UpdateEventStatusViewModel, EventMaster>()
-                .ForMember(dest => dest.EventMasterId, opt => opt.MapFrom(src => src.EventMasterId)) 
+                .ForMember(dest => dest.EventMasterId, opt => opt.MapFrom(src => src.EventMasterId))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsStatus))
                 .ReverseMap();
 

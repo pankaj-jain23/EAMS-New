@@ -32,12 +32,8 @@ namespace EAMS.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest("Invalid payload");
                 var mappedData = _mapper.Map<UserRegistration>(registerViewModel);
-                var roleId = registerViewModel.RoleId;
-                var stateIds = registerViewModel.StateMasterId;
-                var districtIds = registerViewModel.DistrictMasterId;
-                var pcIds = registerViewModel.PCMasterId;
-                var assemblyIds = registerViewModel.AssemblyMasterId;
-                var registerResult = await _authService.RegisterAsync(mappedData, roleId,stateIds,districtIds,pcIds,assemblyIds);
+                var roleId = registerViewModel.RoleId; 
+                var registerResult = await _authService.RegisterAsync(mappedData, roleId);
                 if (registerResult.IsSucceed == false)
                 {
                     return BadRequest(registerResult.Message);
@@ -155,8 +151,7 @@ namespace EAMS.Controllers
         #endregion
 
         #region Refresh Token
-
-        [HttpPost]
+         [HttpPost]
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken(GetRefreshTokenViewModel refreshTokenViewModel)
         {

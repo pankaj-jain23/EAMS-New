@@ -72,16 +72,179 @@ namespace EAMS_DAL.Migrations
                     b.ToTable("AssemblyMaster");
                 });
 
-            modelBuilder.Entity("EAMS_ACore.BoothMaster", b =>
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserAssembly", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserAssemblyId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserAssemblyId"));
+
+                    b.Property<int?>("AssemblyMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserAssemblyId");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("UserAssembly");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserDistrict", b =>
+                {
+                    b.Property<int>("UserDistrictId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserDistrictId"));
+
+                    b.Property<int?>("DistrictMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.HasKey("UserDistrictId");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("UserDistrict");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserPCConstituency", b =>
+                {
+                    b.Property<int>("UserPCConstituencyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserPCConstituencyId"));
+
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PCMasterId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserPCConstituencyId");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("UserPCConstituency");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserRegistration", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserState", b =>
+                {
+                    b.Property<int>("UserStateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserStateId"));
+
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserStateId");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("UserState");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.BoothMaster", b =>
+                {
+                    b.Property<int>("BoothMasterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BoothMasterId"));
 
                     b.Property<int>("AssemblyMasterId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("AssignedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("AssignedOnTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AssignedTo")
+                        .HasColumnType("text");
 
                     b.Property<string>("BoothCode_No")
                         .IsRequired()
@@ -108,6 +271,9 @@ namespace EAMS_DAL.Migrations
                     b.Property<int>("DistrictMasterId")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsAssigned")
+                        .HasColumnType("boolean");
+
                     b.Property<double?>("Latitude")
                         .HasColumnType("double precision");
 
@@ -120,7 +286,7 @@ namespace EAMS_DAL.Migrations
                     b.Property<int?>("TotalVoters")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("BoothMasterId");
 
                     b.HasIndex("AssemblyMasterId");
 
@@ -171,11 +337,11 @@ namespace EAMS_DAL.Migrations
 
             modelBuilder.Entity("EAMS_ACore.EventMaster", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EventMasterId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventMasterId"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -202,9 +368,319 @@ namespace EAMS_DAL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("EventMasterId");
 
                     b.ToTable("EventMaster");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.Models.ElectionInfoMaster", b =>
+                {
+                    b.Property<int>("ElectionInfoMasterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ElectionInfoMasterId"));
+
+                    b.Property<string>("AROUserId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AssemblyMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BoothMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DistrictMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EVMDepositedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ElectionInfoCreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ElectionInfoDeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("ElectionInfoStatus")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ElectionInfoUpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EventMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("FinalTVote")
+                        .HasColumnType("integer");
+
+                    b.Property<bool?>("IsEVMDeposited")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsMCESwitchOff")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsMockPollDone")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPartyDeparted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPartyDispatched")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPartyReached")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPartyReachedCollectionCenter")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsPollEnded")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("IsPollEndedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("IsPollStarted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsSetupOfPolling")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsVoterTurnOut")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("MCESwitchOffLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("MockPollDoneLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PartyDepartedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PartyDispatchedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PartyReachedCollectionCenterLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PartyReachedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PollStartedLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SOUserId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("SetupOfPollingLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("VoterInQueue")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("VoterInQueueLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("VotingLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("VotingTurnOutLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ElectionInfoMasterId");
+
+                    b.ToTable("ElectionInfoMaster");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.Models.PollDetail", b =>
+                {
+                    b.Property<int>("PollDetailMasterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PollDetailMasterId"));
+
+                    b.Property<int>("AddedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AssemblyMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BoothMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DistrictMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EventMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SlotManagementId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("VotesPolled")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("VotesPolledRecivedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("PollDetailMasterId");
+
+                    b.ToTable("PollDetails");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.Models.PollInterruption", b =>
+                {
+                    b.Property<int>("PollInterruptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PollInterruptionId"));
+
+                    b.Property<int>("AssemblyMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BoothMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DistrictMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Flag")
+                        .HasColumnType("text");
+
+                    b.Property<int>("InterruptionType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool?>("IsPollInterrupted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NewBU")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewCU")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldBU")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldCU")
+                        .HasColumnType("text");
+
+                    b.Property<TimeOnly?>("ResumeTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly?>("StopTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserRole")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserType")
+                        .HasColumnType("text");
+
+                    b.HasKey("PollInterruptionId");
+
+                    b.ToTable("PollInterruptions");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.Models.PollInterruptionHistory", b =>
+                {
+                    b.Property<int>("PollInterruptionHisId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PollInterruptionHisId"));
+
+                    b.Property<int>("AssemblyMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BoothMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DistrictMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Flag")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("InterruptionType")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsPollInterrupted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NewBU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NewCU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldBU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldCU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<TimeOnly?>("ResumeTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly?>("StopTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PollInterruptionHisId");
+
+                    b.ToTable("PollInterruptionHistory");
                 });
 
             modelBuilder.Entity("EAMS_ACore.Models.SectorOfficerMaster", b =>
@@ -214,6 +690,30 @@ namespace EAMS_DAL.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SOMasterId"));
+
+                    b.Property<int>("AppPin")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsLocked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("OTP")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OTPAttempts")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("OTPExpireTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("OTPGeneratedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("SOUpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -249,6 +749,71 @@ namespace EAMS_DAL.Migrations
                     b.HasKey("SOMasterId");
 
                     b.ToTable("SectorOfficerMaster");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.Models.SlotManagementMaster", b =>
+                {
+                    b.Property<int>("SlotManagementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SlotManagementId"));
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("EventMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsLastSlot")
+                        .HasColumnType("boolean");
+
+                    b.Property<TimeOnly?>("LockTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTimeOffset>("SlotCreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SlotSequenceNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("SlotManagementId");
+
+                    b.ToTable("SlotManagementMaster");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.NotificationModels.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("NotificationId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("EAMS_ACore.ParliamentConstituencyMaster", b =>
@@ -374,70 +939,6 @@ namespace EAMS_DAL.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -546,6 +1047,42 @@ namespace EAMS_DAL.Migrations
                     b.Navigation("StateMaster");
                 });
 
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserAssembly", b =>
+                {
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
+                        .WithMany("UserAssemblies")
+                        .HasForeignKey("Id");
+
+                    b.Navigation("UserRegistration");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserDistrict", b =>
+                {
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
+                        .WithMany("UserDistricts")
+                        .HasForeignKey("Id");
+
+                    b.Navigation("UserRegistration");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserPCConstituency", b =>
+                {
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
+                        .WithMany("UserPCConstituencies")
+                        .HasForeignKey("Id");
+
+                    b.Navigation("UserRegistration");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserState", b =>
+                {
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
+                        .WithMany("UserStates")
+                        .HasForeignKey("Id");
+
+                    b.Navigation("UserRegistration");
+                });
+
             modelBuilder.Entity("EAMS_ACore.BoothMaster", b =>
                 {
                     b.HasOne("EAMS_ACore.AssemblyMaster", "AssemblyMaster")
@@ -606,7 +1143,7 @@ namespace EAMS_DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -615,7 +1152,7 @@ namespace EAMS_DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -630,7 +1167,7 @@ namespace EAMS_DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -639,7 +1176,7 @@ namespace EAMS_DAL.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -649,6 +1186,17 @@ namespace EAMS_DAL.Migrations
             modelBuilder.Entity("EAMS_ACore.AssemblyMaster", b =>
                 {
                     b.Navigation("BoothMaster");
+                });
+
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserRegistration", b =>
+                {
+                    b.Navigation("UserAssemblies");
+
+                    b.Navigation("UserDistricts");
+
+                    b.Navigation("UserPCConstituencies");
+
+                    b.Navigation("UserStates");
                 });
 
             modelBuilder.Entity("EAMS_ACore.DistrictMaster", b =>

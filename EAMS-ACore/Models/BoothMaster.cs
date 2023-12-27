@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace EAMS_ACore
 {
     public class BoothMaster
     {
-        public int Id { get; set; }
+        [Key]
+        public int BoothMasterId { get; set; }
         public int StateMasterId
         {
             get;
@@ -52,16 +54,18 @@ namespace EAMS_ACore
 
         public bool BoothStatus { get; set; }
 
-        public DateTime? BoothCreatedAt { get; set; }
+        public DateTime? BoothCreatedAt { get; set; }  
 
-        public DateTime? BoothUpdatedAt { get; set; }
+        public DateTime? BoothUpdatedAt { get; set; }  
 
-        public DateTime? BoothDeletedAt { get; set; }
+        public DateTime? BoothDeletedAt { get; set; } 
 
-        //public long? AssignedTo { get; set; }
+        public string? AssignedTo { get; set; }
+        public string? AssignedBy { get; set; }  
+        public DateTime? AssignedOnTime { get; set; } 
+        public bool IsAssigned { get; set; }
 
-        //public long? AssignedBy { get; set; }
 
-        //public short? AssignedStatus { get; set; }
+
     }
 }

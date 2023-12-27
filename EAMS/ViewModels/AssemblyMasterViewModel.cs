@@ -1,12 +1,26 @@
-﻿namespace EAMS.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EAMS.ViewModels
 {
     public class AssemblyMasterViewModel
     {
-        public string AssemblyName { get; set; }
-        public int AssemblyCode { get; set; }
+        public int AssemblyMasterId { get; set; }
 
+        [Required(ErrorMessage = "Assembly Name is required")]
+        public string AssemblyName { get; set; }
+        [Required(ErrorMessage = "Assembly Code is required")]
+        public int AssemblyCode { get; set; }
+        [Required(ErrorMessage = "State Master Id is required")]
+        public int StateMasterId { get; set; }
+        public int DistrictMasterId { get; set; }
+
+        [Required(ErrorMessage = "Pc Master Id is required")]
+        public int PCMasterId { get; set; }
+
+        [Required(ErrorMessage = "Assembly Type is required")]
         public string? AssemblyType { get; set; }
-        public bool Status { get; set; } = true;
-        public List<BoothMasterViewModel>boothMasterViewModels { get; set; }
+
+        [Required(ErrorMessage = "Status is required")]
+        public bool IsStatus { get; set; }
     }
 }

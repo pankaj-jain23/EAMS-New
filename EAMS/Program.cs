@@ -1,28 +1,29 @@
+using EAMS.Helper;
+using EAMS.Hubs;
+using EAMS.Middleware;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
+using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_BLL.AuthServices;
 using EAMS_BLL.Services;
+using EAMS_DAL.AuthRepository;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<IEamsService, EamsService>();
-builder.Services.AddTransient<IEamsRepository, EamsRepository>();
+builder.Services.AddAutoMapper(typeof(MapperProfile)); // Add your profile class here
 builder.Services.AddDbContext<EamsContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Postgres");
@@ -50,8 +51,6 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.SignIn.RequireConfirmedEmail = false;
 });
-
-
 // Add Authentication and JwtBearer
 builder.Services
     .AddAuthentication(options =>
@@ -68,11 +67,51 @@ builder.Services
         {
             ValidateIssuer = true,
             ValidateAudience = true,
+            ValidateLifetime = true, // Set to true for lifetime validation
             ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
             ValidAudience = builder.Configuration["JWT:ValidAudience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+            ClockSkew = TimeSpan.Zero // Set to zero or adjust according to your requirements
+
         };
     });
+
+builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IAuthRepository, AuthRepository>();
+builder.Services.AddTransient<IEamsService, EamsService>();
+builder.Services.AddTransient<IEamsRepository, EamsRepository>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
+builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
+builder.Services.AddHostedService<DatabaseListenerService>();
+
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -85,18 +124,17 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
- 
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseCors();
 app.UseAuthentication();
+app.UseMiddleware<TokenExpirationMiddleware>();
 app.UseAuthorization();
-
+app.UseHttpsRedirection();
 app.MapControllers();
-
+app.MapHub<DashBoardHub>("/DashBoardHub");
 app.Run();
+

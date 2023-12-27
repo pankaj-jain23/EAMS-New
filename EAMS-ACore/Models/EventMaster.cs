@@ -1,8 +1,12 @@
-﻿namespace EAMS_ACore
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EAMS_ACore
 {
     public class EventMaster
     {
-        public int Id { get; set; }
+        [Key]
+        public int EventMasterId { get; set; }
 
         public string EventName { get; set; } 
 

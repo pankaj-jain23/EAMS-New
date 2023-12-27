@@ -1,11 +1,15 @@
-﻿namespace EAMS.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EAMS.ViewModels
 {
     public class DistrictMasterViewModel
-    {
-        public int DistrictMasterId { get; set; }
-        public string Name { get; set; }
+    { 
+        public int StateMasterId { get; set; }
+        public int DistrictMasterId { get; set; }  
+        public string DistrictName { get; set; } 
         public string DistrictCode { get; set; }
-        public bool Status { get; set; } = true;
+         
+        public bool IsStatus { get; set; }  
        
 
     }

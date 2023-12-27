@@ -6,7 +6,6 @@ namespace EAMS_ACore
     public class ParliamentConstituencyMaster
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PCMasterId { get; set; }
 
         public int StateMasterId
@@ -26,11 +25,11 @@ namespace EAMS_ACore
 
         public string? PcType { get; set; } 
 
-        public DateTime? PcCreatedAt { get; set; }
+        public DateTime? PcCreatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? PcUpdatedAt { get; set; }
+        public DateTime? PcUpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public DateTime? PcDeletedAt { get; set; }
+        public DateTime? PcDeletedAt { get; set; } = DateTime.UtcNow;
 
         public bool PcStatus { get; set; }
         public virtual List<AssemblyMaster>? AssemblyMaster

@@ -3,6 +3,7 @@ using System;
 using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EAMS_DAL.Migrations
 {
     [DbContext(typeof(EamsContext))]
-    partial class EamsContextModelSnapshot : ModelSnapshot
+    [Migration("20231226102359_UserRegisttrationRelationShip")]
+    partial class UserRegisttrationRelationShip
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,12 +86,7 @@ namespace EAMS_DAL.Migrations
                     b.Property<int?>("AssemblyMasterId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
                     b.HasKey("UserAssemblyId");
-
-                    b.HasIndex("Id");
 
                     b.ToTable("UserAssembly");
                 });
@@ -104,12 +102,7 @@ namespace EAMS_DAL.Migrations
                     b.Property<int?>("DistrictMasterId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
                     b.HasKey("UserDistrictId");
-
-                    b.HasIndex("Id");
 
                     b.ToTable("UserDistrict");
                 });
@@ -122,15 +115,10 @@ namespace EAMS_DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserPCConstituencyId"));
 
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
                     b.Property<int?>("PCMasterId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserPCConstituencyId");
-
-                    b.HasIndex("Id");
 
                     b.ToTable("UserPCConstituency");
                 });
@@ -189,9 +177,21 @@ namespace EAMS_DAL.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("UserAssemblyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserDistrictId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int>("UserPCConstituencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserStateId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -201,6 +201,14 @@ namespace EAMS_DAL.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("UserAssemblyId");
+
+                    b.HasIndex("UserDistrictId");
+
+                    b.HasIndex("UserPCConstituencyId");
+
+                    b.HasIndex("UserStateId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -213,15 +221,10 @@ namespace EAMS_DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserStateId"));
 
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
                     b.Property<int?>("StateMasterId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserStateId");
-
-                    b.HasIndex("Id");
 
                     b.ToTable("UserState");
                 });
@@ -1047,40 +1050,39 @@ namespace EAMS_DAL.Migrations
                     b.Navigation("StateMaster");
                 });
 
-            modelBuilder.Entity("EAMS_ACore.AuthModels.UserAssembly", b =>
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserRegistration", b =>
                 {
-                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserAssemblies")
-                        .HasForeignKey("Id");
+                    b.HasOne("EAMS_ACore.AuthModels.UserAssembly", "UserAssembly")
+                        .WithMany("UserRegistrations")
+                        .HasForeignKey("UserAssemblyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("UserRegistration");
-                });
+                    b.HasOne("EAMS_ACore.AuthModels.UserDistrict", "UserDistrict")
+                        .WithMany("UserRegistrations")
+                        .HasForeignKey("UserDistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("EAMS_ACore.AuthModels.UserDistrict", b =>
-                {
-                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserDistricts")
-                        .HasForeignKey("Id");
+                    b.HasOne("EAMS_ACore.AuthModels.UserPCConstituency", "UserPCConstituency")
+                        .WithMany("UserRegistrations")
+                        .HasForeignKey("UserPCConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("UserRegistration");
-                });
+                    b.HasOne("EAMS_ACore.AuthModels.UserState", "UserState")
+                        .WithMany("UserRegistrations")
+                        .HasForeignKey("UserStateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("EAMS_ACore.AuthModels.UserPCConstituency", b =>
-                {
-                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserPCConstituencies")
-                        .HasForeignKey("Id");
+                    b.Navigation("UserAssembly");
 
-                    b.Navigation("UserRegistration");
-                });
+                    b.Navigation("UserDistrict");
 
-            modelBuilder.Entity("EAMS_ACore.AuthModels.UserState", b =>
-                {
-                    b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserStates")
-                        .HasForeignKey("Id");
+                    b.Navigation("UserPCConstituency");
 
-                    b.Navigation("UserRegistration");
+                    b.Navigation("UserState");
                 });
 
             modelBuilder.Entity("EAMS_ACore.BoothMaster", b =>
@@ -1188,15 +1190,24 @@ namespace EAMS_DAL.Migrations
                     b.Navigation("BoothMaster");
                 });
 
-            modelBuilder.Entity("EAMS_ACore.AuthModels.UserRegistration", b =>
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserAssembly", b =>
                 {
-                    b.Navigation("UserAssemblies");
+                    b.Navigation("UserRegistrations");
+                });
 
-                    b.Navigation("UserDistricts");
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserDistrict", b =>
+                {
+                    b.Navigation("UserRegistrations");
+                });
 
-                    b.Navigation("UserPCConstituencies");
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserPCConstituency", b =>
+                {
+                    b.Navigation("UserRegistrations");
+                });
 
-                    b.Navigation("UserStates");
+            modelBuilder.Entity("EAMS_ACore.AuthModels.UserState", b =>
+                {
+                    b.Navigation("UserRegistrations");
                 });
 
             modelBuilder.Entity("EAMS_ACore.DistrictMaster", b =>

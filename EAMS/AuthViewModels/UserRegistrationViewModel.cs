@@ -5,13 +5,13 @@ namespace EAMS.AuthViewModels
     public class UserRegistrationViewModel
     {
         [Required(ErrorMessage = "StateMasterId is required")]
-        public string StateMasterId { get; set; }
+        public List<string> StateMasterId { get; set; }
 
-        [Required(ErrorMessage = "DistrictMasterId is required")]
-        public string DistrictMasterId { get; set; }
+        public List<string> DistrictMasterId { get; set; }
+        public List<string> PCMasterId { get; set; }
 
         [Required(ErrorMessage = "AssemblyMasterId is required")]
-        public string AssemblyMasterId { get; set; }
+        public List<string> AssemblyMasterId { get; set; }
 
         [Required(ErrorMessage = "PhoneNumber is required")]
         public string PhoneNumber { get; set; }

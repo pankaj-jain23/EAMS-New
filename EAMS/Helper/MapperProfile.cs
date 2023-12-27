@@ -22,10 +22,10 @@ namespace EAMS.Helper
 
             #region UserRegistration UserRegistration  
             CreateMap<UserRegistrationViewModel, UserRegistration>()
-                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
-                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
-                .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
-                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                //.ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+                //.ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                //.ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId))
+                //.ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
                 .ReverseMap();

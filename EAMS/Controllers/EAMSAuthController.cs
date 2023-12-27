@@ -23,7 +23,6 @@ namespace EAMS.Controllers
         }
 
         #region Register
-
         [HttpPost]
         [Route("registeration")]
         public async Task<IActionResult> Register(UserRegistrationViewModel registerViewModel)
@@ -34,7 +33,11 @@ namespace EAMS.Controllers
                     return BadRequest("Invalid payload");
                 var mappedData = _mapper.Map<UserRegistration>(registerViewModel);
                 var roleId = registerViewModel.RoleId;
-                var registerResult = await _authService.RegisterAsync(mappedData, roleId);
+                var stateIds = registerViewModel.StateMasterId;
+                var districtIds = registerViewModel.DistrictMasterId;
+                var pcIds = registerViewModel.PCMasterId;
+                var assemblyIds = registerViewModel.AssemblyMasterId;
+                var registerResult = await _authService.RegisterAsync(mappedData, roleId,stateIds,districtIds,pcIds,assemblyIds);
                 if (registerResult.IsSucceed == false)
                 {
                     return BadRequest(registerResult.Message);
@@ -80,6 +83,7 @@ namespace EAMS.Controllers
         #region AddDyanmicRole && Get Role
         [HttpPost]
         [Route("AddDyanmicRole")]
+        [Authorize(Roles ="SuperAdmin")]
         public async Task<IActionResult> AddDyanmicRole([FromBody] RolesViewModel rolesViewModel)
         {
             if (ModelState.IsValid)
@@ -180,7 +184,7 @@ namespace EAMS.Controllers
         #region CreateSoPin
         [HttpPost]
         [Route("CreateSOPin")]
-        [Authorize(Roles = "SO")]
+        [Authorize(Roles = "SO,SuperAdmin")]
         public async Task<IActionResult> CreateSOPin(CreateSOPinViewModel createSOPinViewModel)
         {
             // Retrieve SoId from the claims

@@ -3,6 +3,7 @@ using System;
 using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EAMS_DAL.Migrations
 {
     [DbContext(typeof(EamsContext))]
-    partial class EamsContextModelSnapshot : ModelSnapshot
+    [Migration("20231226112253_UserRegisttrationRelationShip1")]
+    partial class UserRegisttrationRelationShip1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,6 +89,9 @@ namespace EAMS_DAL.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<int>("UserRegistrationId")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserAssemblyId");
 
                     b.HasIndex("Id");
@@ -107,6 +113,9 @@ namespace EAMS_DAL.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<int>("UserRegistrationId")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserDistrictId");
 
                     b.HasIndex("Id");
@@ -126,6 +135,9 @@ namespace EAMS_DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("PCMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRegistrationId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserPCConstituencyId");
@@ -217,6 +229,9 @@ namespace EAMS_DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("StateMasterId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserRegistrationId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserStateId");
@@ -1050,7 +1065,7 @@ namespace EAMS_DAL.Migrations
             modelBuilder.Entity("EAMS_ACore.AuthModels.UserAssembly", b =>
                 {
                     b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserAssemblies")
+                        .WithMany("UserAssembly")
                         .HasForeignKey("Id");
 
                     b.Navigation("UserRegistration");
@@ -1059,7 +1074,7 @@ namespace EAMS_DAL.Migrations
             modelBuilder.Entity("EAMS_ACore.AuthModels.UserDistrict", b =>
                 {
                     b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserDistricts")
+                        .WithMany("UserDistrict")
                         .HasForeignKey("Id");
 
                     b.Navigation("UserRegistration");
@@ -1068,7 +1083,7 @@ namespace EAMS_DAL.Migrations
             modelBuilder.Entity("EAMS_ACore.AuthModels.UserPCConstituency", b =>
                 {
                     b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserPCConstituencies")
+                        .WithMany("UserPCConstituency")
                         .HasForeignKey("Id");
 
                     b.Navigation("UserRegistration");
@@ -1077,7 +1092,7 @@ namespace EAMS_DAL.Migrations
             modelBuilder.Entity("EAMS_ACore.AuthModels.UserState", b =>
                 {
                     b.HasOne("EAMS_ACore.AuthModels.UserRegistration", "UserRegistration")
-                        .WithMany("UserStates")
+                        .WithMany("UserState")
                         .HasForeignKey("Id");
 
                     b.Navigation("UserRegistration");
@@ -1190,13 +1205,13 @@ namespace EAMS_DAL.Migrations
 
             modelBuilder.Entity("EAMS_ACore.AuthModels.UserRegistration", b =>
                 {
-                    b.Navigation("UserAssemblies");
+                    b.Navigation("UserAssembly");
 
-                    b.Navigation("UserDistricts");
+                    b.Navigation("UserDistrict");
 
-                    b.Navigation("UserPCConstituencies");
+                    b.Navigation("UserPCConstituency");
 
-                    b.Navigation("UserStates");
+                    b.Navigation("UserState");
                 });
 
             modelBuilder.Entity("EAMS_ACore.DistrictMaster", b =>

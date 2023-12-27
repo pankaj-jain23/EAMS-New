@@ -222,10 +222,11 @@ namespace EAMS_DAL.AuthRepository
         #endregion
 
         #region CreateUser
-        public async Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds)
+        public async Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds, List<string> stateIds, List<string> districtIds, List<string> pcIds, List<string> assemblyIds)
         {
             try
             {
+
                 var createUserResult = await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
                 if (!createUserResult.Succeeded)
                 {
@@ -258,8 +259,75 @@ namespace EAMS_DAL.AuthRepository
                             };
                         }
                     }
+
                 }
 
+                if (stateIds != null && stateIds.Any())
+                {
+                    foreach (var id in stateIds)
+                    {
+                        UserState userState = new UserState()
+                        {
+                            StateMasterId = Convert.ToInt32(id),
+                            Id = user.Id
+                        };
+                        var userResult = _context.UserState.Add(userState);
+                        _context.SaveChanges();
+
+
+
+                    }
+                }
+                if (districtIds != null && districtIds.Any())
+                {
+                    foreach (var id in districtIds)
+                    {
+                        UserDistrict userDistrict = new UserDistrict()
+                        {
+                            DistrictMasterId = Convert.ToInt32(id),
+                            Id = user.Id
+                        };
+                        var userResult = _context.UserDistrict.Add(userDistrict);
+                        _context.SaveChanges();
+
+                        // Handle role assignment failure
+
+
+                    }
+                }
+                if (pcIds != null && pcIds.Any())
+                {
+                    foreach (var id in pcIds)
+                    {
+                        UserPCConstituency userPc = new UserPCConstituency()
+                        {
+                            PCMasterId = Convert.ToInt32(id),
+                            Id = user.Id
+                        };
+                        var userResult = _context.UserPCConstituency.Add(userPc);
+                        _context.SaveChanges();
+
+                        // Handle role assignment failure
+
+
+                    }
+                }
+                if (assemblyIds != null && assemblyIds.Any())
+                {
+                    foreach (var id in assemblyIds)
+                    {
+                        UserAssembly userAssembly = new UserAssembly()
+                        {
+                            AssemblyMasterId = Convert.ToInt32(id),
+                            Id = user.Id
+                        };
+                        var userResult = _context.UserAssembly.Add(userAssembly);
+                        _context.SaveChanges();
+
+
+
+                    }
+                }
                 return new ServiceResponse()
                 {
                     IsSucceed = true,
@@ -414,10 +482,16 @@ namespace EAMS_DAL.AuthRepository
         public async Task<UserList> GetDashboardProfile(string userId)
         {
 
-            var userRecord = await _userManager.FindByIdAsync(userId); 
-            var stateName = await _context.StateMaster.Where(d => d.StateMasterId == userRecord.StateMasterId).Select(d => d.StateName).FirstOrDefaultAsync();
-            var districtName = await _context.DistrictMaster.Where(d => d.DistrictMasterId == userRecord.DistrictMasterId).Select(d => d.DistrictName).FirstOrDefaultAsync();
-            var assemblyName = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == userRecord.AssemblyMasterId).Select(d => d.AssemblyName).FirstOrDefaultAsync();
+            var userRecord = await _userManager.FindByIdAsync(userId);
+            var stateId = await _context.UserState.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
+            var districtId = await _context.UserDistrict.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
+            var assemblyId = await _context.UserAssembly.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
+            var pcId= await _context.UserPCConstituency.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
+
+            var stateName = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).Select(d => d.StateName).FirstOrDefaultAsync();
+            var districtName = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId)).Select(d => d.DistrictName).FirstOrDefaultAsync();
+            var assemblyName = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyId)).Select(d => d.AssemblyName).FirstOrDefaultAsync();
+            var pcName = await _context.ParliamentConstituencyMaster.Where(d => d.PCMasterId == Convert.ToInt32(pcId)).Select(d => d.PcName).FirstOrDefaultAsync();
             if (userRecord != null)
             {
                 var roles = await _userManager.GetRolesAsync(userRecord);
@@ -435,11 +509,11 @@ namespace EAMS_DAL.AuthRepository
                     {
                         Name = userRecord.UserName,
                         MobileNumber = userRecord.PhoneNumber,
-                        StateId = userRecord.StateMasterId,
+                        StateId = Convert.ToInt32(stateId),
                         StateName = stateName,
-                        DistrictId = userRecord.DistrictMasterId,
+                        DistrictId = Convert.ToInt32(districtId),
                         DistrictName = districtName,
-                        AssemblyId = userRecord.AssemblyMasterId,
+                        AssemblyId = Convert.ToInt32(assemblyId),
                         AssemblyName = assemblyName,
                         Roles= rolesList
 

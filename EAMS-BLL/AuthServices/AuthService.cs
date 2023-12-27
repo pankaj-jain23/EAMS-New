@@ -76,9 +76,9 @@ namespace EAMS_BLL.AuthServices
                     new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId",user.Id),
-                    new Claim("StateMasterId",user.StateMasterId.ToString()),
-                    new Claim("DistrictMasterId",user.DistrictMasterId.ToString()),
-                    new Claim("AssemblyMasterId",user.AssemblyMasterId.ToString()),
+                    //new Claim("StateMasterId",user.StateMasterId.ToString()),
+                    //new Claim("DistrictMasterId",user.DistrictMasterId.ToString()),
+                    //new Claim("AssemblyMasterId",user.AssemblyMasterId.ToString()),
 
                 };
 
@@ -135,7 +135,7 @@ namespace EAMS_BLL.AuthServices
         #endregion
 
         #region Register
-        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId)
+        public async Task<ServiceResponse> RegisterAsync(UserRegistration userRegistration, List<string> roleId, List<string> stateIds, List<string> districtIds, List<string> pcIds, List<string> assemblyIds)
         {
             var userExists = await _authRepository.FindUserByName(userRegistration);
             if (userExists.IsSucceed == false)
@@ -145,7 +145,7 @@ namespace EAMS_BLL.AuthServices
             }
             else
             {
-                var createUserResult = await _authRepository.CreateUser(userRegistration, roleId);
+                var createUserResult = await _authRepository.CreateUser(userRegistration, roleId,stateIds,districtIds,pcIds,assemblyIds);
 
                 if (createUserResult.IsSucceed == true)
                 {

@@ -23,7 +23,7 @@ namespace EAMS_ACore.IAuthRepository
         Task<ServiceResponse> FindUserByName(UserRegistration userRegistration);
         Task<List<UserRegistration>> FindUserListByName(string userName);
         Task<UserRegistration> CheckUserLogin(Login login);
-        Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId);
+        Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleId, List<string> stateIds, List<string> districtIds, List<string> pcIds, List<string> assemblyIds);
         Task<ServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);
         Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId); 

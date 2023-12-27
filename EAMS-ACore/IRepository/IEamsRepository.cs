@@ -86,7 +86,7 @@ namespace EAMS_ACore.IRepository
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
 
-
+        bool IsPollInterrupted(int boothMasterId);
         Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId);
         Task<List<AssemblyEventActivityCount>> GetEventListAssemblyWiseById(string stateId, string districtId);
         Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId);

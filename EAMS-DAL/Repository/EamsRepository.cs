@@ -4,6 +4,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
+using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Net.NetworkInformation;
@@ -2238,6 +2239,29 @@ namespace EAMS_DAL.Repository
 
 
             return finalCanStart;
+        }
+        
+       public bool IsPollInterrupted(int boothMasterId)
+        {
+            bool ispollInterrupted = false;
+        var pollInterruptionData=  _context.PollInterruptions.Where(p=>p.BoothMasterId == boothMasterId).OrderByDescending(p=>p.CreatedAt).FirstOrDefault();
+
+            if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime!= null && pollInterruptionData.ResumeTime is null)
+            {
+                ispollInterrupted = true;
+            }
+            else if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime != null && pollInterruptionData.ResumeTime is not null )
+            {                
+                ispollInterrupted = false;
+            }
+            else
+            {
+                ispollInterrupted = false;
+
+
+            }
+
+            return ispollInterrupted;
         }
 
         public async Task<FinalViewModel> GetFinalVotes(string boothMasterId)

@@ -263,7 +263,7 @@ namespace EAMS_DAL.AuthRepository
 
                 }
 
-               
+
                 return new ServiceResponse()
                 {
                     IsSucceed = true,
@@ -424,56 +424,43 @@ namespace EAMS_DAL.AuthRepository
         }
         #endregion
 
-        public async Task<UserList> GetDashboardProfile(string userId)
+        #region UserDetail
+        public async Task<DashBoardProfile> GetDashboardProfile(string userId)
         {
-
             var userRecord = await _userManager.FindByIdAsync(userId);
-            //var stateId = await _context.UserState.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
 
-            //var stateName = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).Select(d => d.StateName).FirstOrDefaultAsync();
-            //if (userRecord != null)
-            //{
-            //    var roles = await _userManager.GetRolesAsync(userRecord);
+            if (userRecord != null)
+            {
+                var userSubDetails = await _context.UserState
+                    .Include(u => u.UserDistrict) // Include UserDistrict
+                        .ThenInclude(d => d.UserAssembly) // Include UserAssembly within UserDistrict
+                    .Include(u => u.UserPCConstituency) // Include UserPCConstituency
+                        .ThenInclude(pc => pc.UserAssembly) // Include UserAssembly within UserPCConstituency
+                    .FirstOrDefaultAsync(u => u.Id == userId);
 
-            //    var rolesList = roles.Select(role => new Role
-            //    {
+                var roles = await _userManager.GetRolesAsync(userRecord);
 
-            //        RoleId = role,
-            //        RoleName = role
-            //    }).ToList();
+                var rolesList = roles.ToList();
 
-            //    if (userRecord != null && rolesList != null)
-            //    {
-            //        UserList userList = new UserList()
-            //        {
-            //            Name = userRecord.UserName,
-            //            MobileNumber = userRecord.PhoneNumber,
-            //            StateId = Convert.ToInt32(stateId),
-            //            //StateName = stateName,
-            //            //DistrictId = Convert.ToInt32(districtId),
-            //            //DistrictName = districtName,
-            //            //AssemblyId = Convert.ToInt32(assemblyId),
-            //            //AssemblyName = assemblyName,
-            //            Roles = rolesList
+                DashBoardProfile dashBoardProfile = new DashBoardProfile()
+                {
+                    Name=userRecord.UserName,
+                    MobileNumber=userRecord.PhoneNumber,
+                    UserEmail=userRecord.Email,
+                    UserType="DashBoard",
+                    Roles = rolesList,
+                    UserStates=userSubDetails
+                };
 
-            //        };
-
-            //        return userList;
-
-
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
-            //else
-            //{
-            //    return null;
-            //}
-
-            return null;
+                return dashBoardProfile;
+            }
+            else
+            {
+                return null;
+            }
         }
 
+
+        #endregion
     }
 }

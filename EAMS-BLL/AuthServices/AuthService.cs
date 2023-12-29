@@ -22,10 +22,11 @@ namespace EAMS_BLL.AuthServices
         private readonly IAuthRepository _authRepository;
         private readonly IEamsService _EAMSService;
         private readonly IEamsRepository _eamsRepository;
+        private readonly INotificationService _notificationService;
         private readonly UserManager<UserRegistration> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthService(IConfiguration configuration, IAuthRepository authRepository, UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager, IEamsService eamsService, IEamsRepository eamsRepository)
+        public AuthService(IConfiguration configuration, IAuthRepository authRepository, UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager, IEamsService eamsService, IEamsRepository eamsRepository,INotificationService notificationService)
         {
             _configuration = configuration;
             _authRepository = authRepository;
@@ -33,6 +34,7 @@ namespace EAMS_BLL.AuthServices
             _roleManager = roleManager;
             _EAMSService = eamsService;
             _eamsRepository = eamsRepository;
+            _notificationService = notificationService;
         }
 
         #region AddDynamicRole && Get Role
@@ -255,6 +257,7 @@ namespace EAMS_BLL.AuthServices
                         var isSucceed = await _authRepository.SectorOfficerMasterRecord(sectorOfficerMaster);
                         if (isSucceed.IsSucceed == true)
                         {
+                            var isSucced = await _notificationService.SendOtp(sectorOfficerMaster.SoMobile.ToString(),otp);
                             return new Response()
                             {
                                 Status = RequestStatusEnum.OK,
@@ -386,7 +389,7 @@ namespace EAMS_BLL.AuthServices
                     _TokenViewModel.Message = "Invalid access token or refresh token";
                     return _TokenViewModel;
                 }
-                
+
                 var authClaims = new List<Claim>
                                 {
                                     new Claim(ClaimTypes.Name,soUser.SoName),
@@ -477,7 +480,7 @@ namespace EAMS_BLL.AuthServices
             return Convert.ToBase64String(randomNumber);
         }
         private async Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string? token)
-        { 
+        {
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
@@ -531,9 +534,12 @@ namespace EAMS_BLL.AuthServices
 
         #endregion
 
-        public async Task<UserList> GetDashboardProfile(string UserID)
+        #region UserDetail
+        public async Task<DashBoardProfile> GetDashboardProfile(string UserID)
         {
             return await _authRepository.GetDashboardProfile(UserID);
         }
+        
+        #endregion
     }
 }

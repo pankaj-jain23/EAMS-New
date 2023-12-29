@@ -77,10 +77,10 @@ namespace EAMS.Controllers
 
         [Route("SendOtp")]
         [HttpPost]
-        public async Task<IActionResult> SendOtp(string mobile)
+        public async Task<IActionResult> SendOtp(string mobile, string otp)
         {
            
-            var result = await _notificationService.SendOtp(mobile);
+            var result = await _notificationService.SendOtp(mobile,otp);
 
             return Ok(result);
         }

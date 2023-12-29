@@ -28,9 +28,9 @@ namespace EAMS_ACore.IAuthRepository
         Task<List<Role>> GetRoleByUser(Login login);
         Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId); 
         Task<SectorOfficerMaster>GetSOById(int soId);
-        Task<UserList> GetDashboardProfile(string userId);
+        Task<DashBoardProfile> GetDashboardProfile(string userId); 
 
-        
+
 
     }
 }

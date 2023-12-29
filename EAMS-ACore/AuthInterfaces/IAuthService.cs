@@ -19,7 +19,8 @@ namespace EAMS_ACore.AuthInterfaces
         Task<Response> ValidateMobile(ValidateMobile validateMobile);
         Task<Token> GetRefreshToken(GetRefreshToken getRefreshToken);
         Task<ServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);
-        Task<UserList> GetDashboardProfile(string userId);
+        Task<DashBoardProfile> GetDashboardProfile(string userId);
+         
 
 
 

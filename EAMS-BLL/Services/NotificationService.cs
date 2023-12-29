@@ -51,7 +51,7 @@ namespace EAMS_BLL.Services
         {
             return await _notificationRepository.GetSMSTemplate();
         }
-        public async Task<ServiceResponse> SendOtp(string mobile)
+        public async Task<ServiceResponse> SendOtp(string mobile,string otp)
         {
             
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
@@ -64,7 +64,7 @@ namespace EAMS_BLL.Services
             string templateId = "1407168318422038309";
             string userName = "Chetna";string placeholder = "{#var#}";
             //var template = "Dear {#var#},eOffice Services has been resumed now - O/o DGR";
-            string otp = "123456";
+             
             string template = "Punjab Bye Elections 2023 to 04-Jalandhar(SC) PC, Dear Sector Officer, Your OTP for registration on PPDMS Mobile App is " + Convert.ToString(otp).Trim() + ". -CEOPJB";
             if (template.Contains(placeholder))
             {

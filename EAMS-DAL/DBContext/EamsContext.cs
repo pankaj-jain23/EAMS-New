@@ -18,10 +18,10 @@ public partial class EamsContext : IdentityDbContext<UserRegistration>
     {
     }
 
-    public virtual DbSet<UserState> UserState { get; set; }
-    public virtual DbSet<UserDistrict> UserDistrict { get; set; }
-    public virtual DbSet<UserPCConstituency> UserPCConstituency { get; set; }
-    public virtual DbSet<UserAssembly> UserAssembly { get; set; }
+    //public virtual DbSet<UserState> UserState { get; set; }
+    //public virtual DbSet<UserDistrict> UserDistrict { get; set; }
+    //public virtual DbSet<UserPCConstituency> UserPCConstituency { get; set; }
+    //public virtual DbSet<UserAssembly> UserAssembly { get; set; }
 
     public virtual DbSet<AssemblyMaster> AssemblyMaster { get; set; }
     public virtual DbSet<BoothMaster> BoothMaster { get; set; }

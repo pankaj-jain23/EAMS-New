@@ -14,6 +14,7 @@ namespace EAMS_ACore.AuthModels
     public class UserState
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserStateId { get; set; }
         public int? StateMasterId { get; set; }
         public string Id { get; set; }

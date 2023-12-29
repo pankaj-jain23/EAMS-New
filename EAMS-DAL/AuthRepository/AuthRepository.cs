@@ -265,32 +265,39 @@ namespace EAMS_DAL.AuthRepository
 
                 if (userRegistration.UserStates != null && userRegistration.UserStates.Any())
                 {
-                    foreach (var userState in userRegistration.UserStates)
-                    {
-                        _context.UserState.AddRange(userState);
-                        if (userState.UserDistrict != null && userState.UserDistrict.Any())
-                        {
-                            _context.UserDistrict.AddRange(userState.UserDistrict);
+                    //foreach (var userState in userRegistration.UserStates)
+                    //{
+                    //    _context.UserState.Add(userState);
+                    //    _context.SaveChanges(); // Save changes after adding each UserState
 
-                            foreach (var userDistrict in userState.UserDistrict)
-                            {
-                                _context.UserAssembly.AddRange(userDistrict.UserAssembly);
-                            }
-                        }
-                        if (userState.UserPCConstituency != null && userState.UserPCConstituency.Any())
-                        {
-                            _context.UserPCConstituency.AddRange(userState.UserPCConstituency);
+                    //    if (userState.UserDistrict != null && userState.UserDistrict.Any())
+                    //    {
+                    //        _context.UserDistrict.AddRange(userState.UserDistrict);
+                    //        _context.SaveChanges(); // Save changes after adding each UserDistrict
 
-                            foreach (var userPc in userState.UserPCConstituency)
-                            {
-                                _context.UserAssembly.AddRange(userPc.UserAssembly);
-                            }
-                        }
-                    }
-                    _context.SaveChanges();
+                    //        foreach (var userDistrict in userState.UserDistrict)
+                    //        {
+                    //            _context.UserAssembly.AddRange(userDistrict.UserAssembly);
+                    //            _context.SaveChanges(); // Save changes after adding each UserAssembly
+                    //        }
+                    //    }
+
+                    //    if (userState.UserPCConstituency != null && userState.UserPCConstituency.Any())
+                    //    {
+                    //        _context.UserPCConstituency.AddRange(userState.UserPCConstituency);
+                    //        _context.SaveChanges(); // Save changes after adding each UserPCConstituency
+
+                    //        foreach (var userPc in userState.UserPCConstituency)
+                    //        {
+                    //            _context.UserAssembly.AddRange(userPc.UserAssembly);
+                    //            _context.SaveChanges(); // Save changes after adding each UserAssembly
+                    //        }
+                    //    }
+                    //}
+
                 }
 
-             
+
 
                 return new ServiceResponse()
                 {
@@ -456,51 +463,51 @@ namespace EAMS_DAL.AuthRepository
         {
 
             var userRecord = await _userManager.FindByIdAsync(userId);
-            var stateId = await _context.UserState.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
+            //var stateId = await _context.UserState.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
 
-            var stateName = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).Select(d => d.StateName).FirstOrDefaultAsync();
-            if (userRecord != null)
-            {
-                var roles = await _userManager.GetRolesAsync(userRecord);
+            //var stateName = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).Select(d => d.StateName).FirstOrDefaultAsync();
+            //if (userRecord != null)
+            //{
+            //    var roles = await _userManager.GetRolesAsync(userRecord);
 
-                var rolesList = roles.Select(role => new Role
-                {
+            //    var rolesList = roles.Select(role => new Role
+            //    {
 
-                    RoleId = role,
-                    RoleName = role
-                }).ToList();
+            //        RoleId = role,
+            //        RoleName = role
+            //    }).ToList();
 
-                if (userRecord != null && rolesList != null)
-                {
-                    UserList userList = new UserList()
-                    {
-                        Name = userRecord.UserName,
-                        MobileNumber = userRecord.PhoneNumber,
-                        StateId = Convert.ToInt32(stateId),
-                        //StateName = stateName,
-                        //DistrictId = Convert.ToInt32(districtId),
-                        //DistrictName = districtName,
-                        //AssemblyId = Convert.ToInt32(assemblyId),
-                        //AssemblyName = assemblyName,
-                        Roles = rolesList
+            //    if (userRecord != null && rolesList != null)
+            //    {
+            //        UserList userList = new UserList()
+            //        {
+            //            Name = userRecord.UserName,
+            //            MobileNumber = userRecord.PhoneNumber,
+            //            StateId = Convert.ToInt32(stateId),
+            //            //StateName = stateName,
+            //            //DistrictId = Convert.ToInt32(districtId),
+            //            //DistrictName = districtName,
+            //            //AssemblyId = Convert.ToInt32(assemblyId),
+            //            //AssemblyName = assemblyName,
+            //            Roles = rolesList
 
-                    };
+            //        };
 
-                    return userList;
-
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
+            //        return userList;
 
 
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
+            //else
+            //{
+            //    return null;
+            //}
+
+            return null;
         }
 
     }

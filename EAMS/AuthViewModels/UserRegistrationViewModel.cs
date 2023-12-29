@@ -33,15 +33,15 @@ namespace EAMS.AuthViewModels
         public int DistrictMasterId { get; set; } 
         public List<AssemblyViewModel> Assemblies { get; set; }
     }
-
+    public class PCConstituencyViewModel
+    {
+        public int PCMasterId { get; set; }
+        public List<AssemblyViewModel> Assemblies { get; set; }
+    }
     public class AssemblyViewModel
     {
         public int AssemblyMasterId { get; set; } 
     }
 
-    public class PCConstituencyViewModel
-    {
-        public int PCMasterId { get; set; } 
-        public List<AssemblyViewModel> Assemblies { get; set; }
-    }
+ 
 }

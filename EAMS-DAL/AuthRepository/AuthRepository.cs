@@ -239,10 +239,7 @@ namespace EAMS_DAL.AuthRepository
                 }
 
                 var user = await _userManager.FindByNameAsync(userRegistration.UserName);
-                user.UserStates = userRegistration.UserStates;
-                user.UserDistricts = userRegistration.UserDistricts;
-                user.UserAssemblies = userRegistration.UserAssemblies;
-                user.UserPCConstituencies = userRegistration.UserPCConstituencies;
+
 
                 if (roleIds != null && roleIds.Any())
                 {
@@ -266,9 +263,34 @@ namespace EAMS_DAL.AuthRepository
 
                 }
 
-                 
+                if (userRegistration.UserStates != null && userRegistration.UserStates.Any())
+                {
+                    foreach (var userState in userRegistration.UserStates)
+                    {
+                        _context.UserState.AddRange(userState);
+                        if (userState.UserDistrict != null && userState.UserDistrict.Any())
+                        {
+                            _context.UserDistrict.AddRange(userState.UserDistrict);
 
-                _context.SaveChanges();
+                            foreach (var userDistrict in userState.UserDistrict)
+                            {
+                                _context.UserAssembly.AddRange(userDistrict.UserAssembly);
+                            }
+                        }
+                        if (userState.UserPCConstituency != null && userState.UserPCConstituency.Any())
+                        {
+                            _context.UserPCConstituency.AddRange(userState.UserPCConstituency);
+
+                            foreach (var userPc in userState.UserPCConstituency)
+                            {
+                                _context.UserAssembly.AddRange(userPc.UserAssembly);
+                            }
+                        }
+                    }
+                    _context.SaveChanges();
+                }
+
+             
 
                 return new ServiceResponse()
                 {
@@ -276,10 +298,19 @@ namespace EAMS_DAL.AuthRepository
                     Message = $"User '{userRegistration.UserName}' created successfully!."
                 };
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 // Log the exception details for investigation
-                // Example: _logger.LogError(ex, "An error occurred while creating a user.");
+                foreach (var entry in ex.Entries)
+                {
+                    Console.WriteLine($"Entity Type: {entry.Entity.GetType().Name}");
+                    Console.WriteLine($"Entity State: {entry.State}");
+                    Console.WriteLine($"Original Values: {string.Join(", ", entry.OriginalValues.Properties.Select(p => $"{p.Name}: {entry.OriginalValues[p]}"))}");
+                    Console.WriteLine($"Current Values: {string.Join(", ", entry.CurrentValues.Properties.Select(p => $"{p.Name}: {entry.CurrentValues[p]}"))}");
+
+                    // Log entry details, such as entry.State, entry.OriginalValues, entry.CurrentValues, etc.
+                }
+
                 return new ServiceResponse()
                 {
                     IsSucceed = false,
@@ -426,14 +457,8 @@ namespace EAMS_DAL.AuthRepository
 
             var userRecord = await _userManager.FindByIdAsync(userId);
             var stateId = await _context.UserState.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
-            var districtId = await _context.UserDistrict.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
-            var assemblyId = await _context.UserAssembly.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
-            var pcId= await _context.UserPCConstituency.Where(d => d.Id == userRecord.Id).FirstOrDefaultAsync();
 
             var stateName = await _context.StateMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateId)).Select(d => d.StateName).FirstOrDefaultAsync();
-            var districtName = await _context.DistrictMaster.Where(d => d.DistrictMasterId == Convert.ToInt32(districtId)).Select(d => d.DistrictName).FirstOrDefaultAsync();
-            var assemblyName = await _context.AssemblyMaster.Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyId)).Select(d => d.AssemblyName).FirstOrDefaultAsync();
-            var pcName = await _context.ParliamentConstituencyMaster.Where(d => d.PCMasterId == Convert.ToInt32(pcId)).Select(d => d.PcName).FirstOrDefaultAsync();
             if (userRecord != null)
             {
                 var roles = await _userManager.GetRolesAsync(userRecord);
@@ -452,12 +477,12 @@ namespace EAMS_DAL.AuthRepository
                         Name = userRecord.UserName,
                         MobileNumber = userRecord.PhoneNumber,
                         StateId = Convert.ToInt32(stateId),
-                        StateName = stateName,
-                        DistrictId = Convert.ToInt32(districtId),
-                        DistrictName = districtName,
-                        AssemblyId = Convert.ToInt32(assemblyId),
-                        AssemblyName = assemblyName,
-                        Roles= rolesList
+                        //StateName = stateName,
+                        //DistrictId = Convert.ToInt32(districtId),
+                        //DistrictName = districtName,
+                        //AssemblyId = Convert.ToInt32(assemblyId),
+                        //AssemblyName = assemblyName,
+                        Roles = rolesList
 
                     };
 

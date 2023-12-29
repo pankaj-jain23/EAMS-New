@@ -22,25 +22,27 @@ namespace EAMS.Helper
 
             #region UserRegistration UserRegistration  
             CreateMap<UserRegistrationViewModel, UserRegistration>()
-           .ForMember(dest => dest.UserStates, opt => opt.MapFrom(src => src.UserStates))
-           .ForMember(dest => dest.UserDistricts, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.Districts)))
-           .ForMember(dest => dest.UserAssemblies, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.Districts.SelectMany(district => district.Assemblies))))
-           .ForMember(dest => dest.UserPCConstituencies, opt => opt.MapFrom(src => src.UserStates.SelectMany(state => state.PCConstituencies)))
-           .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-           .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
-           .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
-           .ReverseMap();
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+            .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password))
+            .ForMember(dest => dest.UserStates, opt => opt.MapFrom(src => src.UserStates));
 
-            CreateMap<StateViewModel, UserState>() 
-                .ReverseMap();
+            CreateMap<StateViewModel, UserState>()
+                .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+                .ForMember(dest => dest.UserDistrict, opt => opt.MapFrom(src => src.Districts))
+                .ForMember(dest => dest.UserPCConstituency, opt => opt.MapFrom(src => src.PCConstituencies));
 
-            CreateMap<DistrictViewModel, UserDistrict>() 
-                .ReverseMap();
+            CreateMap<DistrictViewModel, UserDistrict>()
+                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+                .ForMember(dest => dest.UserAssembly, opt => opt.MapFrom(src => src.Assemblies));
 
-            CreateMap<AssemblyViewModel, UserAssembly>().ReverseMap();
+            CreateMap<PCConstituencyViewModel, UserPCConstituency>()
+                .ForMember(dest => dest.PCMasterId, opt => opt.MapFrom(src => src.PCMasterId))
+                .ForMember(dest => dest.UserAssembly, opt => opt.MapFrom(src => src.Assemblies));
 
-            CreateMap<PCConstituencyViewModel, UserPCConstituency>() 
-                .ReverseMap();
+            CreateMap<AssemblyViewModel, UserAssembly>()
+                .ForMember(dest => dest.AssemblyMasterId, opt => opt.MapFrom(src => src.AssemblyMasterId));
+
 
             #endregion
 

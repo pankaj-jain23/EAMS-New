@@ -3,6 +3,7 @@ using System;
 using EAMS_DAL.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EAMS_DAL.Migrations
 {
     [DbContext(typeof(EamsContext))]
-    partial class EamsContextModelSnapshot : ModelSnapshot
+    [Migration("20231228102250_UserRegRelationkeys")]
+    partial class UserRegRelationkeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,10 +86,10 @@ namespace EAMS_DAL.Migrations
                     b.Property<int?>("AssemblyMasterId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("UserDistrictId")
+                    b.Property<int>("UserDistrictId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("UserPCConstituencyId")
+                    b.Property<int>("UserPCConstituencyId")
                         .HasColumnType("integer");
 
                     b.HasKey("UserAssemblyId");
@@ -1056,11 +1059,15 @@ namespace EAMS_DAL.Migrations
                 {
                     b.HasOne("EAMS_ACore.AuthModels.UserDistrict", "UserDistrict")
                         .WithMany("UserAssembly")
-                        .HasForeignKey("UserDistrictId");
+                        .HasForeignKey("UserDistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EAMS_ACore.AuthModels.UserPCConstituency", "UserPCConstituency")
                         .WithMany("UserAssembly")
-                        .HasForeignKey("UserPCConstituencyId");
+                        .HasForeignKey("UserPCConstituencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("UserDistrict");
 

@@ -263,42 +263,7 @@ namespace EAMS_DAL.AuthRepository
 
                 }
 
-                if (userRegistration.UserStates != null && userRegistration.UserStates.Any())
-                {
-                    //foreach (var userState in userRegistration.UserStates)
-                    //{
-                    //    _context.UserState.Add(userState);
-                    //    _context.SaveChanges(); // Save changes after adding each UserState
-
-                    //    if (userState.UserDistrict != null && userState.UserDistrict.Any())
-                    //    {
-                    //        _context.UserDistrict.AddRange(userState.UserDistrict);
-                    //        _context.SaveChanges(); // Save changes after adding each UserDistrict
-
-                    //        foreach (var userDistrict in userState.UserDistrict)
-                    //        {
-                    //            _context.UserAssembly.AddRange(userDistrict.UserAssembly);
-                    //            _context.SaveChanges(); // Save changes after adding each UserAssembly
-                    //        }
-                    //    }
-
-                    //    if (userState.UserPCConstituency != null && userState.UserPCConstituency.Any())
-                    //    {
-                    //        _context.UserPCConstituency.AddRange(userState.UserPCConstituency);
-                    //        _context.SaveChanges(); // Save changes after adding each UserPCConstituency
-
-                    //        foreach (var userPc in userState.UserPCConstituency)
-                    //        {
-                    //            _context.UserAssembly.AddRange(userPc.UserAssembly);
-                    //            _context.SaveChanges(); // Save changes after adding each UserAssembly
-                    //        }
-                    //    }
-                    //}
-
-                }
-
-
-
+               
                 return new ServiceResponse()
                 {
                     IsSucceed = true,

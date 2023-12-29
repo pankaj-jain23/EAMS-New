@@ -28,7 +28,7 @@ namespace EAMS_DAL.Repository
         }
         public async Task< List<Notification>> GetNotification()
         {
-            return await _context.Notification.ToListAsync();
+            return await _context.Notification.OrderByDescending(d=>d.NotificationId).ToListAsync();
 
         }
     }

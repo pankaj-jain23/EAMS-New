@@ -37,8 +37,8 @@ public partial class EamsContext : IdentityDbContext<UserRegistration>
     public virtual DbSet<PollInterruptionHistory> PollInterruptionHistory { get; set; }
     public virtual DbSet<Notification> Notification { get; set; }
 
-
-
+    public virtual DbSet<SMSTemplate> SMSTemplate { get; set; }
+    public virtual DbSet<SMSSent> SMSSent { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     { 
         base.OnModelCreating(modelBuilder);

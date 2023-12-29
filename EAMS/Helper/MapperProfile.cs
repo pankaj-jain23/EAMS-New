@@ -70,6 +70,17 @@ namespace EAMS.Helper
             CreateMap<NotificationViewModel, Notification>().ReverseMap();
             #endregion
 
+
+            #region SMSTemplateViewModel SMSTemplateModel
+            CreateMap<SMSTemplateViewModel, SMSTemplate>().ReverseMap();
+            #endregion
+
+            #region SMSSentViewModel SMSSentModel
+            CreateMap<SMSSentModel, SMSSent>().ReverseMap();
+            #endregion
+
+
+
             #region GetRefreshTokenViewModel GetRefreshToken
             CreateMap<GetRefreshTokenViewModel, GetRefreshToken>().ReverseMap();
             #endregion

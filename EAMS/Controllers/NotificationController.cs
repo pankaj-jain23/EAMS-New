@@ -4,6 +4,7 @@ using EAMS_ACore.Interfaces;
 using EAMS_ACore.NotificationModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 
 namespace EAMS.Controllers
 {
@@ -33,6 +34,53 @@ namespace EAMS.Controllers
         public async Task<IActionResult> GetNotification()
         { 
             var result = await _notificationService.GetNotification();
+
+            return Ok(result);
+        }
+
+        [Route("AddSMSTemplate")]
+        [HttpPost]
+        public async Task<IActionResult> AddSMSTemplate(SMSTemplateViewModel sMSTemplateViewModel)
+        {
+            var mappedData = _mapper.Map<SMSTemplate>(sMSTemplateViewModel);
+            var result = await _notificationService.AddSMSTemplate(mappedData);
+
+            return Ok(result);
+        }
+
+        [Route("GetSMSTemplates")]
+        [HttpGet]
+        public async Task<IActionResult> GetSMSTemplates()
+        {
+            var result = await _notificationService.GetSMSTemplate();
+
+            return Ok(result);
+        }
+        [Route("GetSMSTemplateById")]
+        [HttpGet]
+        public async Task<IActionResult> GetSMSTemplateById(string SMSTemplateById)
+        {
+            //var mappedData = _mapper.Map<SMSSent>(SMSSentModel);
+            var result = await _notificationService.GetSMSTemplateById(SMSTemplateById);
+
+            return Ok(result);
+        }
+        [Route("GetSMSTemplateById")]
+        [HttpPost]
+        public async Task<IActionResult> SendtoAll(string SMSTemplateId)
+        {
+            //var mappedData = _mapper.Map<SMSSent>(SMSSentModel);
+            var result = await _notificationService.SendSMS(SMSTemplateId);
+
+            return Ok(result);
+        }
+
+        [Route("SendOtp")]
+        [HttpPost]
+        public async Task<IActionResult> SendOtp(string mobile)
+        {
+           
+            var result = await _notificationService.SendOtp(mobile);
 
             return Ok(result);
         }

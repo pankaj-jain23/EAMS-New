@@ -458,19 +458,19 @@ namespace EAMS_BLL.Services
 
                                                 if (electionInfoMaster.VoterInQueue <= fetchResult.RemainingVotes)
                                                 {
-                                                    if (electionInfoMaster.VoterInQueue >= fetchResult.VotesPolled)
-                                                    {
+                                                    //if (electionInfoMaster.VoterInQueue >= fetchResult.VotesPolled)
+                                                    //{
 
                                                         electionInfoRecord.VoterInQueue = electionInfoMaster.VoterInQueue;
                                                         electionInfoRecord.IsVoterTurnOut = true;
                                                         electionInfoRecord.VotingTurnOutLastUpdate = BharatDateTime();
                                                         electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                                        return await _eamsRepository.EventActivity(electionInfoRecord);
-                                                    }
-                                                    else
-                                                    {
-                                                        return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voters in queue canno t be less than Last Votes Polled!" };
-                                                    }
+                                                           return await _eamsRepository.EventActivity(electionInfoRecord);
+                                                    //}
+                                                    //else
+                                                    //{
+                                                    //    return new Response { Status = RequestStatusEnum.BadRequest, Message = "Voters in queue canno t be less than Last Votes Polled!" };
+                                                    //}
                                                 }
                                                 else
                                                 {

@@ -349,7 +349,7 @@ namespace EAMS_DAL.Repository
         {
             var assembliesMasterRecord = _context.AssemblyMaster.Where(d => d.AssemblyMasterId == assemblyMaster.AssemblyMasterId).FirstOrDefault();
 
-            if (assembliesMasterRecord == null)
+            if (assembliesMasterRecord != null)
             {
                 assembliesMasterRecord.AssemblyName = assemblyMaster.AssemblyName;
                 assembliesMasterRecord.AssemblyCode = assemblyMaster.AssemblyCode;

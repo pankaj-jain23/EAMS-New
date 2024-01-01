@@ -245,13 +245,14 @@ namespace EAMS_BLL.AuthServices
                     else
                     {
                         var otp = GenerateOTP();
+                       
                         SectorOfficerMaster sectorOfficerMaster = new SectorOfficerMaster()
                         {
                             SoMobile = validateMobile.MobileNumber,
                             OTP = otp,
                             OTPAttempts = 1,
                             OTPGeneratedTime = BharatDateTime(),
-                            OTPExpireTime = BharatTimeDynamic(0, 0, 0, 0, 30)
+                            OTPExpireTime = BharatTimeDynamic(0, 0, 0, 0, 60)
                         };
 
                         var isSucceed = await _authRepository.SectorOfficerMasterRecord(sectorOfficerMaster);
@@ -261,7 +262,7 @@ namespace EAMS_BLL.AuthServices
                             return new Response()
                             {
                                 Status = RequestStatusEnum.OK,
-                                Message = "OTP Sent Successfully " + otp,
+                                Message = "OTP Sent Successfully " + otp +"/"+"Response: "+ isSucced.Message,
 
                             };
                         }

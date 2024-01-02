@@ -121,8 +121,28 @@ namespace EAMS.Helper
             #endregion
 
             #region AssemblyMasterViewModel AssemblyMaster
+            //CreateMap<AssemblyMasterViewModel, AssemblyMaster>()
+            //    .ReverseMap();
             CreateMap<AssemblyMasterViewModel, AssemblyMaster>()
-                .ReverseMap();
+    .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+    .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+    .ForMember(dest => dest.AssemblyName, opt => opt.MapFrom(src => src.AssemblyName))
+    .ForMember(dest => dest.AssemblyCode, opt => opt.MapFrom(src => src.AssemblyCode))
+    .ForMember(dest => dest.PCMasterId, opt => opt.MapFrom(src => src.PCMasterId))
+    .ForMember(dest => dest.AssemblyType, opt => opt.MapFrom(src => src.AssemblyType))
+    .ForMember(dest => dest.AssemblyStatus, opt => opt.MapFrom(src => src.IsStatus))
+     .ReverseMap();
+
+
+            CreateMap<AddAssemblyMasterViewModel, AssemblyMaster>()
+   .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+   .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+   .ForMember(dest => dest.AssemblyName, opt => opt.MapFrom(src => src.AssemblyName))
+   .ForMember(dest => dest.AssemblyCode, opt => opt.MapFrom(src => src.AssemblyCode))
+   .ForMember(dest => dest.PCMasterId, opt => opt.MapFrom(src => src.PCMasterId))
+   .ForMember(dest => dest.AssemblyType, opt => opt.MapFrom(src => src.AssemblyType))
+   .ForMember(dest => dest.AssemblyStatus, opt => opt.MapFrom(src => src.IsStatus));
+
             #endregion
 
             #region DistrictMasterViewModel and DistrictMaster 

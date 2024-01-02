@@ -484,7 +484,7 @@ namespace EAMS_DAL.Repository
             }
             else
             {
-                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO User" + sectorOfficerMaster.SoName + " " + "Already Exists" };
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "SO Mobile" + sectorOfficerMaster.SoName + " " + "Already Exists" };
 
             }
         }
@@ -503,7 +503,7 @@ namespace EAMS_DAL.Repository
             var isMobileUnique = await _context.SectorOfficerMaster
                               .AnyAsync(so => so.SoMobile == updatedSectorOfficer.SoMobile);
 
-            if (isMobileUnique == false)
+            if (isMobileUnique == true)
             {
                 existingSectorOfficer.SoName = updatedSectorOfficer.SoName;
                 existingSectorOfficer.SoMobile = updatedSectorOfficer.SoMobile;

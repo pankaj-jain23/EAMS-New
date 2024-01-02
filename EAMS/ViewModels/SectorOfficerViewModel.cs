@@ -18,5 +18,7 @@ namespace EAMS.ViewModels
         public int SoAssemblyCode { get; set; }
         [Required(ErrorMessage = "Sector Officer Mobile is required")]
         public string SoMobile { get; set; }
+
+        public bool? IsStatus { get; set; }
     }
 }

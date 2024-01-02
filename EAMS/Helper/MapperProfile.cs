@@ -243,6 +243,7 @@ namespace EAMS.Helper
               .ForMember(dest => dest.SoMobile, opt => opt.MapFrom(src => src.SoMobile))
               .ForMember(dest => dest.SoDesignation, opt => opt.MapFrom(src => src.SoDesignation))
               .ForMember(dest => dest.SoAssemblyCode, opt => opt.MapFrom(src => src.SoAssemblyCode))
+              .ForMember(dest => dest.SoStatus, opt => opt.MapFrom(src => src.IsStatus))
               .ReverseMap();
             #endregion
 
@@ -254,6 +255,7 @@ namespace EAMS.Helper
               .ForMember(dest => dest.SoMobile, opt => opt.MapFrom(src => src.SoMobile))
               .ForMember(dest => dest.SoDesignation, opt => opt.MapFrom(src => src.SoDesignation))
               .ForMember(dest => dest.SoAssemblyCode, opt => opt.MapFrom(src => src.SoAssemblyCode))
+              .ForMember(dest => dest.SoStatus, opt => opt.MapFrom(src => src.IsStatus))
               .ReverseMap();
             #endregion
 

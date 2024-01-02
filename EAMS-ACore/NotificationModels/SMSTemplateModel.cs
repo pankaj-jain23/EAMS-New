@@ -8,6 +8,7 @@ namespace EAMS_ACore.NotificationModels
 {
     public class SMSTemplateModel
     {
+        public string? SMSName { get; set; }
         public string? Message { get; set; }
         public string? EntityId { get; set; }
         public string? TemplateId { get; set; }

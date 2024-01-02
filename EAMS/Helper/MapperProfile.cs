@@ -116,6 +116,7 @@ namespace EAMS.Helper
                .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictId))
                .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
                .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode))
+               .ForMember(dest => dest.IsStatus, opt => opt.MapFrom(src => src.DistrictStatus))
                .ReverseMap();
 
             #endregion
@@ -146,8 +147,15 @@ namespace EAMS.Helper
             #endregion
 
             #region DistrictMasterViewModel and DistrictMaster 
+            //CreateMap<DistrictMasterViewModel, DistrictMaster>()
+            // .ReverseMap();
             CreateMap<DistrictMasterViewModel, DistrictMaster>()
-             .ReverseMap();
+              .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+              .ForMember(dest => dest.DistrictMasterId, opt => opt.MapFrom(src => src.DistrictMasterId))
+              .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
+              .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode))
+              .ForMember(dest => dest.DistrictStatus, opt => opt.MapFrom(src => src.IsStatus))
+              .ReverseMap();
 
             #endregion
 

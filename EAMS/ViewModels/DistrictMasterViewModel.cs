@@ -8,7 +8,7 @@ namespace EAMS.ViewModels
         public int DistrictMasterId { get; set; }  
         public string DistrictName { get; set; } 
         public string DistrictCode { get; set; }
-         
+        //public bool DistrictStatus { get; set; }
         public bool IsStatus { get; set; }  
        
 

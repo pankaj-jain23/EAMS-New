@@ -29,7 +29,7 @@ namespace EAMS_ACore
 
         public DateTime? DistrictDeletedAt { get; set; }  
 
-        public bool DistrictStatus { get; set; }=true;
+        public bool DistrictStatus { get; set; }
 
         [JsonIgnore]
         public virtual List<AssemblyMaster>? AssemblyMaster

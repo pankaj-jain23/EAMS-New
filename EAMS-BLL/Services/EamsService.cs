@@ -918,6 +918,7 @@ namespace EAMS_BLL.Services
                                                     pollInterruptionData.CreatedAt = BharatDateTime();
                                                     pollInterruptionData.UpdatedAt = BharatDateTime();
                                                     pollInterruptionData.IsPollInterrupted = false;
+                                                pollInterruptionData.Remarks= pollInterruption.Remarks;
 
                                                     var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                                     return result.Result;
@@ -939,7 +940,9 @@ namespace EAMS_BLL.Services
                                             pollInterruptionData.Flag = InterruptionCategory.Both.ToString();
                                             pollInterruptionData.CreatedAt = BharatDateTime();
                                             pollInterruptionData.UpdatedAt = BharatDateTime();
+                                            pollInterruptionData.Remarks = pollInterruption.Remarks;
                                             pollInterruptionData.IsPollInterrupted = false;
+                                            pollInterruptionData.Remarks = pollInterruption.Remarks;
                                             var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                             return result.Result;
                                         }
@@ -1009,7 +1012,7 @@ namespace EAMS_BLL.Services
                                         pollInterruptionData.CreatedAt = BharatDateTime();
                                         pollInterruptionData.UpdatedAt = BharatDateTime();
                                         pollInterruptionData.IsPollInterrupted = true;
-
+                                        pollInterruptionData.Remarks = pollInterruption.Remarks;
                                         var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                         return result.Result;
                                     }
@@ -1029,6 +1032,7 @@ namespace EAMS_BLL.Services
                                     pollInterruptionData.CreatedAt = BharatDateTime();
                                     pollInterruptionData.UpdatedAt = BharatDateTime();
                                     pollInterruptionData.IsPollInterrupted = true;
+                                    pollInterruptionData.Remarks = pollInterruption.Remarks;
                                     var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                     return result.Result;
                                 }
@@ -1105,7 +1109,7 @@ namespace EAMS_BLL.Services
                                                         pollInterruptionData.CreatedAt = BharatDateTime();
                                                         pollInterruptionData.UpdatedAt = BharatDateTime();
                                                         pollInterruptionData.IsPollInterrupted = false;
-
+                                                        pollInterruptionData.Remarks = pollInterruption.Remarks;
                                                         var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                                         return result.Result;
                                                     }
@@ -1127,6 +1131,7 @@ namespace EAMS_BLL.Services
                                                     pollInterruptionData.CreatedAt = BharatDateTime();
                                                     pollInterruptionData.UpdatedAt = BharatDateTime();
                                                     pollInterruptionData.IsPollInterrupted = false;
+                                                    pollInterruptionData.Remarks = pollInterruption.Remarks;
                                                     var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                                     return result.Result;
                                                 }
@@ -1205,7 +1210,7 @@ namespace EAMS_BLL.Services
                                                 pollInterruptionData.CreatedAt = BharatDateTime();
                                                 pollInterruptionData.UpdatedAt = BharatDateTime();
                                                 pollInterruptionData.IsPollInterrupted = true;
-
+                                                pollInterruptionData.Remarks = pollInterruption.Remarks;
                                                 var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                                 return result.Result;
                                             }
@@ -1227,6 +1232,7 @@ namespace EAMS_BLL.Services
                                             pollInterruptionData.CreatedAt = BharatDateTime();
                                             pollInterruptionData.UpdatedAt = BharatDateTime();
                                             pollInterruptionData.IsPollInterrupted = true;
+                                            pollInterruptionData.Remarks = pollInterruption.Remarks;
                                             var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                             return result.Result;
                                         }
@@ -1301,7 +1307,7 @@ namespace EAMS_BLL.Services
                                                 pollInterruptionData.CreatedAt = BharatDateTime();
                                                 pollInterruptionData.UpdatedAt = BharatDateTime();
                                                 pollInterruptionData.IsPollInterrupted = false;
-
+                                                pollInterruptionData.Remarks = pollInterruption.Remarks;
                                                 var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                                 return result.Result;
 
@@ -1325,6 +1331,7 @@ namespace EAMS_BLL.Services
                                             pollInterruptionData.CreatedAt = BharatDateTime();
                                             pollInterruptionData.UpdatedAt = BharatDateTime();
                                             pollInterruptionData.IsPollInterrupted = false;
+                                            pollInterruptionData.Remarks = pollInterruption.Remarks;
                                             var result = _eamsRepository.AddPollInterruption(pollInterruptionData);
                                             return result.Result;
                                         }

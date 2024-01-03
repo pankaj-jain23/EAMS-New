@@ -32,6 +32,7 @@ namespace EAMS_ACore.Models
         public DateTime? UpdatedAt { get; set; } 
 
         public string? Flag { get; set; }
+        public string? Remarks { get; set; }
 
 
 

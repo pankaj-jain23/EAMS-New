@@ -62,8 +62,14 @@ namespace EAMS.Controllers
         {
             //var mappedData = _mapper.Map<SMSSent>(SMSSentModel);
             var result = await _notificationService.GetSMSTemplateById(SMSTemplateById);
-
-            return Ok(result);
+            if (result == null)
+            {
+                return BadRequest("Record Not Found");
+            }
+            else
+            {
+                return Ok(result);
+            }
         }
         [Route("GetSMSTemplateById")]
         [HttpPost]

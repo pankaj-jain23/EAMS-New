@@ -51,9 +51,9 @@ namespace EAMS_BLL.Services
         {
             return await _notificationRepository.GetSMSTemplate();
         }
-        public async Task<ServiceResponse> SendOtp(string mobile,string otp)
+        public async Task<ServiceResponse> SendOtp(string mobile, string otp)
         {
-            
+
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
             string userNameSMS = SMSEnum.UserName.GetStringValue();
             string Password = SMSEnum.Password.GetStringValue();
@@ -62,14 +62,15 @@ namespace EAMS_BLL.Services
 
             string FinalsmsTemplateMsg = "";
             string templateId = "1407168318422038309";
-            string userName = "Chetna";string placeholder = "{#var#}";
+            string userName = "Chetna"; string placeholder = "{#var#}";
             //var template = "Dear {#var#},eOffice Services has been resumed now - O/o DGR";
-             
+
+           // string template = "Punjab Bye Elections 2023 to 04-Jalandhar(SC) PC, Dear Sector Officer, Your OTP for registration on PPDMS Mobile App is {#var#}. -CEOPJB";
             string template = "Punjab Bye Elections 2023 to 04-Jalandhar(SC) PC, Dear Sector Officer, Your OTP for registration on PPDMS Mobile App is " + Convert.ToString(otp).Trim() + ". -CEOPJB";
             if (template.Contains(placeholder))
             {
 
-                FinalsmsTemplateMsg = template.Replace(placeholder, userName);
+                FinalsmsTemplateMsg = template.Replace(placeholder, Convert.ToString(otp).Trim());
 
             }
             else
@@ -105,12 +106,73 @@ namespace EAMS_BLL.Services
 
             //var res = _notificationRepository.SendSMS(sMSSentModel);
 
+            return new ServiceResponse()
+            {
+                IsSucceed = true,
+                Message = "SMS Sent: " + sent + "/Not Sent: " + Notsent
+            };
+
+        }
+
+        /*public async Task<ServiceResponse> SendOtp(string mobile,string otp)
+        {
+            
+            SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
+            string userNameSMS = SMSEnum.UserName.GetStringValue();
+            string Password = SMSEnum.Password.GetStringValue();
+            string senderId = SMSEnum.SenderId.GetStringValue();
+            string entityId = SMSEnum.EntityId.GetStringValue();
+            string SMSTypeOTP = SMSEnum.OTP.GetStringValue();
+            string FinalsmsTemplateMsg = "";string placeholder = "{#var#}";
+
+            var getTemplate = _notificationRepository.GetSMSTemplateById(SMSTypeOTP);
+            string template = getTemplate.Result.Message;
+
+
+            if (template.Contains(placeholder))
+            {
+
+                FinalsmsTemplateMsg = template.Replace(placeholder, Convert.ToString(otp).Trim());
+
+            }
+            else
+            {
+                FinalsmsTemplateMsg = template;
+            }
+
+
+            var result = SendSMSAsync(userNameSMS, Password, senderId, mobile, FinalsmsTemplateMsg, entityId, getTemplate.Result.TemplateId.ToString());
+           
+            if (result.Result.Contains(SMSEnum.MessageAccepted.GetStringValue()))
+            {
+
+                sent += 1;
+            }
+            else
+            {
+                Notsent += 0;
+            }
+
+            sMSSentModel = new SMSSentModel()
+            {
+                SMSTemplateMasterId = getTemplate.Result.SMSTemplateMasterId,
+                Message = FinalsmsTemplateMsg,
+                Mobile = mobile,
+                RemarksFromGW = result.Result,
+                CreatedAt = BharatDateTime(),
+                //Status=,
+                SentToUserType="SO"
+
+            };
+
+            var res = _notificationRepository.SaveSMS(sMSSentModel);
+
             return new ServiceResponse() {
                 IsSucceed=true,
                 Message = "SMS Sent: " + sent + "/Not Sent: " + Notsent
             };
           
-        }
+        }*/
         public async Task<ServiceResponse> SendSMS(string smsTemplateMasterId)
         {
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
@@ -127,9 +189,8 @@ namespace EAMS_BLL.Services
                     string entityId = SMSEnum.EntityId.GetStringValue();
                     string MessageDb = smsTemplateRecord.Message;
                     string mobile = ""; string userName = "";
-                    string userNamePlaceholder = "{#User#}";
-
-                   
+                    string userNamePlaceholder = "{#userName#}";
+                                     
 
                     foreach (var soDetail in soRecord)
                     {
@@ -147,7 +208,7 @@ namespace EAMS_BLL.Services
                         
                         
                        var result = SendSMSAsync(userNameSMS, Password, senderId, mobile, FinalsmsTemplateMsg, entityId, smsTemplateMasterId);
-                        if (result.Result.Contains("Message Accepted"))
+                        if (result.Result.Contains(SMSEnum.MessageAccepted.GetStringValue()))
                         {
 
                             sent += 1;
@@ -169,7 +230,7 @@ namespace EAMS_BLL.Services
 
                         };
 
-                     var res= _notificationRepository.SendSMS(sMSSentModel);
+                     var res= _notificationRepository.SaveSMS(sMSSentModel);
 
 
                     }

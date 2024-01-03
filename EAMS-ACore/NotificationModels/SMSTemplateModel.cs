@@ -12,6 +12,6 @@ namespace EAMS_ACore.NotificationModels
         public string? Message { get; set; }
         public string? EntityId { get; set; }
         public string? TemplateId { get; set; }
-        public bool? Status { get; set; }
+        public bool? IsStatus { get; set; }
     }
 }

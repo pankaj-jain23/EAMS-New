@@ -9,7 +9,7 @@ namespace EAMS.ViewModels
         public string? Message { get; set; }
         public string? EntityId { get; set; }
         public string? TemplateId { get; set; }
-        public bool? Status { get; set; }
+        public bool? IsStatus { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

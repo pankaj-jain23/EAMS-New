@@ -72,7 +72,14 @@ namespace EAMS.Helper
 
 
             #region SMSTemplateViewModel SMSTemplateModel
-            CreateMap<SMSTemplateViewModel, SMSTemplate>().ReverseMap();
+           
+            CreateMap<SMSTemplateViewModel, SMSTemplate>()
+               .ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.TemplateId))
+               .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsStatus))
+               .ForMember(dest => dest.EntityId, opt => opt.MapFrom(src => src.EntityId))
+               .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))
+               .ForMember(dest => dest.SMSName, opt => opt.MapFrom(src => src.SMSName))
+               .ReverseMap();
             #endregion
 
             #region SMSSentViewModel SMSSentModel

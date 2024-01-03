@@ -791,7 +791,7 @@ namespace EAMS_DAL.Repository
 
         public async Task<List<EventMaster>> GetEventList()
         {
-            var eventData = await _context.EventMaster
+            var eventData = await _context.EventMaster.Where(d => d.EventMasterId != 14)
                 .OrderBy(d => d.EventSequence) // Add this line for ordering
                 .Select(d => new EventMaster
                 {
@@ -2690,16 +2690,16 @@ namespace EAMS_DAL.Repository
                     list.Add(model);
                 }
 
-                else if (eventid.EventMasterId == 14)
-                {
-                    EventWiseBoothStatus model = new EventWiseBoothStatus();
-                    model.EventMasterId = eventid.EventMasterId;
-                    model.EventName = eventid.EventName;
-                    model.Completed = totalPollInterrupted;
-                    model.Pending = pendingInterruption;
-                    model.TotalBooths = soTotalBooths.Count;
-                    list.Add(model);
-                }
+                //else if (eventid.EventMasterId == 14)
+                //{
+                //    EventWiseBoothStatus model = new EventWiseBoothStatus();
+                //    model.EventMasterId = eventid.EventMasterId;
+                //    model.EventName = eventid.EventName;
+                //    model.Completed = totalPollInterrupted;
+                //    model.Pending = pendingInterruption;
+                //    model.TotalBooths = soTotalBooths.Count;
+                //    list.Add(model);
+                //}
 
             }
 

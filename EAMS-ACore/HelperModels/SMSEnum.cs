@@ -14,7 +14,13 @@ namespace EAMS_ACore.HelperModels
         Password,
 
         [StringValue("PBGOVT")]
-        SenderId
+        SenderId,
+
+        [StringValue("7")]
+        OTP,
+
+       [StringValue("Message Accepted")]
+        MessageAccepted
     }
 
     public class StringValueAttribute : Attribute

@@ -14,7 +14,7 @@ namespace EAMS_ACore.IRepository
         Task<ServiceResponse> SendNotification(Notification notificationModel);
         Task<ServiceResponse> AddSMSTemplate(SMSTemplate SMSModel);
         Task<SMSTemplate> GetSMSTemplateById(string smsTemplateMasterId);
-        Task<ServiceResponse> SendSMS(SMSSentModel sMSSentModel);
+        Task<ServiceResponse> SaveSMS(SMSSentModel sMSSentModel);
         Task<List<Notification>> GetNotification();
         Task<List<SMSTemplate>> GetSMSTemplate();
 

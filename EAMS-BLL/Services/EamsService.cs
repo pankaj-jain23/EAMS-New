@@ -738,7 +738,22 @@ namespace EAMS_BLL.Services
             }
             else if (electionInfoRecord == null)
             {
-                return await _eamsRepository.EventActivity(electionInfoMaster);
+                if (electionInfoMaster.EventMasterId == 1)
+                {
+                    string pollInterruptedMsg = "You have not entered 'Resume Time' in Poll interruption againist this booth.";
+                    bool isPollInterruptedOfBooth = false;
+                    isPollInterruptedOfBooth = _eamsRepository.IsPollInterrupted(electionInfoMaster.BoothMasterId);
+                    if (isPollInterruptedOfBooth == false)
+                    {
+                        return await _eamsRepository.EventActivity(electionInfoMaster);
+                    }
+                    else
+                    {
+                        return new Response { Status = RequestStatusEnum.BadRequest, Message = pollInterruptedMsg };
+
+                    }
+                }
+                
 
             }
 

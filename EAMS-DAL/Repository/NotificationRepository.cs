@@ -38,7 +38,7 @@ namespace EAMS_DAL.Repository
         
         public async Task<SMSTemplate> GetSMSTemplateById(string smsTemplateMasterId)
         {
-            return await _context.SMSTemplate.OrderByDescending(d => d.Status== true && d.SMSTemplateMasterId == Convert.ToInt32(smsTemplateMasterId)).FirstOrDefaultAsync();
+            return await _context.SMSTemplate.Where(d => d.Status== true && d.SMSTemplateMasterId == Convert.ToInt32(smsTemplateMasterId)).FirstOrDefaultAsync();
 
         }
         public async Task< List<Notification>> GetNotification()
@@ -59,7 +59,7 @@ namespace EAMS_DAL.Repository
             return await _context.SectorOfficerMaster.ToListAsync();
 
         }
-            public async Task<ServiceResponse> SendSMS(SMSSentModel sMSSentModel)
+            public async Task<ServiceResponse> SaveSMS(SMSSentModel sMSSentModel)
         {
 
             var smssent = ConvertToSMSSent(sMSSentModel);

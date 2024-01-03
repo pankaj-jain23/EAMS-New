@@ -22,7 +22,8 @@ namespace EAMS.ViewModels
         public string? newBU { get; set; }
         public string? oldCu { get; set; }
         public string? oldBu { get; set; }
-        
+        public string? Remarks { get; set; }
+
     }
 }
 

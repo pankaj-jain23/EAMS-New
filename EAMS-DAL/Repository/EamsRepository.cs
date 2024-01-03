@@ -6,8 +6,11 @@ using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using EAMS_DAL.Migrations;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace EAMS_DAL.Repository
 {
@@ -535,7 +538,7 @@ namespace EAMS_DAL.Repository
                             join state in _context.StateMaster
                              on dist.StateMasterId equals state.StateMasterId
 
-                            select new CombinedMaster
+                            select new CombinedMaster 
                             {
                                 StateId = Convert.ToInt32(stateMasterId),
                                 StateName = state.StateName,
@@ -2983,20 +2986,52 @@ namespace EAMS_DAL.Repository
             var pollInterruptionRecord = await _context.PollInterruptions.Where(d => d.BoothMasterId == Convert.ToInt32(boothMasterId)).OrderByDescending(p => p.PollInterruptionId).FirstOrDefaultAsync();
             return pollInterruptionRecord;
         }
-
-      
-        public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
+        public async Task<List<PollInterruptionHistoryModel>> GetPollInterruptionHistoryById(string boothMasterId)
         {
-            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == boothMasterId).FirstOrDefaultAsync();
-            return boothRecord;
+            var query = from pollInterruption in _context.PollInterruptions
+                        join assemblyMaster in _context.AssemblyMaster on pollInterruption.AssemblyMasterId equals assemblyMaster.AssemblyMasterId
+                        join boothMaster in _context.BoothMaster on new { BoothMasterId = pollInterruption.BoothMasterId, AssemblyMasterId = assemblyMaster.AssemblyMasterId } equals new { BoothMasterId = boothMaster.BoothMasterId, AssemblyMasterId = boothMaster.AssemblyMasterId }
+                        where boothMaster.BoothMasterId == Convert.ToInt32(boothMasterId)
+                        orderby pollInterruption.CreatedAt descending
+                        select new
+                        {
+                            pollInterruption.PollInterruptionId,
+                            pollInterruption.BoothMasterId,
+                            boothMaster.BoothName,
+                            boothMaster.StateMasterId,
+                            boothMaster.DistrictMasterId,
+                            pollInterruption.IsPollInterrupted,
+                            pollInterruption.InterruptionType,
+                            pollInterruption.StopTime,
+                            pollInterruption.ResumeTime,
+                            pollInterruption.CreatedAt,
+                        };
+
+            var result = await query.ToListAsync();
+
+            return result.Select(p => new PollInterruptionHistoryModel
+            {
+                PollInterruptionId = p.PollInterruptionId,
+                BoothMasterId = p.BoothMasterId,
+                BoothName = p.BoothName,
+                StateMasterId = p.StateMasterId,
+                DistrictMasterId = p.DistrictMasterId,
+                IsPollInterrupted = p.IsPollInterrupted,
+                InterruptionReason = Enum.GetName(typeof(InterruptionReason), p.InterruptionType),
+                StopTime = p.StopTime,
+                ResumeTime = p.ResumeTime,
+                CreatedAt = p.CreatedAt,
+                // Add other properties as needed
+            }).ToList();
         }
+
 
 
 
         public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string StateId)
         {
 
-           
+
 
             //  var ww = _context.PollInterruptions.FromSqlRaw(query).ToList();
 
@@ -3008,18 +3043,18 @@ namespace EAMS_DAL.Repository
                          orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
                          select new PollInterruptionDashboard
                          {
-                             PollInterruptionMasterId=pi.PollInterruptionId,
-                             StateMasterId=pi.StateMasterId,
-                             DistrictMasterId=pi.DistrictMasterId,
-                             AssemblyMasterId= pi.AssemblyMasterId,
-                             AssemblyName=am.AssemblyName,
-                             BoothMasterId=bm.BoothMasterId,
-                             BoothName=bm.BoothName,
-                             CreatedAt=pi.CreatedAt,
-                             InterruptionType=pi.InterruptionType,
-                             StopTime=pi.StopTime,
-                             ResumeTime=pi.ResumeTime,
-                             isPollInterrupted=pi.IsPollInterrupted
+                             PollInterruptionMasterId = pi.PollInterruptionId,
+                             StateMasterId = pi.StateMasterId,
+                             DistrictMasterId = pi.DistrictMasterId,
+                             AssemblyMasterId = pi.AssemblyMasterId,
+                             AssemblyName = am.AssemblyName,
+                             BoothMasterId = bm.BoothMasterId,
+                             BoothName = bm.BoothName,
+                             CreatedAt = pi.CreatedAt,
+                             InterruptionType = pi.InterruptionType,
+                             StopTime = pi.StopTime,
+                             ResumeTime = pi.ResumeTime,
+                             isPollInterrupted = pi.IsPollInterrupted
 
                          } into distinctResult
                          group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
@@ -3038,6 +3073,15 @@ namespace EAMS_DAL.Repository
 
             //return finalResult;
         }
+        public async Task<BoothMaster> GetBoothRecord(int boothMasterId)
+        {
+            var boothRecord = await _context.BoothMaster.Where(d => d.BoothMasterId == boothMasterId).FirstOrDefaultAsync();
+            return boothRecord;
+        }
+
+
+
+      
 
         #endregion
 

@@ -1458,8 +1458,11 @@ namespace EAMS_BLL.Services
             return _eamsRepository.GetPollInterruptionData(boothMasterId);
         }
 
+        public Task<List<PollInterruptionHistoryModel>> GetPollInterruptionHistoryById(string boothMasterId)
+        {
+            return _eamsRepository.GetPollInterruptionHistoryById(boothMasterId);
+        }
 
-     
 
         #endregion
         static bool IsHHmmFormat(string timeString)

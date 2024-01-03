@@ -1620,6 +1620,16 @@ namespace EAMS.Controllers
 
         }
 
+
+        [HttpGet]
+        [Route("GetPollInterruptionHistoryById")]
+        public async Task<IActionResult> GetPollInterruptionHistoryById(string boothMasterId)
+        {
+            var data = await _EAMSService.GetPollInterruptionHistoryById(boothMasterId);
+            return Ok(data);
+
+        }
+
         [HttpGet]
         [Route("GetPollInterruptionDashboard")]
         public async Task<IActionResult> GetPollInterruptionDashboard(string StateId)

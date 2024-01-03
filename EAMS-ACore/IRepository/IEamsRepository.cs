@@ -2,6 +2,7 @@
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace EAMS_ACore.IRepository
 {
@@ -107,6 +108,8 @@ namespace EAMS_ACore.IRepository
         #region PollInterruption Interruption
         Task<Response> AddPollInterruption(PollInterruption pollinterruptionData);
         Task<PollInterruption> GetPollInterruptionData(string boothMasterId);
+        Task<List<PollInterruptionHistoryModel>> GetPollInterruptionHistoryById(string boothMasterId);
+        
         Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string stateid);
 
         

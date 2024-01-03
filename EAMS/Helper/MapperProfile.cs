@@ -79,6 +79,10 @@ namespace EAMS.Helper
                .ForMember(dest => dest.EntityId, opt => opt.MapFrom(src => src.EntityId))
                .ForMember(dest => dest.Message, opt => opt.MapFrom(src => src.Message))
                .ForMember(dest => dest.SMSName, opt => opt.MapFrom(src => src.SMSName))
+                 .ForMember(dest => dest.SMSTemplateMasterId, opt => opt.MapFrom(src => src.SMSTemplateMasterId))
+               //.ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTimeOffset.Now.ToUniversalTime()))
+               //.ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTimeOffset.Now.ToUniversalTime()))
+
                .ReverseMap();
             #endregion
 

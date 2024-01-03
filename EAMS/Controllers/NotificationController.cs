@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using EAMS.ViewModels;
+using EAMS_ACore.HelperModels;
+using EAMS_ACore;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.NotificationModels;
+using EAMS_BLL.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
@@ -71,15 +74,15 @@ namespace EAMS.Controllers
                 return Ok(result);
             }
         }
-        [Route("GetSMSTemplateById")]
-        [HttpPost]
-        public async Task<IActionResult> SendtoAll(string SMSTemplateId)
-        {
-            //var mappedData = _mapper.Map<SMSSent>(SMSSentModel);
-            var result = await _notificationService.SendSMS(SMSTemplateId);
+        //[Route("SendtoAll")]
+        //[HttpPost]
+        //public async Task<IActionResult> SendtoAll(string SMSTemplateId)
+        //{
+        //    //var mappedData = _mapper.Map<SMSSent>(SMSSentModel);
+        //    var result = await _notificationService.SendSMS(SMSTemplateId);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
         [Route("SendOtp")]
         [HttpPost]
@@ -89,6 +92,25 @@ namespace EAMS.Controllers
             var result = await _notificationService.SendOtp(mobile,otp);
 
             return Ok(result);
+        }
+
+        [HttpPut]
+        [Route("UpdateSMSTemplateById")]
+        public async Task<IActionResult> UpdateSMSTemplateById(SMSTemplateViewModel sMSTemplateViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<SMSTemplate>(sMSTemplateViewModel);
+                var sms_temp = await _notificationService.UpdateSMSTemplateById(mappedData);
+
+                return Ok(sms_temp);
+           
+            }
+            else
+
+            {
+                return BadRequest(ModelState);
+            }
         }
     }
 }

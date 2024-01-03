@@ -1,4 +1,5 @@
-﻿using EAMS_ACore.HelperModels;
+﻿using EAMS.Helper;
+using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.NotificationModels;
@@ -47,10 +48,15 @@ namespace EAMS_BLL.Services
             return await _notificationRepository.GetSMSTemplateById(smsTemplateMasterId);
 
         }
-        public async Task<List<SMSTemplate>> GetSMSTemplate()
+        public async Task<List<SMSTemplateModel>> GetSMSTemplate()
         {
             return await _notificationRepository.GetSMSTemplate();
         }
+        public async Task<ServiceResponse> UpdateSMSTemplateById(SMSTemplate sMSTemplate)
+        {
+            return await _notificationRepository.UpdateSMSTemplateById(sMSTemplate);
+        }
+        
         public async Task<ServiceResponse> SendOtp(string mobile, string otp)
         {
 

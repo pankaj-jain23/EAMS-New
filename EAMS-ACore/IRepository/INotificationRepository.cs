@@ -16,7 +16,8 @@ namespace EAMS_ACore.IRepository
         Task<SMSTemplate> GetSMSTemplateById(string smsTemplateMasterId);
         Task<ServiceResponse> SaveSMS(SMSSentModel sMSSentModel);
         Task<List<Notification>> GetNotification();
-        Task<List<SMSTemplate>> GetSMSTemplate();
+        Task<List<SMSTemplateModel>> GetSMSTemplate();
+        Task<ServiceResponse> UpdateSMSTemplateById(SMSTemplate sMSTemplateModel);
 
         Task<List<SectorOfficerMaster>> GetSectorOfficersAll();
     }

@@ -234,62 +234,92 @@ namespace EAMS_DAL.AuthRepository
                                                         DistrictMasterId = d.DistrictMasterId,
                                                     })
                                                     .ToList();
+                            var pcList = _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId)
+                                                      .Where(d => d.StateMasterId == userState.StateMasterId)
+                                                      .Select(d => new UserPCConstituency
+                                                      {
+                                                          PCMasterId = d.PCMasterId,
+                                                      })
+                                                      .ToList();
 
                             var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
 
                             if (matchingUserState != null)
                             {
                                 matchingUserState.UserDistrict = districtList;
+                                matchingUserState.UserPCConstituency = pcList;
                             }
+
                         }
 
+                        // Inside the if (isExist.Any(d => d.Name.Contains("DistrictAdmin"))) block
                         if (isExist.Any(d => d.Name.Contains("DistrictAdmin")))
                         {
-
                             foreach (var district in userState.UserDistrict)
                             {
-                                var districtList = _context.DistrictMaster.OrderBy(d => d.DistrictMasterId)
-                                                           .Where(d => d.StateMasterId == district.UserState.StateMasterId && d.DistrictMasterId == district.DistrictMasterId)
-                                                           .Select(d => new UserDistrict
-                                                           {
-                                                               DistrictMasterId = d.DistrictMasterId,
-                                                               // Add other property assignments as needed
-                                                           })
-                                                           .ToList();
+                                var assemblieList = _context.AssemblyMaster.OrderBy(d => d.AssemblyMasterId)
+                                    .Where(d => d.StateMasterId == userState.StateMasterId || d.DistrictMasterId == district.DistrictMasterId)
+                                    .Select(d => new UserAssembly
+                                    {
+                                        AssemblyMasterId = d.AssemblyMasterId,
+                                        // Set other properties as needed
+                                    })
+                                    .ToList();
 
                                 var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
 
                                 if (matchingUserState != null)
                                 {
-                                    matchingUserState.UserDistrict = districtList;
+                                    foreach (var assemblie in matchingUserState.UserDistrict)
+                                    {
+                                        // Create a list of UserAssembly from the list of AssemblyMaster
+                                        var userAssemblyList = assemblieList.Select(assembly => new UserAssembly
+                                        {
+                                            AssemblyMasterId = assembly.AssemblyMasterId,
+                                            // Set other properties as needed
+                                        }).ToList();
+
+                                        // Assign the list of UserAssembly to the UserAssembly property
+                                        assemblie.UserAssembly = userAssemblyList;
+                                    }
                                 }
                             }
-
-
                         }
-
+                   
                         if (isExist.Any(d => d.Name.Contains("PC")))
                         {
                             foreach (var pc in userState.UserPCConstituency)
                             {
-                                var pcList = _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId)
-                                                       .Where(d => d.StateMasterId == pc.UserState.StateMasterId && d.PCMasterId == pc.PCMasterId)
-                                                       .Select(d => new UserPCConstituency
-                                                       {
-                                                           PCMasterId = d.PCMasterId, 
-                                                       })
-                                                       .ToList();
+                                var assemblieList = _context.AssemblyMaster.OrderBy(d => d.AssemblyMasterId)
+                                    .Where(d => d.StateMasterId == userState.StateMasterId || d.PCMasterId==pc.PCMasterId)
+                                    .Select(d => new UserAssembly
+                                    {
+                                        AssemblyMasterId = d.AssemblyMasterId,
+                                        // Set other properties as needed
+                                    })
+                                    .ToList();
 
                                 var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
 
                                 if (matchingUserState != null)
                                 {
-                                    matchingUserState.UserPCConstituency = pcList;
+                                    foreach (var assemblie in matchingUserState.UserPCConstituency)
+                                    {
+                                        // Create a list of UserAssembly from the list of AssemblyMaster
+                                        var userAssemblyList = assemblieList.Select(assembly => new UserAssembly
+                                        {
+                                            AssemblyMasterId = assembly.AssemblyMasterId,
+                                            // Set other properties as needed
+                                        }).ToList();
+
+                                        // Assign the list of UserAssembly to the UserAssembly property
+                                        assemblie.UserAssembly = userAssemblyList;
+                                    }
                                 }
                             }
                         }
 
-                        
+
 
                     }
 

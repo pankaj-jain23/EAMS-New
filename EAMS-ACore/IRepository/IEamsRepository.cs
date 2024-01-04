@@ -64,7 +64,10 @@ namespace EAMS_ACore.IRepository
         #endregion
 
         #region PCMaster
-        Task<List<ParliamentConstituencyMaster>> GetPCList();
+        Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId);
+        Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid,string PcMasterId);
+        Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterid,string districtMasterId);
+        
         #endregion
 
         #region Event Activity

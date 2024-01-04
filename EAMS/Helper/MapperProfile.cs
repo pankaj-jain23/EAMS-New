@@ -298,7 +298,7 @@ namespace EAMS.Helper
             #endregion    
 
             #region PCMaster
-            CreateMap<PCViewModel, ParliamentConstituencyMaster>()
+            CreateMap<ParliamentConstituencyMaster,PCViewModel>()
                 .ReverseMap();
             #endregion
 

@@ -4,6 +4,8 @@ namespace EAMS.ViewModels
 {
     public class PCViewModel
     {
+        public int? PCMasterId { get; set; }
+        public int? StateMasterId { get; set; }
         [Required(ErrorMessage = "PC Code is required")]
         public string? PcCodeNo { get; set; }
         [Required(ErrorMessage = "PC Name is required")]
@@ -11,11 +13,11 @@ namespace EAMS.ViewModels
         [Required(ErrorMessage = "PC Type is required")]
         public string? PcType { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        //public DateTime? CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
+        //public DateTime? UpdatedAt { get; set; }
 
-        public DateTime? DeletedAt { get; set; }
+       // public DateTime? DeletedAt { get; set; }
         [Required(ErrorMessage = "PC Status is required")]
         public bool IsStatus { get; set; } 
     }

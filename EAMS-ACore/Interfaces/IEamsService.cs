@@ -65,8 +65,11 @@ namespace EAMS_ACore.Interfaces
 
         #region PCMaster
 
-        Task<List<ParliamentConstituencyMaster>> GetPCList();
+        Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId);
         #endregion
+        Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid, string PcMasterId);
+        Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterid, string districtMasterId);
+
 
         #region Event Activity
         Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster);

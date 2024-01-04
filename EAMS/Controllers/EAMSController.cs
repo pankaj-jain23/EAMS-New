@@ -967,10 +967,53 @@ namespace EAMS.Controllers
         #region PC 
         [HttpGet]
         [Route("GetPCList")]
-        public async Task<IActionResult> GetPCList()
+        public async Task<IActionResult> GetPCList(string stateMasterId)
         {
-            var pcList = await _EAMSService.GetPCList();
+            var pcList = await _EAMSService.GetPCList(stateMasterId);
             var mappedData = _mapper.Map<List<PCViewModel>>(pcList);
+            if (mappedData != null)
+            {
+                var pcData = new
+                {
+                    count = mappedData.Count,
+                    data = mappedData
+                };
+                return Ok(pcData);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+        }
+        #endregion
+
+        #region PC 
+        [HttpGet]
+        [Route("GetAssemblyByPCId")]
+        public async Task<IActionResult> GetAssemblyByPCId(string stateMasterid, string PcMasterId)
+        {
+            var asembList = await _EAMSService.GetAssemblyByPCId(stateMasterid, PcMasterId);
+            var mappedData = _mapper.Map<List<AssemblyMasterViewModel>>(asembList);
+            if (mappedData != null)
+            {
+               var pcData = new
+                {
+                    count = mappedData.Count,
+                    data = mappedData
+                };
+                return Ok(pcData);
+            }
+            else
+            {
+                return BadRequest("No Record Found");
+            }
+        }
+        [HttpGet]
+        [Route("GetAssemblyByDistrictId")]
+        public async Task<IActionResult> GetAssemblyByDistrictId(string stateMasterid, string districtMasterId)
+        {
+            var asembList = await _EAMSService.GetAssemblyByDistrictId(stateMasterid,districtMasterId);
+            var mappedData = _mapper.Map<List<AssemblyMasterViewModel>>(asembList);
             if (mappedData != null)
             {
                 var pcData = new

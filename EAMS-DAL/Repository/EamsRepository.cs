@@ -408,7 +408,47 @@ namespace EAMS_DAL.Repository
             var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyCode == Convert.ToInt32(assemblyCode)).FirstOrDefaultAsync();
             return assemblyRecord;
         }
+        public async Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid,string PcMasterId)
+        {
+            
+            var asemData = await _context.AssemblyMaster
+    .Where(d => d.PCMasterId == Convert.ToInt32(PcMasterId) && d.StateMasterId == Convert.ToInt32(stateMasterid))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new AssemblyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId = d.StateMasterId,
+        AssemblyCode = d.AssemblyCode,
+        AssemblyName = d.AssemblyName,
+        AssemblyType = d.AssemblyType,
+        AssemblyStatus = d.AssemblyStatus,
+        AssemblyCreatedAt=d.AssemblyCreatedAt
+    })
+    .ToListAsync();
 
+            return asemData;
+        }
+        
+             public async Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterId,string districtMasterId)
+        {
+
+            var asemData = await _context.AssemblyMaster
+    .Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new AssemblyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId = d.StateMasterId,
+        AssemblyCode = d.AssemblyCode,
+        AssemblyName = d.AssemblyName,
+        AssemblyType = d.AssemblyType,
+        AssemblyStatus = d.AssemblyStatus,
+        AssemblyCreatedAt = d.AssemblyCreatedAt
+    })
+    .ToListAsync();
+
+            return asemData;
+        }
         #endregion
 
         #region SO Master
@@ -1422,17 +1462,23 @@ namespace EAMS_DAL.Repository
 
         #region PCMaster
 
-        public async Task<List<ParliamentConstituencyMaster>> GetPCList()
-        {
-            var pcData = await _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId).Select(d => new ParliamentConstituencyMaster
-            {
-                PCMasterId = d.PCMasterId,
-                PcCodeNo = d.PcCodeNo,
-                PcName = d.PcName,
-                PcType = d.PcType,
-                PcStatus = d.PcStatus
-            })
-                .ToListAsync();
+        public async Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId)
+        {          
+
+            var pcData = await _context.ParliamentConstituencyMaster
+    .Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new ParliamentConstituencyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId=d.StateMasterId,
+        PcCodeNo = d.PcCodeNo,
+        PcName = d.PcName,
+        PcType = d.PcType,
+        PcStatus = d.PcStatus
+    })
+    .ToListAsync();
+
             return pcData;
         }
 

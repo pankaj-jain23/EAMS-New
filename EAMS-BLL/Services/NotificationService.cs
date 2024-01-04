@@ -57,7 +57,7 @@ namespace EAMS_BLL.Services
             return await _notificationRepository.UpdateSMSTemplateById(sMSTemplate);
         }
         
-        public async Task<ServiceResponse> SendOtp(string mobile, string otp)
+        /*public async Task<ServiceResponse> SendOtp(string mobile, string otp)
         {
 
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
@@ -118,9 +118,9 @@ namespace EAMS_BLL.Services
                 Message = "SMS Sent: " + sent + "/Not Sent: " + Notsent
             };
 
-        }
+        }*/
 
-        /*public async Task<ServiceResponse> SendOtp(string mobile,string otp)
+        public async Task<ServiceResponse> SendOtp(string mobile,string otp)
         {
             
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;
@@ -174,11 +174,12 @@ namespace EAMS_BLL.Services
             var res = _notificationRepository.SaveSMS(sMSSentModel);
 
             return new ServiceResponse() {
-                IsSucceed=true,
-                Message = "SMS Sent: " + sent + "/Not Sent: " + Notsent
+                IsSucceed = true,
+                
+                //Message = "Response:" + " " + result.Result
             };
           
-        }*/
+        }
         public async Task<ServiceResponse> SendSMS(string smsTemplateMasterId)
         {
             SMSSentModel sMSSentModel = new SMSSentModel(); int sent = 0; int Notsent = 0;

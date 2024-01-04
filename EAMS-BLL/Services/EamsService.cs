@@ -250,12 +250,24 @@ namespace EAMS_BLL.Services
         #endregion
 
         #region PCMaster
-        public Task<List<ParliamentConstituencyMaster>> GetPCList()
+        public Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId)
         {
-            return _eamsRepository.GetPCList();
+            return _eamsRepository.GetPCList(stateMasterId);
         }
         #endregion
 
+        
+        public Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid,string PcMasterId)
+        {
+            return _eamsRepository.GetAssemblyByPCId(stateMasterid,PcMasterId);
+        }
+
+        public Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterid, string districtMasterId)
+        {
+            return _eamsRepository.GetAssemblyByDistrictId(stateMasterid,districtMasterId);
+        }
+
+        
         #region EventActivity
 
         public async Task<Response> EventActivity(ElectionInfoMaster electionInfoMaster)

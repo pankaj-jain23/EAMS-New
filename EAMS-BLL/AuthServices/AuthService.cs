@@ -262,7 +262,8 @@ namespace EAMS_BLL.AuthServices
                             return new Response()
                             {
                                 Status = RequestStatusEnum.OK,
-                                Message = "OTP Sent Successfully " + otp +"/"+"Response: "+ isSucced.Message,
+                                //Message = "OTP Sent Successfully " + otp +"/"+"Response: "+ isSucced.Message,
+                                Message = "OTP Sent Successfully " + otp ,
 
                             };
                         }

@@ -31,7 +31,7 @@ namespace EAMS.Controllers
         public async Task<IActionResult> UpdateMaster(UpdateMasterStatusViewModel updateMasterStatus)
         {
             var mappedData = _mapper.Map<UpdateMasterStatus>(updateMasterStatus);
-            var isSucced=await _EAMSService.UpdateMasterStatus(mappedData);
+            var isSucced = await _EAMSService.UpdateMasterStatus(mappedData);
             if (isSucced.IsSucceed)
             {
                 return Ok(isSucced);
@@ -39,13 +39,13 @@ namespace EAMS.Controllers
             else
             {
                 return BadRequest(isSucced);
-            } 
+            }
         }
         #endregion
 
         #region State master
         [HttpGet]
-        [Route("StateList")] 
+        [Route("StateList")]
         public async Task<IActionResult> StateList()
         {
             var stateList = await _EAMSService.GetState();
@@ -136,10 +136,10 @@ namespace EAMS.Controllers
             {
                 var mappedData = new
                 {
-                    StateMasterId=stateRecord.StateMasterId,
-                    StateName=stateRecord.StateName,
-                    StateCode=stateRecord.StateCode,
-                    IsStatus=stateRecord.StateStatus
+                    StateMasterId = stateRecord.StateMasterId,
+                    StateName = stateRecord.StateName,
+                    StateCode = stateRecord.StateCode,
+                    IsStatus = stateRecord.StateStatus
 
                 };
                 return Ok(mappedData);
@@ -250,8 +250,8 @@ namespace EAMS.Controllers
             {
                 var dataMapping = new
                 {
-                    StateMasterId=districtRecord.StateMasterId,
-                    StateName=districtRecord.StateMaster.StateName,
+                    StateMasterId = districtRecord.StateMasterId,
+                    StateName = districtRecord.StateMaster.StateName,
                     DistrictMasterId = districtRecord.DistrictMasterId,
                     DistrictName = districtRecord.DistrictName,
                     DistrictCode = districtRecord.DistrictCode,
@@ -367,13 +367,13 @@ namespace EAMS.Controllers
                     StateName = assemblyRecord.StateMaster.StateName,
                     DistrictMasterId = assemblyRecord.DistrictMaster.DistrictMasterId,
                     DistrictName = assemblyRecord.DistrictMaster.DistrictName,
-                    DistrictCode = assemblyRecord.DistrictMaster.DistrictCode, 
+                    DistrictCode = assemblyRecord.DistrictMaster.DistrictCode,
                     AssemblyMasterId = assemblyRecord.AssemblyMasterId,
                     AssemblyName = assemblyRecord.AssemblyName,
-                    AssemblyCode=assemblyRecord.AssemblyCode,
-                    AssemblyType=assemblyRecord.AssemblyType,
-                    PcMasterId=assemblyRecord.ParliamentConstituencyMaster.PCMasterId,
-                    PcName=assemblyRecord.ParliamentConstituencyMaster.PcName,
+                    AssemblyCode = assemblyRecord.AssemblyCode,
+                    AssemblyType = assemblyRecord.AssemblyType,
+                    PcMasterId = assemblyRecord.ParliamentConstituencyMaster.PCMasterId,
+                    PcName = assemblyRecord.ParliamentConstituencyMaster.PcName,
                     IsStatus = assemblyRecord.AssemblyStatus,
 
 
@@ -523,7 +523,7 @@ namespace EAMS.Controllers
             var soRecord = await _EAMSService.GetSOById(soMasterId);
             if (soRecord != null)
             {
-                 
+
 
 
                 return Ok(soRecord);
@@ -557,7 +557,7 @@ namespace EAMS.Controllers
                     var data = new
                     {
                         count = boothList.Count,
-                        data = boothList .ToList()
+                        data = boothList.ToList()
                     };
                     return Ok(data);
 
@@ -767,10 +767,10 @@ namespace EAMS.Controllers
         }
 
         [HttpGet]
-        [Route("GetBoothById")]        
+        [Route("GetBoothById")]
         public async Task<IActionResult> GetBoothById(string boothMasterId)
         {
-            var boothRecord =await _EAMSService.GetBoothById(boothMasterId);
+            var boothRecord = await _EAMSService.GetBoothById(boothMasterId);
             if (boothRecord != null)
             {
                 var dataMapping = new
@@ -783,12 +783,12 @@ namespace EAMS.Controllers
                     AssemblyMasterId = boothRecord.AssemblyMasterId,
                     AssemblyName = boothRecord.AssemblyMaster.AssemblyName,
                     AssemblyCode = boothRecord.AssemblyMaster.AssemblyCode,
-                    AssemblyType = boothRecord.AssemblyMaster.AssemblyType,  
+                    AssemblyType = boothRecord.AssemblyMaster.AssemblyType,
                     BoothMasterId = boothRecord.BoothMasterId,
                     BoothName = boothRecord.BoothName,
                     BoothCode_No = boothRecord.BoothCode_No,
                     BoothNoAuxy = boothRecord.BoothNoAuxy,
-                    TotalVoters = boothRecord.TotalVoters, 
+                    TotalVoters = boothRecord.TotalVoters,
                     IsStatus = boothRecord.BoothStatus
 
                 };
@@ -801,7 +801,7 @@ namespace EAMS.Controllers
                 return NotFound($"[{boothMasterId}] not exist");
             }
         }
- 
+
 
         #endregion
 
@@ -901,7 +901,7 @@ namespace EAMS.Controllers
                 var data = new
                 {
                     count = eventWiseBoothList.Count,
-                    data = eventWiseBoothList.OrderBy(p=>Int32.Parse(p.BoothCode))
+                    data = eventWiseBoothList.OrderBy(p => Int32.Parse(p.BoothCode))
                 };
                 return Ok(data);
             }
@@ -996,7 +996,7 @@ namespace EAMS.Controllers
             var mappedData = _mapper.Map<List<AssemblyMasterViewModel>>(asembList);
             if (mappedData != null)
             {
-               var pcData = new
+                var pcData = new
                 {
                     count = mappedData.Count,
                     data = mappedData
@@ -1012,7 +1012,7 @@ namespace EAMS.Controllers
         [Route("GetAssemblyByDistrictId")]
         public async Task<IActionResult> GetAssemblyByDistrictId(string stateMasterid, string districtMasterId)
         {
-            var asembList = await _EAMSService.GetAssemblyByDistrictId(stateMasterid,districtMasterId);
+            var asembList = await _EAMSService.GetAssemblyByDistrictId(stateMasterid, districtMasterId);
             var mappedData = _mapper.Map<List<AssemblyMasterViewModel>>(asembList);
             if (mappedData != null)
             {
@@ -1234,7 +1234,7 @@ namespace EAMS.Controllers
                 BoothMasterId = electionInfoViewModel.BoothMasterId,
                 EventMasterId = electionInfoViewModel.EventMasterId,
                 IsPartyDispatched = electionInfoViewModel.EventStatus,
-                
+
             };
             var result = await _EAMSService.EventActivity(electionInfoMaster);
             return result;
@@ -1489,6 +1489,7 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetDistrictWiseEventListById")]
+        [Authorize (Roles ="ECI,SuperAdmin,StateAdmin") ]
         public async Task<IActionResult> EventListDistrictWiseById(string stateId)
         {
             var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateId);
@@ -1499,6 +1500,7 @@ namespace EAMS.Controllers
         }
         [HttpGet]
         [Route("GetAssemblyWiseEventListById")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin")]
         public async Task<IActionResult> EventListAssemblyWiseById(string stateId, string districtId)
         {
             var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
@@ -1509,6 +1511,7 @@ namespace EAMS.Controllers
         }
         [HttpGet]   
         [Route("GetBoothWiseEventListById")]
+        
         public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);

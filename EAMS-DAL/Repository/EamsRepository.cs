@@ -3046,6 +3046,12 @@ namespace EAMS_DAL.Repository
                             boothMaster.BoothName,
                             boothMaster.StateMasterId,
                             boothMaster.DistrictMasterId,
+
+                            pollInterruption.OldBU,
+                            pollInterruption.OldCU,
+                            pollInterruption.NewCU,
+                            pollInterruption.NewBU,
+
                             pollInterruption.IsPollInterrupted,
                             pollInterruption.InterruptionType,
                             pollInterruption.StopTime,
@@ -3066,6 +3072,10 @@ namespace EAMS_DAL.Repository
                 InterruptionReason = Enum.GetName(typeof(InterruptionReason), p.InterruptionType),
                 StopTime = p.StopTime,
                 ResumeTime = p.ResumeTime,
+                OldCU=p.OldCU,
+                NewCU=p.NewCU,
+                OldBU=p.OldBU,
+                NewBU=p.NewBU,
                 CreatedAt = p.CreatedAt,
                 // Add other properties as needed
             }).ToList();

@@ -147,6 +147,8 @@ namespace EAMS_BLL.AuthServices
             }
             else
             {
+                
+
                 var createUserResult = await _authRepository.CreateUser(userRegistration, roleIds);
 
                 if (createUserResult.IsSucceed == true)

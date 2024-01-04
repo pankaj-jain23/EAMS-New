@@ -1,21 +1,15 @@
-﻿using EAMS.Helper;
+﻿using EAMS_ACore;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
+using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EAMS_DAL.AuthRepository
 {
@@ -226,18 +220,101 @@ namespace EAMS_DAL.AuthRepository
         {
             try
             {
+                var isExist = await _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).ToListAsync();
+                if (isExist.Count > 0)
+                {
+                    foreach (var userState in userRegistration.UserStates)
+                    {
+                        if (isExist.Any(d => d.Name.Contains("ECI") || d.Name.Contains("SuperAdmin") || d.Name.Contains("StateAdmin")))
+                        {
+                            var districtList = _context.DistrictMaster.OrderBy(d => d.DistrictMasterId)
+                                                    .Where(d => d.StateMasterId == userState.StateMasterId)
+                                                    .Select(d => new UserDistrict
+                                                    {
+                                                        DistrictMasterId = d.DistrictMasterId,
+                                                    })
+                                                    .ToList();
 
-                var createUserResult = await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
-                if (!createUserResult.Succeeded)
+                            var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
+
+                            if (matchingUserState != null)
+                            {
+                                matchingUserState.UserDistrict = districtList;
+                            }
+                        }
+
+                        if (isExist.Any(d => d.Name.Contains("DistrictAdmin")))
+                        {
+
+                            foreach (var district in userState.UserDistrict)
+                            {
+                                var districtList = _context.DistrictMaster.OrderBy(d => d.DistrictMasterId)
+                                                           .Where(d => d.StateMasterId == district.UserState.StateMasterId && d.DistrictMasterId == district.DistrictMasterId)
+                                                           .Select(d => new UserDistrict
+                                                           {
+                                                               DistrictMasterId = d.DistrictMasterId,
+                                                               // Add other property assignments as needed
+                                                           })
+                                                           .ToList();
+
+                                var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
+
+                                if (matchingUserState != null)
+                                {
+                                    matchingUserState.UserDistrict = districtList;
+                                }
+                            }
+
+
+                        }
+
+                        if (isExist.Any(d => d.Name.Contains("PC")))
+                        {
+                            foreach (var pc in userState.UserPCConstituency)
+                            {
+                                var pcList = _context.ParliamentConstituencyMaster.OrderBy(d => d.PCMasterId)
+                                                       .Where(d => d.StateMasterId == pc.UserState.StateMasterId && d.PCMasterId == pc.PCMasterId)
+                                                       .Select(d => new UserPCConstituency
+                                                       {
+                                                           PCMasterId = d.PCMasterId, 
+                                                       })
+                                                       .ToList();
+
+                                var matchingUserState = userRegistration.UserStates.FirstOrDefault(us => us.StateMasterId == userState.StateMasterId);
+
+                                if (matchingUserState != null)
+                                {
+                                    matchingUserState.UserPCConstituency = pcList;
+                                }
+                            }
+                        }
+
+                        
+
+                    }
+
+
+                    var createUserResult = await _userManager.CreateAsync(userRegistration, userRegistration.PasswordHash);
+                    if (!createUserResult.Succeeded)
+                    {
+                        return new ServiceResponse()
+                        {
+                            IsSucceed = false,
+                            Message = "User creation failed! Please check user details and try again.",
+                            // Log the error details for investigation
+                        };
+                    }
+                }
+                else
                 {
                     return new ServiceResponse()
                     {
                         IsSucceed = false,
-                        Message = "User creation failed! Please check user details and try again.",
+                        Message = $"Failed to assign roles to user '{userRegistration.UserName}'.",
                         // Log the error details for investigation
                     };
-                }
 
+                }
                 var user = await _userManager.FindByNameAsync(userRegistration.UserName);
 
 
@@ -290,6 +367,7 @@ namespace EAMS_DAL.AuthRepository
                 };
             }
         }
+
         #endregion
 
         #region  UpdateUser
@@ -444,12 +522,12 @@ namespace EAMS_DAL.AuthRepository
 
                 DashBoardProfile dashBoardProfile = new DashBoardProfile()
                 {
-                    Name=userRecord.UserName,
-                    MobileNumber=userRecord.PhoneNumber,
-                    UserEmail=userRecord.Email,
-                    UserType="DashBoard",
+                    Name = userRecord.UserName,
+                    MobileNumber = userRecord.PhoneNumber,
+                    UserEmail = userRecord.Email,
+                    UserType = "DashBoard",
                     Roles = rolesList,
-                    UserStates=userSubDetails
+                    UserStates = userSubDetails
                 };
 
                 return dashBoardProfile;

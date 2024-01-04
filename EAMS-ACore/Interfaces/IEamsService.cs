@@ -30,6 +30,7 @@ namespace EAMS_ACore.Interfaces
         Task<Response> UpdateAssembliesById(AssemblyMaster assemblyMaster);
         Task<Response> AddAssemblies(AssemblyMaster assemblyMaster);
         Task<AssemblyMaster> GetAssemblyById(string assemblyId);
+
         #endregion
 
         #region SO Master

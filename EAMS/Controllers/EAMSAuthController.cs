@@ -6,7 +6,6 @@ using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EAMS.Controllers
 {
@@ -25,6 +24,7 @@ namespace EAMS.Controllers
         #region Register
         [HttpPost]
         [Route("registeration")]
+       
         public async Task<IActionResult> Register(UserRegistrationViewModel registerViewModel)
         {
             try

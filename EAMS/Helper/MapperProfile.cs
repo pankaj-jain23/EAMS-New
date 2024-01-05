@@ -301,11 +301,21 @@ namespace EAMS.Helper
 
 
              .ReverseMap();
-            #endregion    
+            #endregion
 
             #region PCMaster
-            CreateMap<ParliamentConstituencyMaster,PCViewModel>()
-                .ReverseMap();
+            //CreateMap<ParliamentConstituencyMaster,PCViewModel>()
+            //    .ReverseMap();
+
+
+
+            CreateMap<ParliamentConstituencyMaster, PCViewModel>()
+              .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+              .ForMember(dest => dest.PcName, opt => opt.MapFrom(src => src.PcName))
+              .ForMember(dest => dest.PcCodeNo, opt => opt.MapFrom(src => src.PcCodeNo))
+              .ForMember(dest => dest.PcType, opt => opt.MapFrom(src => src.PcType))
+              .ForMember(dest => dest.IsStatus, opt => opt.MapFrom(src => src.PcStatus))
+              .ReverseMap();
             #endregion
 
             #region Event Activity

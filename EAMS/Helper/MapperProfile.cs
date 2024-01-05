@@ -171,9 +171,15 @@ namespace EAMS.Helper
             #endregion
 
             #region AddDistrictMasterViewModel and DistrictMaster 
-            CreateMap<AddDistrictMasterViewModel, DistrictMaster>()
-             .ReverseMap();
+            //CreateMap<AddDistrictMasterViewModel, DistrictMaster>()
+            // .ReverseMap();
 
+            CreateMap<AddDistrictMasterViewModel, DistrictMaster>()
+              .ForMember(dest => dest.StateMasterId, opt => opt.MapFrom(src => src.StateMasterId))
+              .ForMember(dest => dest.DistrictName, opt => opt.MapFrom(src => src.DistrictName))
+              .ForMember(dest => dest.DistrictCode, opt => opt.MapFrom(src => src.DistrictCode))
+              .ForMember(dest => dest.DistrictStatus, opt => opt.MapFrom(src => src.IsStatus))
+              .ReverseMap();
             #endregion
 
             #region  BoothMasterViewModel and BoothMaster

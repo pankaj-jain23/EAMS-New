@@ -297,7 +297,8 @@ namespace EAMS_DAL.Repository
         {
             try
             {
-                var isExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName).FirstOrDefault();
+                var isExist = _context.DistrictMaster.Where(p => (p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName) && p.StateMasterId== districtMaster.StateMasterId).FirstOrDefault();
+                //var isExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode && p.DistrictName == districtMaster.DistrictName && p.StateMasterId== districtMaster.StateMasterId).FirstOrDefault();
 
                 if (isExist == null)
                 {
@@ -342,7 +343,8 @@ namespace EAMS_DAL.Repository
                                 DistrictCode = dist.DistrictCode,
                                 AssemblyId = asemb.AssemblyMasterId,
                                 AssemblyName = asemb.AssemblyName,
-                                AssemblyCode = asemb.AssemblyCode
+                                AssemblyCode = asemb.AssemblyCode,
+                                IsStatus=asemb.AssemblyStatus
                             };
 
             return await innerJoin.ToListAsync();
@@ -372,6 +374,29 @@ namespace EAMS_DAL.Repository
             }
         }
 
+
+        public async Task<Response> UpdatePC(ParliamentConstituencyMaster pcMaster)
+        {
+            var pcMasterRecord = _context.ParliamentConstituencyMaster.Where(d => d.PCMasterId == pcMaster.PCMasterId).FirstOrDefault();
+
+            if (pcMasterRecord != null)
+            {
+                pcMasterRecord.PcName = pcMaster.PcName;
+                pcMasterRecord.PcCodeNo = pcMaster.PcCodeNo;
+                pcMasterRecord.PcType = pcMaster.PcType;
+                pcMasterRecord.PcStatus = pcMaster.PcStatus;
+                pcMasterRecord.PcUpdatedAt = BharatDateTime();
+                 var ss = _context.ParliamentConstituencyMaster.Update(pcMasterRecord);
+                _context.SaveChanges();
+                return new Response { Status = RequestStatusEnum.OK, Message = "PC Updated Successfully" + pcMaster.PcName };
+
+            }
+            else
+            {
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = "PC Not Found" + pcMaster.PcName };
+            }
+        }
+
         public async Task<Response> AddAssemblies(AssemblyMaster assemblyMaster)
         {
             try
@@ -389,6 +414,41 @@ namespace EAMS_DAL.Repository
                 else
                 {
                     return new Response { Status = RequestStatusEnum.BadRequest, Message = assemblyMaster.AssemblyName + "Same District Already Exists" };
+
+                }
+            }
+
+            catch (Exception ex)
+            {
+                return new Response { Status = RequestStatusEnum.BadRequest, Message = ex.Message };
+            }
+        }
+
+        public async Task<Response> AddPC(ParliamentConstituencyMaster pcMaster)
+        {
+            try
+            {
+                if (pcMaster.PcCodeNo != null && pcMaster.PcType != null && pcMaster.StateMasterId != null)
+                {
+                    var pcExist = _context.ParliamentConstituencyMaster.Where(p => p.PcCodeNo == pcMaster.PcCodeNo && p.StateMasterId == pcMaster.StateMasterId).FirstOrDefault();
+
+                    if (pcExist == null)
+                    {
+                        pcMaster.PcCreatedAt = BharatDateTime();
+                        _context.ParliamentConstituencyMaster.Add(pcMaster);
+                        _context.SaveChanges();
+
+                        return new Response { Status = RequestStatusEnum.OK, Message = pcMaster.PcName + "Added Successfully" };
+                    }
+                    else
+                    {
+                        return new Response { Status = RequestStatusEnum.BadRequest, Message = pcMaster.PcName + "Same PC Already Exists" };
+
+                    }
+                }
+                else
+                {
+                    return new Response { Status = RequestStatusEnum.BadRequest, Message = "PC Code, Pc Type,StateMaster Id, isStatus is required" };
 
                 }
             }
@@ -591,7 +651,7 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
-                                
+                                IsStatus=bt.BoothStatus,
                                 BoothCode_No=bt.BoothCode_No,
                                 IsAssigned = bt.IsAssigned,
                                 soMasterId = Convert.ToInt32(soId)

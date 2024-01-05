@@ -110,10 +110,19 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.UpdateAssembliesById(assemblyMaster);
         }
+        public async Task<Response> UpdatePC(ParliamentConstituencyMaster pcMaster)
+        {
+            return await _eamsRepository.UpdatePC(pcMaster);
+        }
 
         public async Task<Response> AddAssemblies(AssemblyMaster assemblyMaster)
         {
             return await _eamsRepository.AddAssemblies(assemblyMaster);
+        }
+
+        public async Task<Response> AddPC(ParliamentConstituencyMaster pcMaster)
+        {
+            return await _eamsRepository.AddPC(pcMaster);
         }
 
         public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)

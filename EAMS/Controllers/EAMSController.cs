@@ -985,6 +985,62 @@ namespace EAMS.Controllers
                 return BadRequest("No Record Found");
             }
         }
+
+
+        [HttpPost]
+        [Route("AddPC")]
+        public async Task<IActionResult> AddPC(PCViewModel addPc)
+        {
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<PCViewModel, ParliamentConstituencyMaster>(addPc);
+                var result = await _EAMSService.AddPC(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
+
+        [HttpPut]
+        [Route("UpdatePC")]
+        public async Task<IActionResult> UpdatePC(PCViewModel pcViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var mappedData = _mapper.Map<PCViewModel, ParliamentConstituencyMaster>(pcViewModel);
+                var result = await _EAMSService.UpdatePC(mappedData);
+                switch (result.Status)
+                {
+                    case RequestStatusEnum.OK:
+                        return Ok(result.Message);
+                    case RequestStatusEnum.BadRequest:
+                        return BadRequest(result.Message);
+                    case RequestStatusEnum.NotFound:
+                        return NotFound(result.Message);
+
+                    default:
+                        return StatusCode(500, "Internal Server Error");
+                }
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
         #endregion
 
         #region PC 

@@ -550,7 +550,7 @@ namespace EAMS_DAL.Repository
 
                          };
             }
-            else if (districtMasterId != "" && districtMasterId != "0")
+            else 
             {
                 solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
                          join asem in _context.AssemblyMaster

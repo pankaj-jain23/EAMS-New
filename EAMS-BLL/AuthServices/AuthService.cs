@@ -62,7 +62,7 @@ namespace EAMS_BLL.AuthServices
 
             // Check if the user exists
             var user = await _authRepository.CheckUserLogin(login);
-
+           var userProfile = await _authRepository.GetDashboardProfile(user.Id);
             if (user is null)
             {
                 // Return an appropriate response when the user is not found
@@ -83,9 +83,10 @@ namespace EAMS_BLL.AuthServices
                     new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId",user.Id),
-                    //new Claim("StateMasterId",user.StateMasterId.ToString()),
-                    //new Claim("DistrictMasterId",user.DistrictMasterId.ToString()),
-                    //new Claim("AssemblyMasterId",user.AssemblyMasterId.ToString()),
+                    new Claim("StateMasterId",userProfile.StateMasterId.ToString()),
+                    new Claim("DistrictMasterId",userProfile.DistrictMasterId.ToString()),
+                    new Claim("PCMasterId",userProfile.PCMasterId.ToString()),
+                    new Claim("AssemblyMasterId", userProfile.DistrictAssemblyMasterId == 0 ? userProfile.PCAssemblyMasterId.ToString() : userProfile.DistrictAssemblyMasterId.ToString()),
 
                 };
 

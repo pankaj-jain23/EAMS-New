@@ -3,6 +3,7 @@ using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.Interfaces;
+using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +22,15 @@ namespace EAMS_DAL.AuthRepository
         private readonly IConfiguration _configuration;
         private readonly EamsContext _context;
 
+
+
         public AuthRepository(UserManager<UserRegistration> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, EamsContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
             _context = context;
+
         }
         #region AddDynamicRole && Get Role
         public async Task<ServiceResponse> AddDynamicRole(Role role)
@@ -264,7 +268,6 @@ namespace EAMS_DAL.AuthRepository
 
                         }
 
-                        // Inside the if (isExist.Any(d => d.Name.Contains("DistrictAdmin"))) block
                         if (isExist.Any(d => d.Name.Contains("DistrictAdmin")))
                         {
                             foreach (var district in userState.UserDistrict)
@@ -297,13 +300,13 @@ namespace EAMS_DAL.AuthRepository
                                 }
                             }
                         }
-                   
+
                         if (isExist.Any(d => d.Name.Contains("PC")))
                         {
                             foreach (var pc in userState.UserPCConstituency)
                             {
                                 var assemblieList = _context.AssemblyMaster.OrderBy(d => d.AssemblyMasterId)
-                                    .Where(d => d.StateMasterId == userState.StateMasterId || d.PCMasterId==pc.PCMasterId)
+                                    .Where(d => d.StateMasterId == userState.StateMasterId || d.PCMasterId == pc.PCMasterId)
                                     .Select(d => new UserAssembly
                                     {
                                         AssemblyMasterId = d.AssemblyMasterId,
@@ -331,7 +334,28 @@ namespace EAMS_DAL.AuthRepository
                             }
                         }
 
+                        if (isExist.Any(d => d.Name.Contains("ARO")))
+                        {
 
+                            foreach (var district in userState.UserDistrict)
+                            {
+                                if (district.DistrictMasterId == 0)
+                                {
+                                    district.UserAssembly = null;
+                                    userState.UserDistrict = null;
+                                }
+                               
+                            }
+                            foreach (var district in userState.UserPCConstituency)
+                            {
+                                if (district.PCMasterId == 0)
+                                {
+                                    district.UserAssembly = null;
+                                    userState.UserPCConstituency = null;
+                                }
+                            }
+
+                        }
 
                     }
 
@@ -552,15 +576,31 @@ namespace EAMS_DAL.AuthRepository
             if (userRecord != null)
             {
                 var userSubDetails = await _context.UserState
-                    .Include(u => u.UserDistrict) // Include UserDistrict
-                        .ThenInclude(d => d.UserAssembly) // Include UserAssembly within UserDistrict
-                    .Include(u => u.UserPCConstituency) // Include UserPCConstituency
-                        .ThenInclude(pc => pc.UserAssembly) // Include UserAssembly within UserPCConstituency
+                    .Include(u => u.UserDistrict)
+                        .ThenInclude(d => d.UserAssembly)
+                    .Include(u => u.UserPCConstituency)
+                        .ThenInclude(pc => pc.UserAssembly)
                     .FirstOrDefaultAsync(u => u.Id == userId);
 
                 var roles = await _userManager.GetRolesAsync(userRecord);
-
                 var rolesList = roles.ToList();
+
+                var userDistrictDetails = userSubDetails?.UserDistrict?.ToList() ?? new List<UserDistrict>();
+                var userDistrictAssemblyDetails = userDistrictDetails.SelectMany(d => d.UserAssembly).Distinct().ToList();
+                var pcDetails = userSubDetails?.UserPCConstituency?.ToList() ?? new List<UserPCConstituency>();
+                var userPCAssemblyDetails = pcDetails.SelectMany(d => d.UserAssembly).Distinct().ToList();
+                var stateName = _context.StateMaster.FirstOrDefault(d => d.StateMasterId == userSubDetails.StateMasterId);
+                var district = userDistrictDetails?.Any() == true ? _context.DistrictMaster.FirstOrDefault(d => d.DistrictMasterId == userDistrictDetails.Select(d => d.DistrictMasterId).FirstOrDefault()) : null;
+                var assemblyDistrictId = userDistrictAssemblyDetails.Any() ? userDistrictAssemblyDetails.Select(d => d.AssemblyMasterId).FirstOrDefault() : (int?)null;
+                var assemblyDistrict = assemblyDistrictId != null ? await GetAssemblyById(assemblyDistrictId.ToString()) : null;
+                var pc = await GetPCList(stateName?.StateMasterId.ToString());
+                var assemblyPcId = pc?.Select(d => d.PCMasterId).FirstOrDefault();
+                var assemblyPc = assemblyPcId != null ? await GetAssemblyByPCId(stateName?.StateMasterId.ToString(), assemblyPcId.ToString()) : null;
+                var stateCount = userRecord.UserStates?.Count() ?? 0;
+                var districtMasterId = district?.DistrictMasterId ?? 0;
+                var assemblyDistrictMasterId = assemblyDistrict?.AssemblyMasterId ?? 0;
+                var pcMasterId = pc?.Select(d => d.PCMasterId).FirstOrDefault() ?? 0;
+                var assemblyPcMasterId = assemblyPc?.Select(d => d.PCMasterId).FirstOrDefault() ?? 0;
 
                 DashBoardProfile dashBoardProfile = new DashBoardProfile()
                 {
@@ -569,20 +609,98 @@ namespace EAMS_DAL.AuthRepository
                     UserEmail = userRecord.Email,
                     UserType = "DashBoard",
                     Roles = rolesList,
-                    UserStates = userSubDetails
+                    StateCount = stateCount,
+                    StateName= stateName.StateName,
+                    StateMasterId = stateCount > 0 ? userRecord.UserStates?.Select(d => d.StateMasterId).FirstOrDefault() ?? 0 : 0,
+                    DistrictCount = districtMasterId > 0 ? userSubDetails?.UserDistrict?.Count() ?? 0 : 0,
+                    DistrictName = district?.DistrictName ?? "0",
+                    DistrictMasterId = districtMasterId,
+                    DistrictAssemblyCount = assemblyDistrictMasterId > 0 ? userDistrictAssemblyDetails?.Count() ?? 0 : 0,
+                    DistrictAssemblyMasterId = assemblyDistrictMasterId,
+                    DistrictAssemblyName = assemblyDistrict?.AssemblyName ?? "0",
+                    PCCount = pcMasterId > 0 ? userSubDetails?.UserPCConstituency?.Count() ?? 0 : 0,
+                    PCMasterId = pcMasterId,
+                    PCName = pc?.Select(d => d.PcName).FirstOrDefault() ?? "0",
+                    PCAssemblyCount = assemblyPcMasterId > 0 ? userPCAssemblyDetails?.Count() ?? 0 : 0,
+                    PCAssemblyMasterId = assemblyPcMasterId,
+                    PCAssemblyName = assemblyPc?.Select(d => d.AssemblyName).FirstOrDefault() ?? "0",
+
                 };
 
                 return dashBoardProfile;
             }
             else
             {
-                return null;
+                return null; // Return null when userRecord is null
             }
         }
 
+        public async Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterId, string districtMasterId)
+        {
 
+            var asemData = await _context.AssemblyMaster
+    .Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId) && d.DistrictMasterId == Convert.ToInt32(districtMasterId))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new AssemblyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId = d.StateMasterId,
+        AssemblyCode = d.AssemblyCode,
+        AssemblyName = d.AssemblyName,
+        AssemblyType = d.AssemblyType,
+        AssemblyStatus = d.AssemblyStatus,
+        AssemblyCreatedAt = d.AssemblyCreatedAt
+    })
+    .ToListAsync();
+
+            return asemData;
+        }
+        public async Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId)
+        {
+
+            var pcData = await _context.ParliamentConstituencyMaster
+    .Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new ParliamentConstituencyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId = d.StateMasterId,
+        PcCodeNo = d.PcCodeNo,
+        PcName = d.PcName,
+        PcType = d.PcType,
+        PcStatus = d.PcStatus
+    })
+    .ToListAsync();
+
+            return pcData;
+        }
+        public async Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid, string PcMasterId)
+        {
+
+            var asemData = await _context.AssemblyMaster
+    .Where(d => d.PCMasterId == Convert.ToInt32(PcMasterId) && d.StateMasterId == Convert.ToInt32(stateMasterid))
+    .OrderBy(d => d.PCMasterId)
+    .Select(d => new AssemblyMaster
+    {
+        PCMasterId = d.PCMasterId,
+        StateMasterId = d.StateMasterId,
+        AssemblyCode = d.AssemblyCode,
+        AssemblyName = d.AssemblyName,
+        AssemblyType = d.AssemblyType,
+        AssemblyStatus = d.AssemblyStatus,
+        AssemblyCreatedAt = d.AssemblyCreatedAt
+    })
+    .ToListAsync();
+
+            return asemData;
+        }
+        public async Task<AssemblyMaster> GetAssemblyById(string assemblyMasterId)
+        {
+            var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
+            return assemblyRecord;
+        }
         #endregion
 
-   
+
     }
 }

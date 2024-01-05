@@ -4,8 +4,11 @@ using EAMS.ViewModels;
 using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.AuthModels;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using System.Xml.Linq;
 
 namespace EAMS.Controllers
 {
@@ -223,7 +226,9 @@ namespace EAMS.Controllers
             var soIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
             var soId = soIdClaim.Value;
             var userRecord = await _authService.GetDashboardProfile(soId);
+            
             if (userRecord is not null)
+                
                 return Ok(userRecord);
             else
                 return NotFound();

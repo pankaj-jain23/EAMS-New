@@ -27,10 +27,15 @@ namespace EAMS_ACore.IAuthRepository
         Task<ServiceResponse> CreateUser(UserRegistration userRegistration, List<string> roleIds);
         Task<ServiceResponse> UpdateUser(UserRegistration userRegistration);
         Task<List<Role>> GetRoleByUser(Login login);
-        Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin,string soId); 
-        Task<SectorOfficerMaster>GetSOById(int soId);
-        Task<DashBoardProfile> GetDashboardProfile(string userId); 
+        Task<ServiceResponse> CreateSOPin(CreateSOPin createSOPin, string soId);
+        Task<SectorOfficerMaster> GetSOById(int soId);
+        Task<DashBoardProfile> GetDashboardProfile(string userId);
+        Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterid, string districtMasterId);
 
+        Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId);
+
+        Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid, string PcMasterId);
+        Task<AssemblyMaster> GetAssemblyById(string assemblyId);
 
 
     }

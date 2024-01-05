@@ -1,6 +1,8 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore;
+using EAMS_ACore.AuthInterfaces;
 using EAMS_ACore.HelperModels;
+using EAMS_ACore.IAuthRepository;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using EAMS_DAL.DBContext;
@@ -17,9 +19,11 @@ namespace EAMS_DAL.Repository
     public class EamsRepository : IEamsRepository
     {
         private readonly EamsContext _context;
-        public EamsRepository(EamsContext context)
+        private readonly IAuthRepository _authRepository;
+        public EamsRepository(EamsContext context, IAuthRepository authRepository)
         {
             _context = context;
+            _authRepository = authRepository;
         }
         #region UpdateMaster
         public async Task<ServiceResponse> UpdateMasterStatus(UpdateMasterStatus updateMasterStatus)
@@ -297,7 +301,7 @@ namespace EAMS_DAL.Repository
         {
             try
             {
-                var isExist = _context.DistrictMaster.Where(p => (p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName) && p.StateMasterId== districtMaster.StateMasterId).FirstOrDefault();
+                var isExist = _context.DistrictMaster.Where(p => (p.DistrictCode == districtMaster.DistrictCode || p.DistrictName == districtMaster.DistrictName) && p.StateMasterId == districtMaster.StateMasterId).FirstOrDefault();
                 //var isExist = _context.DistrictMaster.Where(p => p.DistrictCode == districtMaster.DistrictCode && p.DistrictName == districtMaster.DistrictName && p.StateMasterId== districtMaster.StateMasterId).FirstOrDefault();
 
                 if (isExist == null)
@@ -344,7 +348,7 @@ namespace EAMS_DAL.Repository
                                 AssemblyId = asemb.AssemblyMasterId,
                                 AssemblyName = asemb.AssemblyName,
                                 AssemblyCode = asemb.AssemblyCode,
-                                IsStatus=asemb.AssemblyStatus
+                                IsStatus = asemb.AssemblyStatus
                             };
 
             return await innerJoin.ToListAsync();
@@ -386,7 +390,7 @@ namespace EAMS_DAL.Repository
                 pcMasterRecord.PcType = pcMaster.PcType;
                 pcMasterRecord.PcStatus = pcMaster.PcStatus;
                 pcMasterRecord.PcUpdatedAt = BharatDateTime();
-                 var ss = _context.ParliamentConstituencyMaster.Update(pcMasterRecord);
+                var ss = _context.ParliamentConstituencyMaster.Update(pcMasterRecord);
                 _context.SaveChanges();
                 return new Response { Status = RequestStatusEnum.OK, Message = "PC Updated Successfully" + pcMaster.PcName };
 
@@ -468,9 +472,9 @@ namespace EAMS_DAL.Repository
             var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyCode == Convert.ToInt32(assemblyCode)).FirstOrDefaultAsync();
             return assemblyRecord;
         }
-        public async Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid,string PcMasterId)
+        public async Task<List<AssemblyMaster>> GetAssemblyByPCId(string stateMasterid, string PcMasterId)
         {
-            
+
             var asemData = await _context.AssemblyMaster
     .Where(d => d.PCMasterId == Convert.ToInt32(PcMasterId) && d.StateMasterId == Convert.ToInt32(stateMasterid))
     .OrderBy(d => d.PCMasterId)
@@ -482,14 +486,14 @@ namespace EAMS_DAL.Repository
         AssemblyName = d.AssemblyName,
         AssemblyType = d.AssemblyType,
         AssemblyStatus = d.AssemblyStatus,
-        AssemblyCreatedAt=d.AssemblyCreatedAt
+        AssemblyCreatedAt = d.AssemblyCreatedAt
     })
     .ToListAsync();
 
             return asemData;
         }
-        
-             public async Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterId,string districtMasterId)
+
+        public async Task<List<AssemblyMaster>> GetAssemblyByDistrictId(string stateMasterId, string districtMasterId)
         {
 
             var asemData = await _context.AssemblyMaster
@@ -536,8 +540,8 @@ namespace EAMS_DAL.Repository
                              soName = so.SoName,
                              soMobile = so.SoMobile,
                              soMasterId = so.SOMasterId,
-                             IsStatus=so.SoStatus
-                             
+                             IsStatus = so.SoStatus
+
 
                          };
 
@@ -638,7 +642,7 @@ namespace EAMS_DAL.Repository
                             join state in _context.StateMaster
                              on dist.StateMasterId equals state.StateMasterId
 
-                            select new CombinedMaster 
+                            select new CombinedMaster
                             {
                                 StateId = Convert.ToInt32(stateMasterId),
                                 StateName = state.StateName,
@@ -651,8 +655,8 @@ namespace EAMS_DAL.Repository
                                 BoothMasterId = bt.BoothMasterId,
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
-                                IsStatus=bt.BoothStatus,
-                                BoothCode_No=bt.BoothCode_No,
+                                IsStatus = bt.BoothStatus,
+                                BoothCode_No = bt.BoothCode_No,
                                 IsAssigned = bt.IsAssigned,
                                 soMasterId = Convert.ToInt32(soId)
 
@@ -679,7 +683,7 @@ namespace EAMS_DAL.Repository
                             on asem.DistrictMasterId equals dist.DistrictMasterId
                             join state in _context.StateMaster
                              on dist.StateMasterId equals state.StateMasterId
-                            orderby bt.BoothNoAuxy  
+                            orderby bt.BoothNoAuxy
                             select new CombinedMaster
                             {
                                 StateId = Convert.ToInt32(stateMasterId),
@@ -691,11 +695,11 @@ namespace EAMS_DAL.Repository
                                 BoothName = bt.BoothName,
                                 BoothAuxy = bt.BoothNoAuxy,
                                 IsAssigned = bt.IsAssigned,
-                                IsStatus=bt.BoothStatus
-                                
+                                IsStatus = bt.BoothStatus
 
-                            }; 
-            return await  boothlist.ToListAsync();
+
+                            };
+            return await boothlist.ToListAsync();
         }
 
         public async Task<List<CombinedMaster>> GetBoothListByAssemblyId(string stateMasterId, string districtMasterId, string assemblyMasterId)
@@ -918,14 +922,14 @@ namespace EAMS_DAL.Repository
                 return new ServiceResponse
                 {
                     IsSucceed = true,
-                    
+
                 };
             }
             else
             {
                 return new ServiceResponse
                 {
-                    IsSucceed = false, 
+                    IsSucceed = false,
                 };
             }
         }
@@ -1523,7 +1527,7 @@ namespace EAMS_DAL.Repository
         #region PCMaster
 
         public async Task<List<ParliamentConstituencyMaster>> GetPCList(string stateMasterId)
-        {          
+        {
 
             var pcData = await _context.ParliamentConstituencyMaster
     .Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId))
@@ -1531,7 +1535,7 @@ namespace EAMS_DAL.Repository
     .Select(d => new ParliamentConstituencyMaster
     {
         PCMasterId = d.PCMasterId,
-        StateMasterId=d.StateMasterId,
+        StateMasterId = d.StateMasterId,
         PcCodeNo = d.PcCodeNo,
         PcName = d.PcName,
         PcType = d.PcType,
@@ -1639,7 +1643,7 @@ namespace EAMS_DAL.Repository
                                             {
                                                 model = new VoterTurnOutPolledDetailViewModel()
                                                 {
-                                                    
+
                                                     BoothMasterId = boothExists.BoothMasterId,
                                                     TotalVoters = boothExists.TotalVoters,
                                                     VotesPolled = polldetail.VotesPolled,
@@ -1730,7 +1734,7 @@ namespace EAMS_DAL.Repository
                                 {
                                     var getLastSlotRecord = await _context.SlotManagementMaster.Where(p => p.IsLastSlot == true).FirstOrDefaultAsync();
                                     bool lastslotexceededtime = TimeExceedLastSlot(getLastSlotRecord);
-                                    if(lastslotexceededtime== true)
+                                    if (lastslotexceededtime == true)
                                     {
                                         if (polldetail != null)
                                         {
@@ -2349,18 +2353,18 @@ namespace EAMS_DAL.Repository
 
             return finalCanStart;
         }
-        
-       public bool IsPollInterrupted(int boothMasterId)
+
+        public bool IsPollInterrupted(int boothMasterId)
         {
             bool ispollInterrupted = false;
-        var pollInterruptionData=  _context.PollInterruptions.Where(p=>p.BoothMasterId == boothMasterId).OrderByDescending(p=>p.CreatedAt).FirstOrDefault();
+            var pollInterruptionData = _context.PollInterruptions.Where(p => p.BoothMasterId == boothMasterId).OrderByDescending(p => p.CreatedAt).FirstOrDefault();
 
-            if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime!= null && pollInterruptionData.ResumeTime is null)
+            if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime != null && pollInterruptionData.ResumeTime is null)
             {
                 ispollInterrupted = true;
             }
-            else if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime != null && pollInterruptionData.ResumeTime is not null )
-            {                
+            else if (pollInterruptionData != null && pollInterruptionData.IsPollInterrupted == true && pollInterruptionData.StopTime != null && pollInterruptionData.ResumeTime is not null)
+            {
                 ispollInterrupted = false;
             }
             else
@@ -2528,8 +2532,8 @@ namespace EAMS_DAL.Repository
             DateTime endTime = DateTime.ParseExact(slotRecord.EndTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
             DateTime lockTime = DateTime.ParseExact(slotRecord.LockTime.ToString(), "HH:mm", CultureInfo.InvariantCulture);
 
-             var lastEnteredTime = lastReceviedTime.Value.Hour + ":" + lastReceviedTime.Value.Minute;
-            
+            var lastEnteredTime = lastReceviedTime.Value.Hour + ":" + lastReceviedTime.Value.Minute;
+
 
             //DateTime lsttime = DateTime.ParseExact(lastEnteredTime, "HH:mm", CultureInfo.InvariantCulture);
             if (lastReceviedTime > endTime && lastReceviedTime < lockTime)
@@ -2546,7 +2550,6 @@ namespace EAMS_DAL.Repository
             }
 
 
-            return slotTurnOutValueAlreadyExists;
         }
 
         public bool TimeExceedLastSlot(SlotManagementMaster? slotRecord)
@@ -2816,8 +2819,9 @@ namespace EAMS_DAL.Repository
 
             return list;
         }
-        public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId)
+        public async Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId, string userId)
         {
+            var userRecord = await _authRepository.GetDashboardProfile(userId);
             var getElectionListStateWise = await _context.ElectionInfoMaster
                     .Where(d => d.StateMasterId == Convert.ToInt32(stateId))
                     .ToListAsync();
@@ -2889,8 +2893,8 @@ namespace EAMS_DAL.Repository
                 var stateEvents = new AssemblyEventActivityCount
                 {
                     Key = electionInfo.AssemblyMasterId,
-                    StateMasterId=electionInfo.StateMasterId,
-                    DistrictMasterId=electionInfo.DistrictMasterId,
+                    StateMasterId = electionInfo.StateMasterId,
+                    DistrictMasterId = electionInfo.DistrictMasterId,
                     Name = _context.AssemblyMaster
                         .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.DistrictMasterId == Convert.ToInt32(districtId))
                         .Select(d => d.AssemblyName)
@@ -2918,8 +2922,8 @@ namespace EAMS_DAL.Repository
                 .Select(group => new AssemblyEventActivityCount
                 {
                     Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
-                    StateMasterId=group.Distinct().Select(d => d.StateMasterId).FirstOrDefault(),
-                    DistrictMasterId=group.Distinct().Select(d => d.DistrictMasterId).FirstOrDefault(),
+                    StateMasterId = group.Distinct().Select(d => d.StateMasterId).FirstOrDefault(),
+                    DistrictMasterId = group.Distinct().Select(d => d.DistrictMasterId).FirstOrDefault(),
                     Name = group.Select(d => d.Name).FirstOrDefault(),
                     Type = group.Select(d => d.Type).FirstOrDefault(),
                     PartyDispatch = group.Sum(e => e.PartyDispatch),
@@ -3133,10 +3137,10 @@ namespace EAMS_DAL.Repository
                 InterruptionReason = Enum.GetName(typeof(InterruptionReason), p.InterruptionType),
                 StopTime = p.StopTime,
                 ResumeTime = p.ResumeTime,
-                OldCU=p.OldCU,
-                NewCU=p.NewCU,
-                OldBU=p.OldBU,
-                NewBU=p.NewBU,
+                OldCU = p.OldCU,
+                NewCU = p.NewCU,
+                OldBU = p.OldBU,
+                NewBU = p.NewBU,
                 CreatedAt = p.CreatedAt,
                 // Add other properties as needed
             }).ToList();
@@ -3198,7 +3202,7 @@ namespace EAMS_DAL.Repository
 
 
 
-      
+
 
         #endregion
 

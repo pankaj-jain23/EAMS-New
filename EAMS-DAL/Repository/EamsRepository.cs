@@ -518,8 +518,41 @@ namespace EAMS_DAL.Repository
         #region SO Master
         public async Task<List<CombinedMaster>> GetSectorOfficersListById(string stateMasterId, string districtMasterId, string assemblyMasterId)
         {
+            IQueryable<CombinedMaster> solist = Enumerable.Empty<CombinedMaster>().AsQueryable();
 
-            var solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
+            if (districtMasterId =="0")
+            {
+                solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
+                         join asem in _context.AssemblyMaster
+                         on so.SoAssemblyCode equals asem.AssemblyCode
+                         join pc in _context.ParliamentConstituencyMaster
+                         on asem.PCMasterId equals pc.PCMasterId
+                         where asem.StateMasterId == Convert.ToInt32(stateMasterId) && asem.AssemblyMasterId == Convert.ToInt32(assemblyMasterId) // key selector
+                         join state in _context.StateMaster
+                          on pc.StateMasterId equals state.StateMasterId
+
+                         select new CombinedMaster
+                         { // result selector 
+                             StateName = state.StateName,
+                             //DistrictId = dist.DistrictMasterId,
+                             //DistrictName = dist.DistrictName,
+                             //DistrictCode = dist.DistrictCode,
+                             PCMasterId=pc.PCMasterId,
+                             PCName=pc.PcName,
+                             AssemblyId = asem.AssemblyMasterId,
+                             AssemblyName = asem.AssemblyName,
+                             AssemblyCode = asem.AssemblyCode,
+                             soName = so.SoName,
+                             soMobile = so.SoMobile,
+                             soMasterId = so.SOMasterId,
+                             IsStatus = so.SoStatus
+
+
+                         };
+            }
+            else if (districtMasterId != "" && districtMasterId != "0")
+            {
+                solist = from so in _context.SectorOfficerMaster.Where(d => d.StateMasterId == Convert.ToInt32(stateMasterId)) // outer sequence
                          join asem in _context.AssemblyMaster
                          on so.SoAssemblyCode equals asem.AssemblyCode
                          join dist in _context.DistrictMaster
@@ -544,6 +577,9 @@ namespace EAMS_DAL.Repository
 
 
                          };
+
+            }
+      
 
             return await solist.ToListAsync();
         }

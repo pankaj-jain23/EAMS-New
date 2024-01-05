@@ -1486,7 +1486,6 @@ namespace EAMS.Controllers
         }
 
         #region Event Count for Dashboard
-
         [HttpGet]
         [Route("GetDistrictWiseEventListById")]
         [Authorize (Roles ="ECI,SuperAdmin,StateAdmin") ]
@@ -1510,8 +1509,7 @@ namespace EAMS.Controllers
                 return NotFound();
         }
         [HttpGet]   
-        [Route("GetBoothWiseEventListById")]
-        
+        [Route("GetBoothWiseEventListById")]        
         public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);

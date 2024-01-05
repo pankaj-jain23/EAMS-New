@@ -2945,9 +2945,10 @@ namespace EAMS_DAL.Repository
         public async Task<DashBoardRealTimeCount> GetDashBoardCount()
         {
             var electionInfoList = await _context.ElectionInfoMaster.ToListAsync();
+            var totalBothCount = _context.BoothMaster.Count();
 
             var dashboardCount = new DashBoardRealTimeCount();
-            dashboardCount.Total = electionInfoList.Count;
+            dashboardCount.Total = totalBothCount;
             dashboardCount.Events = new List<EventCount>();
             AddEventCount(dashboardCount, "PartyDispatch", e => e.IsPartyDispatched == true);
             AddEventCount(dashboardCount, "PartyArrived", e => e.IsPartyReached == true);

@@ -17,6 +17,7 @@ namespace EAMS_ACore.IAuthRepository
 
         Task<ServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
+        Task<List<UserRegistration>> GetUsersByRoleId(string roleId);
         Task<SectorOfficerMaster> ValidateMobile(ValidateMobile validateMobile);
 
         Task<ServiceResponse> SectorOfficerMasterRecord(SectorOfficerMaster sectorOfficerMaster);

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace EAMS_DAL.AuthRepository
@@ -76,6 +77,17 @@ namespace EAMS_DAL.AuthRepository
             return roles;
         }
         #endregion
+
+        public async Task<List<UserRegistration>> GetUsersByRoleId(string roleId)
+        {
+            var identityRoles = await _roleManager.FindByIdAsync(roleId);
+            var userInRTole = await _userManager.GetUsersInRoleAsync(identityRoles.Name);
+
+            //GetDashboardProfile(userInRTole.)
+
+
+            return userInRTole.ToList();
+        }
 
         #region LoginAsync && GenerateToken
         public async Task<ServiceResponse> LoginAsync(Login login)
@@ -570,5 +582,7 @@ namespace EAMS_DAL.AuthRepository
 
 
         #endregion
+
+   
     }
 }

@@ -16,6 +16,7 @@ namespace EAMS_ACore.AuthInterfaces
         Task<Token> LoginAsync(Login login);
         Task<ServiceResponse> AddDynamicRole(Role role);
         Task<List<Role>> GetRoles();
+        Task<List<UserRegistration>> GetUsersByRoleId(string roleId);
         Task<Response> ValidateMobile(ValidateMobile validateMobile);
         Task<Token> GetRefreshToken(GetRefreshToken getRefreshToken);
         Task<ServiceResponse>CreateSOPin(CreateSOPin createSOPin,string soID);

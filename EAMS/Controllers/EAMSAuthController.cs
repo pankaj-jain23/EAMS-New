@@ -231,6 +231,22 @@ namespace EAMS.Controllers
         }
         #endregion
 
-         
+        #region GetDashboardUsersByRoleId
+        [HttpGet]
+        [Route("GetDashboardUsersByRoleId")]
+        public async Task<IActionResult> GetDashboardUsersByRoleId(string roleId)
+        {
+            var userlist = await _authService.GetUsersByRoleId(roleId);
+            //var soId = soIdClaim.Value;
+            //var userRecord = await _authService.GetDashboardProfile(soId);
+            //if (userRecord is not null)
+            //    return Ok(userlist);
+            //else
+            return Ok(userlist);
+
+        }
+        #endregion
+
+
     }
 }

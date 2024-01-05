@@ -48,6 +48,11 @@ namespace EAMS_BLL.AuthServices
         {
             return await _authRepository.GetRoles();
         }
+
+        public async Task<List<UserRegistration>> GetUsersByRoleId(string roleId)
+        {
+            return await _authRepository.GetUsersByRoleId(roleId);
+        }
         #endregion
 
         #region Login && Generate Token

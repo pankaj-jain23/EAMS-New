@@ -1,10 +1,10 @@
 ﻿using EAMS.Hubs;
 using EAMS_ACore.Interfaces;
+using EAMS_ACore.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql;
-
 public class DatabaseListenerService : BackgroundService
 {
     private readonly IHubContext<DashBoardHub> _hubContext;
@@ -25,28 +25,40 @@ public class DatabaseListenerService : BackgroundService
         using var cmd = new NpgsqlCommand("LISTEN dashboard_change", conn);
         await cmd.ExecuteNonQueryAsync();
 
-        var notification = conn.WaitAsync(stoppingToken);
-
         while (!stoppingToken.IsCancellationRequested)
         {
-            await notification;
+            // Wait for a notification or cancellation token
+            var notification = conn.WaitAsync(stoppingToken);
 
             using (var scope = _scopeFactory.CreateScope())
             {
                 var scopedService = scope.ServiceProvider.GetRequiredService<IEamsService>();
-                var currentRecord = await scopedService.GetDashBoardCount();
-                var latestRecord = await scopedService.GetDashBoardCount(); // Fetch the latest record
 
-                // Check if there is an actual change in the database
-                if (!currentRecord.Equals(latestRecord))
-                {
-                    // Call the method to send the update to clients
-                    await _hubContext.Clients.All.SendAsync("GetDashboardCount", latestRecord);
-                }
+                // Fetch the latest record
+                var latestRecord = await scopedService.GetDashBoardCount();
+
+                // Notify clients if there is a change
+                await NotifyClientsIfChanged(latestRecord);
             }
 
             // Start waiting for the next notification
-            notification = conn.WaitAsync(stoppingToken);
+            await notification;
+        }
+    }
+
+    private async Task NotifyClientsIfChanged(DashBoardRealTimeCount latestRecord)
+    {
+        try
+        {
+            // You may want to handle exceptions and errors here
+            await _hubContext.Clients.All.SendAsync("GetDashboardCount", latestRecord);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            Console.WriteLine($"Error notifying clients: {ex.Message}");
         }
     }
 }
+
+

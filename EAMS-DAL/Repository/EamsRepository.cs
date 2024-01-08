@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace EAMS_DAL.Repository
@@ -467,6 +468,11 @@ namespace EAMS_DAL.Repository
             var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyMasterId == Convert.ToInt32(assemblyMasterId)).FirstOrDefaultAsync();
             return assemblyRecord;
         }
+        //public async Task<booth> GetAssemblyByBoothId(string boothMasterId)
+        //{
+        //    var assemblyRecord = await _context.BoothMaster.Include(d => Convert.ToInt32(d.BoothMasterId)).FirstOrDefaultAsync();
+        //    return assemblyRecord;
+        //}
         public async Task<AssemblyMaster> GetAssemblyByCode(string assemblyCode)
         {
             var assemblyRecord = await _context.AssemblyMaster.Include(d => d.StateMaster).Include(d => d.DistrictMaster).Include(d => d.ParliamentConstituencyMaster).Where(d => d.AssemblyCode == Convert.ToInt32(assemblyCode)).FirstOrDefaultAsync();
@@ -1581,7 +1587,7 @@ namespace EAMS_DAL.Repository
 
             return pcData;
         }
-
+       
         #endregion
 
         #region EventActivity
@@ -2389,7 +2395,9 @@ namespace EAMS_DAL.Repository
 
             return finalCanStart;
         }
+        
 
+            
         public bool IsPollInterrupted(int boothMasterId)
         {
             bool ispollInterrupted = false;
@@ -3147,6 +3155,7 @@ namespace EAMS_DAL.Repository
                             boothMaster.BoothName,
                             boothMaster.StateMasterId,
                             boothMaster.DistrictMasterId,
+                            pollInterruption.PCMasterId,
 
                             pollInterruption.OldBU,
                             pollInterruption.OldCU,
@@ -3169,6 +3178,7 @@ namespace EAMS_DAL.Repository
                 BoothName = p.BoothName,
                 StateMasterId = p.StateMasterId,
                 DistrictMasterId = p.DistrictMasterId,
+                PCMasterId=p.PCMasterId,
                 IsPollInterrupted = p.IsPollInterrupted,
                 InterruptionReason = Enum.GetName(typeof(InterruptionReason), p.InterruptionType),
                 StopTime = p.StopTime,
@@ -3185,40 +3195,172 @@ namespace EAMS_DAL.Repository
 
 
 
-        public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string StateId)
+        public async Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(ClaimsIdentity claimsIdentity)
         {
+            List<PollInterruptionDashboard> finalResult = new List<PollInterruptionDashboard>();
+            IQueryable<PollInterruptionDashboard> result = null;
+            if (claimsIdentity != null)
+           {
+                Claim stateMasterId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
+                Claim districtMasterId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "DistrictMasterId");
+                Claim assemblyMasterId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "AssemblyMasterId");
+                Claim pcMasterid = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "PCMasterId");
+                Claim role = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "ro");
+                var roles = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+                if (roles == "ARO" || roles == "SubARO")
+                {
+                    result = from pi in _context.PollInterruptions
+                             join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
+                             join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                             join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.AssemblyMasterId== Convert.ToInt16(assemblyMasterId) 
+                             orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                             select new PollInterruptionDashboard
+                             {
+                                 PollInterruptionMasterId = pi.PollInterruptionId,
+                                 StateMasterId = pi.StateMasterId,
+                                 DistrictMasterId = pi.DistrictMasterId,
+                                 AssemblyMasterId = pi.AssemblyMasterId,
+                                 AssemblyName = am.AssemblyName,
+                                 BoothMasterId = bm.BoothMasterId,
+                                 PCMasterId=pi.PCMasterId,
+                                 BoothName = bm.BoothName,
+                                 CreatedAt = pi.CreatedAt,
+                                 InterruptionType = pi.InterruptionType,
+                                 StopTime = pi.StopTime,
+                                 ResumeTime = pi.ResumeTime,
+                                 isPollInterrupted = pi.IsPollInterrupted
+
+                             } into distinctResult
+                             group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                             select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+                }
+
+                else if (roles == "StateAdmin")
+                {
+                    result = from pi in _context.PollInterruptions
+                             join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
+                             join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                             join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value)
+                             orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                             select new PollInterruptionDashboard
+                             {
+                                 PollInterruptionMasterId = pi.PollInterruptionId,
+                                 StateMasterId = pi.StateMasterId,
+                                 DistrictMasterId = pi.DistrictMasterId,
+                                 AssemblyMasterId = pi.AssemblyMasterId,
+                                 AssemblyName = am.AssemblyName,
+                                 BoothMasterId = bm.BoothMasterId,
+                                 PCMasterId = pi.PCMasterId,
+                                 BoothName = bm.BoothName,
+                                 CreatedAt = pi.CreatedAt,
+                                 InterruptionType = pi.InterruptionType,
+                                 StopTime = pi.StopTime,
+                                 ResumeTime = pi.ResumeTime,
+                                 isPollInterrupted = pi.IsPollInterrupted
+
+                             } into distinctResult
+                             group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                             select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+                }
+
+                else if (roles == "ECI")
+                {
+                    result = from pi in _context.PollInterruptions
+                             join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
+                             join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                             join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                           //  where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value)
+                             orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                             select new PollInterruptionDashboard
+                             {
+                                 PollInterruptionMasterId = pi.PollInterruptionId,
+                                 StateMasterId = pi.StateMasterId,
+                                 DistrictMasterId = pi.DistrictMasterId,
+                                 AssemblyMasterId = pi.AssemblyMasterId,
+                                 AssemblyName = am.AssemblyName,
+                                 BoothMasterId = bm.BoothMasterId,
+                                 PCMasterId = pi.PCMasterId,
+                                 BoothName = bm.BoothName,
+                                 CreatedAt = pi.CreatedAt,
+                                 InterruptionType = pi.InterruptionType,
+                                 StopTime = pi.StopTime,
+                                 ResumeTime = pi.ResumeTime,
+                                 isPollInterrupted = pi.IsPollInterrupted
+
+                             } into distinctResult
+                             group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                             select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+                }
+                else if (roles == "DistrictAdmin")
+                {
+                    result = from pi in _context.PollInterruptions
+                             join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
+                             join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                             join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.DistrictMasterId == Convert.ToInt16(districtMasterId.Value)
+                             orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                             select new PollInterruptionDashboard
+                             {
+                                 PollInterruptionMasterId = pi.PollInterruptionId,
+                                 StateMasterId = pi.StateMasterId,
+                                 DistrictMasterId = pi.DistrictMasterId,
+                                 AssemblyMasterId = pi.AssemblyMasterId,
+                                 AssemblyName = am.AssemblyName,
+                                 BoothMasterId = bm.BoothMasterId,
+                                 PCMasterId = pi.PCMasterId,
+                                 BoothName = bm.BoothName,
+                                 CreatedAt = pi.CreatedAt,
+                                 InterruptionType = pi.InterruptionType,
+                                 StopTime = pi.StopTime,
+                                 ResumeTime = pi.ResumeTime,
+                                 isPollInterrupted = pi.IsPollInterrupted
+
+                             } into distinctResult
+                             group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                             select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+                }
+
+                else if (roles == "PCMasterId")
+                {
+                    result = from pi in _context.PollInterruptions
+                             join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
+                             join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
+                             join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
+                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.PCMasterId == Convert.ToInt16(pcMasterid.Value)
+                             orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
+                             select new PollInterruptionDashboard
+                             {
+                                 PollInterruptionMasterId = pi.PollInterruptionId,
+                                 StateMasterId = pi.StateMasterId,
+                                 DistrictMasterId = pi.DistrictMasterId,
+                                 AssemblyMasterId = pi.AssemblyMasterId,
+                                 AssemblyName = am.AssemblyName,
+                                 BoothMasterId = bm.BoothMasterId,
+                                 PCMasterId = pi.PCMasterId,
+                                 BoothName = bm.BoothName,
+                                 CreatedAt = pi.CreatedAt,
+                                 InterruptionType = pi.InterruptionType,
+                                 StopTime = pi.StopTime,
+                                 ResumeTime = pi.ResumeTime,
+                                 isPollInterrupted = pi.IsPollInterrupted
+
+                             } into distinctResult
+                             group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
+                             select groupedResult.OrderByDescending(r => r.CreatedAt).First();
+
+                }
+            }
 
 
-
-            //  var ww = _context.PollInterruptions.FromSqlRaw(query).ToList();
-
-            var result = from pi in _context.PollInterruptions
-                         join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
-                         join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
-                         join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
-                         where pi.StateMasterId == Convert.ToInt16(StateId)
-                         orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
-                         select new PollInterruptionDashboard
-                         {
-                             PollInterruptionMasterId = pi.PollInterruptionId,
-                             StateMasterId = pi.StateMasterId,
-                             DistrictMasterId = pi.DistrictMasterId,
-                             AssemblyMasterId = pi.AssemblyMasterId,
-                             AssemblyName = am.AssemblyName,
-                             BoothMasterId = bm.BoothMasterId,
-                             BoothName = bm.BoothName,
-                             CreatedAt = pi.CreatedAt,
-                             InterruptionType = pi.InterruptionType,
-                             StopTime = pi.StopTime,
-                             ResumeTime = pi.ResumeTime,
-                             isPollInterrupted = pi.IsPollInterrupted
-
-                         } into distinctResult
-                         group distinctResult by new { distinctResult.AssemblyMasterId, distinctResult.BoothMasterId } into groupedResult
-                         select groupedResult.OrderByDescending(r => r.CreatedAt).First();
-
+          
             // Execute the query and retrieve the results
-            var finalResult = result.ToList();
+             finalResult = result.ToList();
 
 
 

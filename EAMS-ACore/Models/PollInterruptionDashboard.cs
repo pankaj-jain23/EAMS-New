@@ -16,6 +16,9 @@ namespace EAMS_ACore.Models
         public string DistrictName { get; set; }
         public int AssemblyMasterId { get; set; }
         public string AssemblyName { get; set; }
+
+        public int? PCMasterId { get; set; }
+        public string PCName { get; set; }
         public int BoothMasterId { get; set; }
         public string BoothCode_No { get; set; }
         

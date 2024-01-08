@@ -1,6 +1,7 @@
 ﻿using EAMS.Helper;
 using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
+using System.Security.Claims;
 
 namespace EAMS_ACore.Interfaces
 {
@@ -109,7 +110,7 @@ namespace EAMS_ACore.Interfaces
         Task<List<PollInterruptionHistoryModel>> GetPollInterruptionHistoryById(string boothMasterId);
 
         
-        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string stateId);
+        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(ClaimsIdentity claimsIdentity);
 
         #endregion
 

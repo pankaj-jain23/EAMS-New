@@ -12,6 +12,7 @@ namespace EAMS_ACore.HelperModels
         public int StateMasterId { get; set; }
         public int DistrictMasterId { get; set; }
         public int BoothMasterId { get; set; }
+        public int? PCMasterId { get; set; }
         public string BoothName { get; set; }
         public string InterruptionReason { get; set; }
         public string? Remarks { get; set; }

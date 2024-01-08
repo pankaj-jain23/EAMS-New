@@ -359,7 +359,7 @@ namespace EAMS.Helper
 
 
 
-            #region InterruptionViewModel CombinedMaster
+            #region InterruptionViewModel PollInterruption
             CreateMap<InterruptionViewModel, PollInterruption>()
                 .ForMember(dest => dest.BoothMasterId, opt => opt.MapFrom(src => src.boothMasterId))
                 .ForMember(dest => dest.InterruptionType, opt => opt.MapFrom(src => src.Reason))

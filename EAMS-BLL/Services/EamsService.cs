@@ -6,6 +6,7 @@ using EAMS_ACore.Interfaces;
 using EAMS_ACore.IRepository;
 using EAMS_ACore.Models;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace EAMS_BLL.Services
 {
@@ -287,6 +288,8 @@ namespace EAMS_BLL.Services
                 string pollInterruptedMsg = "You have not entered 'Resume Time' in Poll interruption againist this booth.";
                 bool isPollInterruptedOfBooth = false;
                 isPollInterruptedOfBooth = _eamsRepository.IsPollInterrupted(electionInfoMaster.BoothMasterId);
+                var boothRecord= _eamsRepository.GetBoothById(electionInfoMaster.BoothMasterId.ToString());
+                var assemblyMasterRecord = _eamsRepository.GetAssemblyById(boothRecord.Result.AssemblyMasterId.ToString());
                 switch (electionInfoMaster.EventMasterId)
                 {  
                     case 1: //party Dispatch
@@ -300,6 +303,8 @@ namespace EAMS_BLL.Services
                                     electionInfoRecord.IsPartyDispatched = electionInfoMaster.IsPartyDispatched;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
                                     electionInfoRecord.PartyDispatchedLastUpdate = BharatDateTime();
+                                    electionInfoRecord.PartyDispatchedLastUpdate = BharatDateTime();
+                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -332,6 +337,7 @@ namespace EAMS_BLL.Services
                                     electionInfoRecord.IsPartyReached = electionInfoMaster.IsPartyReached;
                                     electionInfoRecord.PartyReachedLastUpdate = BharatDateTime();
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -365,6 +371,7 @@ namespace EAMS_BLL.Services
                                     electionInfoRecord.IsSetupOfPolling = electionInfoMaster.IsSetupOfPolling;
                                     electionInfoRecord.SetupOfPollingLastUpdate = BharatDateTime();
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -399,6 +406,7 @@ namespace EAMS_BLL.Services
                                     electionInfoRecord.IsMockPollDone = electionInfoMaster.IsMockPollDone;
                                     electionInfoRecord.MockPollDoneLastUpdate = BharatDateTime();
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -435,6 +443,7 @@ namespace EAMS_BLL.Services
                                     electionInfoRecord.PollStartedLastUpdate = BharatDateTime();
                                     electionInfoRecord.IsPollStarted = electionInfoMaster.IsPollStarted;
                                     electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
+                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                                     return await _eamsRepository.EventActivity(electionInfoRecord);
                                 }
                                 else
@@ -486,7 +495,8 @@ namespace EAMS_BLL.Services
                                                         electionInfoRecord.IsVoterTurnOut = true;
                                                         electionInfoRecord.VotingTurnOutLastUpdate = BharatDateTime();
                                                         electionInfoRecord.EventMasterId = electionInfoMaster.EventMasterId;
-                                                           return await _eamsRepository.EventActivity(electionInfoRecord);
+                                                    electionInfoRecord.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
+                                                    return await _eamsRepository.EventActivity(electionInfoRecord);
                                                     //}
                                                     //else
                                                     //{
@@ -893,6 +903,7 @@ namespace EAMS_BLL.Services
             var boothMasterRecord = await _eamsRepository.GetBoothRecord(Convert.ToInt32(pollInterruption.BoothMasterId));
             if (boothMasterRecord != null)
             {
+                AssemblyMaster asembrecord = await _eamsRepository.GetAssemblyById(boothMasterRecord.AssemblyMasterId.ToString());
                 var pollInterruptionRecord = await _eamsRepository.GetPollInterruptionData(pollInterruption.BoothMasterId.ToString());
 
                 if (pollInterruptionRecord == null) // if no poll added in table
@@ -920,6 +931,8 @@ namespace EAMS_BLL.Services
                                             DistrictMasterId = boothMasterRecord.DistrictMasterId,
                                             AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
                                             BoothMasterId = boothMasterRecord.BoothMasterId,
+                                            PCMasterId=asembrecord.PCMasterId,
+                                           
                                         };
                                         if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
                                             // if evm fault- old cu and l bu enter
@@ -1018,6 +1031,7 @@ namespace EAMS_BLL.Services
                                     DistrictMasterId = boothMasterRecord.DistrictMasterId,
                                     AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
                                     BoothMasterId = boothMasterRecord.BoothMasterId,
+                                    PCMasterId = asembrecord.PCMasterId,
                                 };
                                 if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
                                 {
@@ -1112,6 +1126,7 @@ namespace EAMS_BLL.Services
                                                     DistrictMasterId = pollInterruptionRecord.DistrictMasterId,
                                                     AssemblyMasterId = pollInterruptionRecord.AssemblyMasterId,
                                                     BoothMasterId = pollInterruptionRecord.BoothMasterId,
+                                                    PCMasterId = asembrecord.PCMasterId,
                                                 };
                                                 if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
 
@@ -1216,6 +1231,7 @@ namespace EAMS_BLL.Services
                                             DistrictMasterId = boothMasterRecord.DistrictMasterId,
                                             AssemblyMasterId = boothMasterRecord.AssemblyMasterId,
                                             BoothMasterId = boothMasterRecord.BoothMasterId,
+                                            PCMasterId = asembrecord.PCMasterId,
                                         };
                                         if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
 
@@ -1311,6 +1327,7 @@ namespace EAMS_BLL.Services
                                             DistrictMasterId = pollInterruptionRecord.DistrictMasterId,
                                             AssemblyMasterId = pollInterruptionRecord.AssemblyMasterId,
                                             BoothMasterId = pollInterruptionRecord.BoothMasterId,
+                                            PCMasterId = asembrecord.PCMasterId,
                                         };
                                         if ((InterruptionReason)pollInterruption.InterruptionType == InterruptionReason.EVMFault)
 
@@ -1612,9 +1629,9 @@ namespace EAMS_BLL.Services
             return reasonStatus;
         }
 
-        public Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string stateId)
+        public Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(ClaimsIdentity claimsIdentity)
         {
-            return _eamsRepository.GetPollInterruptionDashboard(stateId);
+            return _eamsRepository.GetPollInterruptionDashboard(claimsIdentity);
         }
 
     }

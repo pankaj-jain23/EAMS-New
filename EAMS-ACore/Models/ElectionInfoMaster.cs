@@ -10,6 +10,7 @@ namespace EAMS_ACore.Models
         public int DistrictMasterId { get; set; }
         public int AssemblyMasterId { get; set; }
         public int BoothMasterId { get; set; }
+        public int? PCMasterId { get; set; }
         public int EventMasterId { get; set; }
         public DateTime? ElectionInfoCreatedAt { get; set; } 
         public DateTime? ElectionInfoUpdatedAt { get; set; } 

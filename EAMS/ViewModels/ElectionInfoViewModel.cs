@@ -13,6 +13,7 @@ namespace EAMS.ViewModels
 
         [Required(ErrorMessage = "Booth Master Id is required")]
         public int BoothMasterId { get; set; }
+        public int? PCMasterId { get; set; }
         [Required(ErrorMessage = "Event Master Id is required")]
         public int EventMasterId { get; set; }
 

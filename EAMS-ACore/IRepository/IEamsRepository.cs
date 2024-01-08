@@ -3,6 +3,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace EAMS_ACore.IRepository
 {
@@ -115,7 +116,7 @@ namespace EAMS_ACore.IRepository
         Task<PollInterruption> GetPollInterruptionData(string boothMasterId);
         Task<List<PollInterruptionHistoryModel>> GetPollInterruptionHistoryById(string boothMasterId);
         
-        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(string stateid);
+        Task<List<PollInterruptionDashboard>> GetPollInterruptionDashboard(ClaimsIdentity claimsIdentity);
 
         
         Task<BoothMaster> GetBoothRecord(int boothMasterId);

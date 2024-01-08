@@ -1766,16 +1766,19 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetPollInterruptionDashboard")]
-        public async Task<IActionResult> GetPollInterruptionDashboard(string StateId)
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,ARO,SubARO")]
+        public async Task<IActionResult> GetPollInterruptionDashboard()
         {
-            var data_record = await  _EAMSService.GetPollInterruptionDashboard(StateId);
+            
+            ClaimsIdentity newClaimsIdentity = new ClaimsIdentity(User.Identity);
+            var data_record = await  _EAMSService.GetPollInterruptionDashboard(newClaimsIdentity);
             var filtered_pending = data_record.Where(p => p.isPollInterrupted == true).ToList();
             var filtered_resolved = data_record.Where(p => p.isPollInterrupted == false).ToList();
             if (data_record != null)
             {
                 var data = new
                 {
-                    totalInterruptions= data_record.Count,
+                    totalInterruptions = data_record.Count,
                     Pending = filtered_pending.Count,
                     Resolved = filtered_resolved.Count,
                     data = filtered_pending

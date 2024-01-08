@@ -3047,6 +3047,70 @@ namespace EAMS_DAL.Repository
 
             return groupedStateEventList;
         }
+        public async Task<List<AssemblyEventActivityCount>> GetEventListAssemblyWiseByPCId(string stateId, string pcId)
+        {
+            var getElectionListStateWise = await _context.ElectionInfoMaster
+                    .Where(d => d.PCMasterId == Convert.ToInt32(pcId) && d.StateMasterId == Convert.ToInt32(stateId))
+                    .ToListAsync();
+            var stateEventList = new List<AssemblyEventActivityCount>();
+
+            foreach (var electionInfo in getElectionListStateWise)
+            {
+
+                var stateEvents = new AssemblyEventActivityCount
+                {
+                    Key = electionInfo.AssemblyMasterId,
+                    StateMasterId = electionInfo.StateMasterId,
+                    DistrictMasterId = electionInfo.DistrictMasterId,
+                    Name = _context.AssemblyMaster
+                        .Where(d => d.AssemblyMasterId == electionInfo.AssemblyMasterId && d.PCMasterId == Convert.ToInt32(pcId))
+                        .Select(d => d.AssemblyName)
+                        .FirstOrDefault(),
+                    Type = "Assembly",
+                    PartyDispatch = electionInfo.IsPartyDispatched.GetValueOrDefault() ? 1 : 0,
+                    PartyArrived = electionInfo.IsPartyReached.GetValueOrDefault() ? 1 : 0,
+                    SetupPollingStation = electionInfo.IsSetupOfPolling.GetValueOrDefault() ? 1 : 0,
+                    MockPollDone = electionInfo.IsMockPollDone.GetValueOrDefault() ? 1 : 0,
+                    PollStarted = electionInfo.IsPollStarted.GetValueOrDefault() ? 1 : 0,
+                    VoterTurnedOut = electionInfo.IsVoterTurnOut.GetValueOrDefault() ? 1 : 0,
+                    PollEnded = electionInfo.IsPollEnded.GetValueOrDefault() ? 1 : 0,
+                    MCEVMOff = electionInfo.IsMCESwitchOff.GetValueOrDefault() ? 1 : 0,
+                    PartyDeparted = electionInfo.IsPartyDeparted.GetValueOrDefault() ? 1 : 0,
+                    PartyReachedAtCollection = electionInfo.IsPartyReachedCollectionCenter.GetValueOrDefault() ? 1 : 0,
+                    EVMDeposited = electionInfo.IsEVMDeposited.GetValueOrDefault() ? 1 : 0,
+                    Children = new List<object>()
+                };
+
+                stateEventList.Add(stateEvents);
+            }
+
+            var groupedStateEventList = stateEventList
+                .GroupBy(e => e.Key)
+                .Select(group => new AssemblyEventActivityCount
+                {
+                    Key = group.Distinct().Select(d => d.Key).FirstOrDefault(),
+                    StateMasterId = group.Distinct().Select(d => d.StateMasterId).FirstOrDefault(),
+                    DistrictMasterId = group.Distinct().Select(d => d.DistrictMasterId).FirstOrDefault(),
+                    Name = group.Select(d => d.Name).FirstOrDefault(),
+                    Type = group.Select(d => d.Type).FirstOrDefault(),
+                    PartyDispatch = group.Sum(e => e.PartyDispatch),
+                    PartyArrived = group.Sum(e => e.PartyArrived),
+                    SetupPollingStation = group.Sum(e => e.SetupPollingStation),
+                    MockPollDone = group.Sum(e => e.MockPollDone),
+                    PollStarted = group.Sum(e => e.PollStarted),
+                    VoterTurnedOut = group.Sum(e => e.VoterTurnedOut),
+                    PollEnded = group.Sum(e => e.PollEnded),
+                    MCEVMOff = group.Sum(e => e.MCEVMOff),
+                    PartyDeparted = group.Sum(e => e.PartyDeparted),
+                    PartyReachedAtCollection = group.Sum(e => e.PartyReachedAtCollection),
+                    EVMDeposited = group.Sum(e => e.EVMDeposited),
+                    Children = new List<object>(),
+                })
+                .ToList();
+
+            return groupedStateEventList;
+        }
+
         public async Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             var getElectionListStateWise = await _context.ElectionInfoMaster

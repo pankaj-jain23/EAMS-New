@@ -1603,7 +1603,7 @@ namespace EAMS.Controllers
         [HttpGet]
         [Route("GetAssemblyWiseEventListById")]
         [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin")]
-        public async Task<IActionResult> EventListAssemblyWiseById(string stateId, string districtId)
+        public async Task<IActionResult> EventListAssemblyWiseById(string? stateId, string? districtId)
         {
             var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
             if (eventAssemblyList is not null)
@@ -1611,9 +1611,21 @@ namespace EAMS.Controllers
             else
                 return NotFound();
         }
+
+        [HttpGet]
+        [Route("GetAssemblyWiseEventListByPCId")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin")]
+        public async Task<IActionResult> EventListAssemblyWiseByPCId(string? stateId, string? pcId)
+        {
+            var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseByPCId(stateId, pcId);
+            if (eventAssemblyList is not null)
+                return Ok(eventAssemblyList);
+            else
+                return NotFound();
+        }
         [HttpGet]   
         [Route("GetBoothWiseEventListById")]        
-        public async Task<IActionResult> EventListBoothWiseById(string stateId, string districtId, string assemblyId)
+        public async Task<IActionResult> EventListBoothWiseById(string? stateId, string? districtId, string? assemblyId)
         {
             var eventBoothList = await _EAMSService.GetEventListBoothWiseById(stateId, districtId, assemblyId);
             if (eventBoothList is not null)

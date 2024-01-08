@@ -633,19 +633,19 @@ namespace EAMS_DAL.AuthRepository
 
                     DistrictCount = userDistrict?.Count > 0 ? userDistrict?.Count() : 0,
                     DistrictName = userDistrict.Count > 1 ? "0" : userDistrict?.FirstOrDefault()?.DistrictName ?? "0",
-                    DistrictMasterId = userDistrict?.FirstOrDefault()?.DistrictMasterId ?? 0,
+                    DistrictMasterId = userDistrict.Count >= 1 ? 0 : userDistrict?.FirstOrDefault()?.DistrictMasterId ?? 0,
 
                     DistrictAssemblyCount = userAssemblyDistrict?.Count > 0 ? userAssemblyDistrict?.Count() : 0,
-                    DistrictAssemblyMasterId = userAssemblyDistrict.FirstOrDefault()?.AssemblyMasterId ?? 0, 
+                    DistrictAssemblyMasterId = userAssemblyDistrict.Count >= 1 ? 0 : userAssemblyDistrict.FirstOrDefault()?.AssemblyMasterId ?? 0,
                     DistrictAssemblyName = userAssemblyDistrict.Count > 1 ? "0" : userAssemblyDistrict?.FirstOrDefault()?.AssemblyName ?? "0",
 
-                    PCCount = userPC?.Count > 0 ? userSubDetails?.UserPCConstituency?.Count() : 0,
-                    PCMasterId = userPC.FirstOrDefault()?.PCMasterId ?? 0, 
+                    PCCount = userPC?.Count > 0 ? userSubDetails?.UserPCConstituency?.Count() : 0, 
+                    PCMasterId = userPC.Count > 1 ? 0 : userPC.FirstOrDefault()?.PCMasterId ?? 0,
                     PCName = userPC.Count > 1 ? "0" : userPC?.FirstOrDefault()?.PcName ?? "0",
 
 
-                    PCAssemblyCount = userAssemblyPC?.Count > 0 ? userAssemblyPC?.Count() : 0,
-                    PCAssemblyMasterId = userAssemblyPC.FirstOrDefault()?.AssemblyMasterId ?? 0, 
+                    PCAssemblyCount = userAssemblyPC?.Count > 0 ? userAssemblyPC?.Count() : 0, 
+                    PCAssemblyMasterId = userAssemblyPC.Count >= 1 ? 0 : userAssemblyPC.FirstOrDefault()?.AssemblyMasterId ?? 0,
                     PCAssemblyName = userAssemblyPC.Count > 1 ? "0" : userAssemblyPC?.FirstOrDefault()?.AssemblyName ?? "0",
                 };
 

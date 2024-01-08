@@ -835,6 +835,10 @@ namespace EAMS_BLL.Services
         {
             return await _eamsRepository.GetEventListAssemblyWiseById(stateId, districtId);
         }
+        public async Task<List<AssemblyEventActivityCount>> GetEventListAssemblyWiseByPCId(string stateId, string pcId)
+        {
+            return await _eamsRepository.GetEventListAssemblyWiseByPCId(stateId, pcId);
+        }
         public async Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId, string districtId, string assemblyId)
         {
             return await _eamsRepository.GetEventListBoothWiseById(stateId, districtId, assemblyId);

@@ -593,28 +593,32 @@ namespace EAMS_DAL.AuthRepository
                 foreach (var district in districtList)
                 {
                     var districtRecord = _context.DistrictMaster.Where(d => d.DistrictMasterId == district.DistrictMasterId).FirstOrDefault();
-                    userDistrict.Add(districtRecord);
+                    if (districtRecord is not null)
+                        userDistrict.Add(districtRecord);
                 }
                 List<AssemblyMaster> userAssemblyDistrict = new List<AssemblyMaster>();
                 var assemblyList = userSubDetails.UserDistrict?.SelectMany(d => d.UserAssembly).ToList();
                 foreach (var assembly in assemblyList)
                 {
                     var assemblyRecord = await _context.AssemblyMaster.FirstOrDefaultAsync(a => a.AssemblyMasterId == assembly.AssemblyMasterId);
-                    userAssemblyDistrict.Add(assemblyRecord);
+                    if (assemblyRecord is not null)
+                        userAssemblyDistrict.Add(assemblyRecord);
                 }
                 List<ParliamentConstituencyMaster> userPC = new List<ParliamentConstituencyMaster>();
                 var pcList = userSubDetails.UserPCConstituency?.ToList();
                 foreach (var pc in pcList)
                 {
                     var pcRecord = await _context.ParliamentConstituencyMaster.FirstOrDefaultAsync(p => p.PCMasterId == pc.PCMasterId);
-                    userPC.Add(pcRecord);
+                    if (pcRecord is not null)
+                        userPC.Add(pcRecord);
                 }
                 List<AssemblyMaster> userAssemblyPC = new List<AssemblyMaster>();
                 var assemblyListPC = userSubDetails.UserPCConstituency?.SelectMany(d => d.UserAssembly).ToList();
                 foreach (var assembly in assemblyListPC)
                 {
                     var assemblyRecord = await _context.AssemblyMaster.FirstOrDefaultAsync(a => a.AssemblyMasterId == assembly.AssemblyMasterId);
-                    userAssemblyPC.Add(assemblyRecord);
+                    if (assemblyRecord is not null)
+                        userAssemblyPC.Add(assemblyRecord);
                 }
                 DashBoardProfile dashBoardProfile = new DashBoardProfile()
                 {
@@ -626,18 +630,23 @@ namespace EAMS_DAL.AuthRepository
                     StateCount = stateCount,
                     StateName = state?.StateName ?? "0",
                     StateMasterId = state?.StateMasterId ?? 0,
-                    DistrictCount = userDistrict.Count,
-                    DistrictName = userDistrict.FirstOrDefault()?.DistrictName ?? "0",
-                    DistrictMasterId = userDistrict.FirstOrDefault()?.DistrictMasterId ?? 0,
-                    DistrictAssemblyCount = userAssemblyDistrict.Count > 0 ? userAssemblyDistrict?.Count() ?? 0 : 0,
-                    DistrictAssemblyMasterId = userAssemblyDistrict.FirstOrDefault()?.AssemblyMasterId ?? 0,
-                    DistrictAssemblyName = userAssemblyDistrict.FirstOrDefault()?.AssemblyName ?? "0",
-                    PCCount = userPC.Count > 0 ? userSubDetails?.UserPCConstituency?.Count() ?? 0 : 0,
-                    PCMasterId = userPC.FirstOrDefault()?.PCMasterId ?? 0,
-                    PCName = userPC.FirstOrDefault()?.PcName ?? "0",
-                    PCAssemblyCount = userAssemblyPC.Count > 0 ? userAssemblyPC?.Count() ?? 0 : 0,
-                    PCAssemblyMasterId = userAssemblyPC.FirstOrDefault()?.AssemblyMasterId ?? 0,
-                    PCAssemblyName = userAssemblyPC.FirstOrDefault()?.AssemblyName ?? "0",
+
+                    DistrictCount = userDistrict?.Count > 0 ? userDistrict?.Count() : 0,
+                    DistrictName = userDistrict.Count > 1 ? "0" : userDistrict?.FirstOrDefault()?.DistrictName ?? "0",
+                    DistrictMasterId = userDistrict?.FirstOrDefault()?.DistrictMasterId ?? 0,
+
+                    DistrictAssemblyCount = userAssemblyDistrict?.Count > 0 ? userAssemblyDistrict?.Count() : 0,
+                    DistrictAssemblyMasterId = userAssemblyDistrict.FirstOrDefault()?.AssemblyMasterId ?? 0, 
+                    DistrictAssemblyName = userAssemblyDistrict.Count > 1 ? "0" : userAssemblyDistrict?.FirstOrDefault()?.AssemblyName ?? "0",
+
+                    PCCount = userPC?.Count > 0 ? userSubDetails?.UserPCConstituency?.Count() : 0,
+                    PCMasterId = userPC.FirstOrDefault()?.PCMasterId ?? 0, 
+                    PCName = userPC.Count > 1 ? "0" : userPC?.FirstOrDefault()?.PcName ?? "0",
+
+
+                    PCAssemblyCount = userAssemblyPC?.Count > 0 ? userAssemblyPC?.Count() : 0,
+                    PCAssemblyMasterId = userAssemblyPC.FirstOrDefault()?.AssemblyMasterId ?? 0, 
+                    PCAssemblyName = userAssemblyPC.Count > 1 ? "0" : userAssemblyPC?.FirstOrDefault()?.AssemblyName ?? "0",
                 };
 
 

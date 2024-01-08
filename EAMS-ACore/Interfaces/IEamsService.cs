@@ -86,6 +86,7 @@ namespace EAMS_ACore.Interfaces
 
         Task<List<EventWiseBoothStatus>> EventWiseBoothStatus(string soId);
         Task<List<EventActivityCount>> GetEventListDistrictWiseById(string stateId,string userId);
+        Task<List<EventActivityCount>> GetEventListPCWiseById(string stateId,string userId);
         Task<List<AssemblyEventActivityCount>> GetEventListAssemblyWiseById(string stateId,string districtId);
         Task<List<EventActivityBoothWise>> GetEventListBoothWiseById(string stateId,string districtId,string assemblyId);
         

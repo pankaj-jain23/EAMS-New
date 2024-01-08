@@ -1576,7 +1576,7 @@ namespace EAMS.Controllers
         #region Event Count for Dashboard
         [HttpGet]
         [Route("GetDistrictWiseEventListById")]
-        [Authorize (Roles ="ECI,SuperAdmin,StateAdmin,DistrictAdmin") ]
+        [Authorize (Roles ="ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC") ]
         public async Task<IActionResult> EventListDistrictWiseById(string stateId)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
@@ -1586,6 +1586,19 @@ namespace EAMS.Controllers
                 return Ok(eventDistrictWiseList);
             else
                 return NotFound(); 
+        }
+        [HttpGet]
+        [Route("GetPCWiseEventListById")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC")]
+        public async Task<IActionResult> EventListPCWiseById(string stateId)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
+
+            var eventPCWiseList = await _EAMSService.GetEventListPCWiseById(stateId, userId);
+            if (eventPCWiseList is not null)
+                return Ok(eventPCWiseList);
+            else
+                return NotFound();
         }
         [HttpGet]
         [Route("GetAssemblyWiseEventListById")]

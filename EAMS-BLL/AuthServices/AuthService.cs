@@ -62,7 +62,6 @@ namespace EAMS_BLL.AuthServices
 
             // Check if the user exists
             var user = await _authRepository.CheckUserLogin(login);
-           var userProfile = await _authRepository.GetDashboardProfile(user.Id);
             if (user is null)
             {
                 // Return an appropriate response when the user is not found
@@ -74,6 +73,8 @@ namespace EAMS_BLL.AuthServices
             }
             else
             {
+                var userProfile = await _authRepository.GetDashboardProfile(user.Id);
+
                 // Retrieve user roles
                 var userRoles = await _authRepository.GetRoleByUser(login);
 

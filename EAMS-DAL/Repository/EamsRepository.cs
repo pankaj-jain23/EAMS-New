@@ -3205,7 +3205,9 @@ namespace EAMS_DAL.Repository
                 Claim districtMasterId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "DistrictMasterId");
                 Claim assemblyMasterId = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "AssemblyMasterId");
                 Claim pcMasterid = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "PCMasterId");
-                Claim role = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "ro");
+
+                string sid = stateMasterId.Value; string aid = assemblyMasterId.Value; string did = districtMasterId.Value; string pcid = pcMasterid.Value;
+                //Claim role = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "roles");
                 var roles = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
                 if (roles == "ARO" || roles == "SubARO")
                 {
@@ -3213,7 +3215,7 @@ namespace EAMS_DAL.Repository
                              join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
                              join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
                              join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
-                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.AssemblyMasterId== Convert.ToInt16(assemblyMasterId) 
+                             where pi.StateMasterId == Convert.ToInt16(sid) && pi.AssemblyMasterId== Convert.ToInt16(aid) 
                              orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
                              select new PollInterruptionDashboard
                              {
@@ -3243,7 +3245,7 @@ namespace EAMS_DAL.Repository
                              join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
                              join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
                              join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
-                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value)
+                             where pi.StateMasterId == Convert.ToInt16(sid)
                              orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
                              select new PollInterruptionDashboard
                              {
@@ -3302,7 +3304,7 @@ namespace EAMS_DAL.Repository
                              join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
                              join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
                              join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
-                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.DistrictMasterId == Convert.ToInt16(districtMasterId.Value)
+                             where pi.StateMasterId == Convert.ToInt16(sid) && pi.DistrictMasterId == Convert.ToInt16(did)
                              orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
                              select new PollInterruptionDashboard
                              {
@@ -3326,13 +3328,13 @@ namespace EAMS_DAL.Repository
 
                 }
 
-                else if (roles == "PCMasterId")
+                else if (roles == "PC")
                 {
                     result = from pi in _context.PollInterruptions
                              join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId
                              join am in _context.AssemblyMaster on pi.AssemblyMasterId equals am.AssemblyMasterId
                              join bm in _context.BoothMaster on new { pi.BoothMasterId, am.AssemblyMasterId } equals new { bm.BoothMasterId, bm.AssemblyMasterId }
-                             where pi.StateMasterId == Convert.ToInt16(stateMasterId.Value) && pi.PCMasterId == Convert.ToInt16(pcMasterid.Value)
+                             where pi.StateMasterId == Convert.ToInt16(sid) && pi.PCMasterId == Convert.ToInt16(pcid)
                              orderby pi.AssemblyMasterId, pi.BoothMasterId, pi.CreatedAt descending
                              select new PollInterruptionDashboard
                              {
@@ -3356,9 +3358,7 @@ namespace EAMS_DAL.Repository
 
                 }
             }
-
-
-          
+                     
             // Execute the query and retrieve the results
              finalResult = result.ToList();
 

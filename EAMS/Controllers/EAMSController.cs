@@ -1766,7 +1766,7 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetPollInterruptionDashboard")]
-        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,ARO,SubARO")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,ARO,SubARO,PC")]
         public async Task<IActionResult> GetPollInterruptionDashboard()
         {
             

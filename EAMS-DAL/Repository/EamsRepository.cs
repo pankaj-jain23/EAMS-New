@@ -3227,6 +3227,7 @@ namespace EAMS_DAL.Repository
                             pollInterruption.StopTime,
                             pollInterruption.ResumeTime,
                             pollInterruption.CreatedAt,
+                            pollInterruption.Remarks
                         };
 
             var result = await query.ToListAsync();
@@ -3248,6 +3249,7 @@ namespace EAMS_DAL.Repository
                 OldBU = p.OldBU,
                 NewBU = p.NewBU,
                 CreatedAt = p.CreatedAt,
+                Remarks=p.Remarks
                 // Add other properties as needed
             }).ToList();
         }

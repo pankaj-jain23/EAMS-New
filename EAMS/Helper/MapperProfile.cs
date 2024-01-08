@@ -370,6 +370,7 @@ namespace EAMS.Helper
                 .ForMember(dest => dest.NewBU, opt => opt.MapFrom(src => src.newBU))
                 .ForMember(dest => dest.OldBU, opt => opt.MapFrom(src => src.oldBu))
                 .ForMember(dest => dest.OldCU, opt => opt.MapFrom(src => src.oldCu))
+                .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src.Remarks))
              //.ForMember(dest => dest.IsPollInterrupted, opt => opt.MapFrom(src => src.IsPollInterrupted))
              //.ForMember(dest => dest.Flag, opt => opt.MapFrom(src => src.Flag))
 

@@ -768,14 +768,17 @@ namespace EAMS_BLL.Services
                 }
             }
             else if (electionInfoRecord == null)
-            {
+             {
                 if (electionInfoMaster.EventMasterId == 1)
                 {
                     string pollInterruptedMsg = "You have not entered 'Resume Time' in Poll interruption againist this booth.";
                     bool isPollInterruptedOfBooth = false;
                     isPollInterruptedOfBooth = _eamsRepository.IsPollInterrupted(electionInfoMaster.BoothMasterId);
+                    var boothRecord = _eamsRepository.GetBoothById(electionInfoMaster.BoothMasterId.ToString());
+                    var assemblyMasterRecord = _eamsRepository.GetAssemblyById(boothRecord.Result.AssemblyMasterId.ToString());
                     if (isPollInterruptedOfBooth == false)
                     {
+                        electionInfoMaster.PCMasterId = assemblyMasterRecord.Result.PCMasterId;
                         return await _eamsRepository.EventActivity(electionInfoMaster);
                     }
                     else

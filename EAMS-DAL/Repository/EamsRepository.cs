@@ -3335,6 +3335,7 @@ namespace EAMS_DAL.Repository
                 string sid = stateMasterId.Value; string aid = assemblyMasterId.Value; string did = districtMasterId.Value; string pcid = pcMasterid.Value;
                 //Claim role = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "roles");
                 var roles = claimsIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
+                //var roles = claimsIdentity.Claims(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role").Value;
                 if (roles == "ARO" || roles == "SubARO")
                 {
                     result = from pi in _context.PollInterruptions
@@ -3395,7 +3396,7 @@ namespace EAMS_DAL.Repository
 
                 }
 
-                else if (roles == "ECI")
+                else if (roles == "ECI" || roles=="SuperAdmin")
                 {
                     result = from pi in _context.PollInterruptions
                              join di in _context.DistrictMaster on pi.DistrictMasterId equals di.DistrictMasterId

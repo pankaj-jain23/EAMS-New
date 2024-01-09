@@ -1602,7 +1602,7 @@ namespace EAMS.Controllers
         }
         [HttpGet]
         [Route("GetAssemblyWiseEventListById")]
-        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC")]
         public async Task<IActionResult> EventListAssemblyWiseById(string? stateId, string? districtId)
         {
             var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseById(stateId, districtId);
@@ -1614,7 +1614,7 @@ namespace EAMS.Controllers
 
         [HttpGet]
         [Route("GetAssemblyWiseEventListByPCId")]
-        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin")]
+        [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC")]
         public async Task<IActionResult> EventListAssemblyWiseByPCId(string? stateId, string? pcId)
         {
             var eventAssemblyList = await _EAMSService.GetEventListAssemblyWiseByPCId(stateId, pcId);

@@ -6,7 +6,7 @@ using EAMS_ACore.HelperModels;
 using EAMS_ACore.Interfaces;
 using EAMS_ACore.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;  
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims; 
 
 namespace EAMS.Controllers
@@ -1577,11 +1577,12 @@ namespace EAMS.Controllers
         [HttpGet]
         [Route("GetDistrictWiseEventListById")]
         [Authorize (Roles ="ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC") ]
-        public async Task<IActionResult> EventListDistrictWiseById(string stateId)
+        public async Task<IActionResult> EventListDistrictWiseById()
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-           
-            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateId, userId);
+            Claim stateMasterId = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
+
+            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateMasterId.ToString(), userId);
             if (eventDistrictWiseList is not null)
                 return Ok(eventDistrictWiseList);
             else
@@ -1590,11 +1591,12 @@ namespace EAMS.Controllers
         [HttpGet]
         [Route("GetPCWiseEventListById")]
         [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC")]
-        public async Task<IActionResult> EventListPCWiseById(string stateId)
+        public async Task<IActionResult> EventListPCWiseById()
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
+            Claim stateId = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
 
-            var eventPCWiseList = await _EAMSService.GetEventListPCWiseById(stateId, userId);
+            var eventPCWiseList = await _EAMSService.GetEventListPCWiseById(stateId.ToString(), userId);
             if (eventPCWiseList is not null)
                 return Ok(eventPCWiseList);
             else

@@ -1577,12 +1577,20 @@ namespace EAMS.Controllers
         [HttpGet]
         [Route("GetDistrictWiseEventListById")]
         [Authorize (Roles ="ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC") ]
-        public async Task<IActionResult> EventListDistrictWiseById()
+        public async Task<IActionResult> EventListDistrictWiseById(string? stateId)
         {
+            string stateMasterId;
             var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            Claim stateMasterId = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
+            var stateMasterIdC = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId").Value;
+            if (stateId != null) {
+                stateMasterId = stateId;
+            }
+            else
+            {
+                stateMasterId = stateMasterIdC.ToString();
+            }
 
-            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateMasterId.ToString(), userId);
+            var eventDistrictWiseList = await _EAMSService.GetEventListDistrictWiseById(stateMasterId, userId);
             if (eventDistrictWiseList is not null)
                 return Ok(eventDistrictWiseList);
             else
@@ -1591,12 +1599,20 @@ namespace EAMS.Controllers
         [HttpGet]
         [Route("GetPCWiseEventListById")]
         [Authorize(Roles = "ECI,SuperAdmin,StateAdmin,DistrictAdmin,PC")]
-        public async Task<IActionResult> EventListPCWiseById()
+        public async Task<IActionResult> EventListPCWiseById(string? stateId)
         {
+            string stateMasterId;
             var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId").Value;
-            Claim stateId = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId");
-
-            var eventPCWiseList = await _EAMSService.GetEventListPCWiseById(stateId.ToString(), userId);
+            var stateMasterIdC = User.Claims.FirstOrDefault(c => c.Type == "StateMasterId").Value;
+            if (stateId != null)
+            {
+                stateMasterId = stateId;
+            }
+            else
+            {
+                stateMasterId = stateMasterIdC.ToString();
+            }
+            var eventPCWiseList = await _EAMSService.GetEventListPCWiseById(stateMasterId, userId);
             if (eventPCWiseList is not null)
                 return Ok(eventPCWiseList);
             else
